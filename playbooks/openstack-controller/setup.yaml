@@ -20,6 +20,7 @@
       - keystone # http://docs.openstack.org/essex/openstack-compute/install/apt/content/install-keystone.html
       - python-mysqldb # http://docs.openstack.org/essex/openstack-compute/install/apt/content/install-keystone.html
       - mysql-server # http://docs.openstack.org/essex/openstack-compute/install/apt/content/install-keystone.html
+      - python-yaml # http://docs.openstack.org/essex/openstack-compute/install/apt/content/setting-up-tenants-users-and-roles.html
 
 
   # http://docs.openstack.org/essex/openstack-compute/install/apt/content/installing-ntp.html
@@ -43,3 +44,11 @@
   - name: ensure keystone database is synced
     action: command keystone-manage db_sync
 
+# http://docs.openstack.org/essex/openstack-compute/install/apt/content/setting-up-tenants-users-and-roles.html
+  - name: ensure file $item is present
+    action: copy src=files/$item dest=/tmp/$item owner=root group=root mode=0700
+    with_items:
+      - keystone-config.yaml
+      - keystone-init.py
+  - name: ensure keystone database is configured
+    action: command /usr/bin/python /tmp/keystone-init.py /tmp/keystone-config.yaml
