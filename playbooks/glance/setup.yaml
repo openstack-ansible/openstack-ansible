@@ -1,0 +1,23 @@
+---
+- hosts: controller
+  user: vagrant
+  sudo: True
+  vars:
+    glance_db_password: ataglance
+
+  tasks:
+  - name: ensure apt repo is up to date
+    action: apt update-cache=yes
+
+  # http://docs.openstack.org/essex/openstack-compute/install/apt/content/install-glance.html
+  - name: ensure glance is installed
+    action: apt pkg=glance
+  - name: ensure glance sqlite is deleted
+    action: file dest=/var/lib/glance/glance.sqlite state=absent
+  - name: ensure create glance sql script is present
+    action: template src=templates/create-glance-db.sql dest=/tmp/create-glance-db.sql owner=root group=root mode=0600
+  - name: ensure glance sql script is executed
+    action: shell mysql -u root < /tmp/create-glance-db.sql
+
+
+
