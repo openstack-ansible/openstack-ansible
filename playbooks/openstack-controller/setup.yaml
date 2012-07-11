@@ -3,8 +3,11 @@
   user: vagrant
   sudo: True
   vars:
-    keystone_dbpassword: keysarelocked
-    ntpserver: 192.168.206.130
+    keystone_db_password: keysarelocked
+    controller_ip: 192.168.206.130
+    ntpserver: $controller_ip
+    mysqlserver: $controller_ip
+    admin_token: 012345SECRET99TOKEN012345
 
   tasks:
   - name: ensure apt repo is up to date
@@ -27,12 +30,16 @@
   # http://docs.openstack.org/essex/openstack-compute/install/apt/content/install-keystone.html
   - name: ensure sqlite keystone database is delete
     action: file dest=/var/lib/keystone/keystone.db state=absent
-
-  # http://docs.openstack.org/essex/openstack-compute/install/apt/content/install-keystone.html
   - name: mysql config file that binds to all interfaces
     action: copy src=files/my.cnf dest=/etc/mysql/my.cnf owner=root group=root mode=0644
-
-  # http://docs.openstack.org/essex/openstack-compute/install/apt/content/install-keystone.html
   - name: ensure mysql restarted for config change to take effect
     action: service name=mysql state=restarted
+  - name: ensure create keystone sql script is present
+    action: template src=templates/create-keystone-db.sql dest=/tmp/create-keystone-db.sql owner=root mode=0600
+  - name: ensure keystone sql script is executed
+    action: shell mysql -u root < /tmp/create-keystone-db.sql
+  - name: ensure keystone service restarted
+    action: service name=keystone state=restarted
+  - name: ensure keystone database is synced
+    action: command keystone-manage db_sync
 
