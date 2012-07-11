@@ -38,7 +38,7 @@ This will boot three VMs, which we will use as hosts:
  * 192.168.206.132 (compute host #2)
 
 
-You should be able to ssh to them (username: vagrant, password: vagrant).
+You should be able to ssh to them (username: `vagrant`, password: `vagrant`).
 You can also authenticate  with the vagrant private key, which is included
 here as the file `vagrant_private_key`.
 
