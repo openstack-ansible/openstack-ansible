@@ -29,26 +29,27 @@
 
 
   # http://docs.openstack.org/essex/openstack-compute/install/apt/content/install-keystone.html
-  - name: ensure sqlite keystone database is delete
+  - name: ensure sqlite keystone database is deleted
     action: file dest=/var/lib/keystone/keystone.db state=absent
   - name: mysql config file that binds to all interfaces
     action: copy src=files/my.cnf dest=/etc/mysql/my.cnf owner=root group=root mode=0644
   - name: ensure mysql restarted for config change to take effect
     action: service name=mysql state=restarted
   - name: ensure create keystone sql script is present
-    action: template src=templates/create-keystone-db.sql dest=/tmp/create-keystone-db.sql owner=root mode=0600
+    action: template src=templates/create-keystone-db.sql dest=/tmp/create-keystone-db.sql owner=root group=root mode=0600
   - name: ensure keystone sql script is executed
     action: shell mysql -u root < /tmp/create-keystone-db.sql
+  - name: ensure keystone config script is present
+    action: template src=templates/keystone.conf dest=/etc/keystone/keystone.conf owner=root group=root mode=0644
   - name: ensure keystone service restarted
     action: service name=keystone state=restarted
   - name: ensure keystone database is synced
     action: command keystone-manage db_sync
 
 # http://docs.openstack.org/essex/openstack-compute/install/apt/content/setting-up-tenants-users-and-roles.html
-  - name: ensure file $item is present
-    action: copy src=files/$item dest=/tmp/$item owner=root group=root mode=0700
-    with_items:
-      - keystone-config.yaml
-      - keystone-init.py
+  - name: ensure keystone-init.py is present
+    action: copy src=files/keystone_init.py dest=/tmp/keystone_init.py owner=root group=root mode=0755
+  - name: ensure kestyone-config.yaml is present
+    action: template src=files/keystone-config.yaml dest=/tmp/keystone-config.yaml owner=root group=root mode=0600
   - name: ensure keystone database is configured
-    action: command /usr/bin/python /tmp/keystone-init.py /tmp/keystone-config.yaml
+    action: command /tmp/keystone-init.py /tmp/keystone-config.yaml

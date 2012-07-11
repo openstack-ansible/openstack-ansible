@@ -1,6 +1,6 @@
 ---
 # token is the admin_token in keystone.conf
-token:    012345SECRET99TOKEN012345
+token:    {{ admin_token }}
 endpoint: http://192.168.206.130:35357/v2.0
 
 default tenant:
