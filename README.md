@@ -39,8 +39,7 @@ This will boot three VMs, which we will use as hosts:
 
 
 You should be able to ssh to them (username: vagrant, password: vagrant).
-You can also authenticate  with the vagrant private key, which should be in
-`~/.vagrant.d/insecure_private_key`. (You can also grab this private key from
-the [vagrant github repository](https://raw.github.com/mitchellh/vagrant/master/keys/vagrant).)
+You can also authenticate  with the vagrant private key, which is included
+here as the file `vagrant_private_key`.
 
 
