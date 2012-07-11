@@ -35,7 +35,7 @@ This will boot three VMs, which we will use as hosts:
 
  * 192.168.206.130 (our cloud controller)
  * 192.168.206.131 (compute host #1)
- * 192.168.206.132 (compute host #1)
+ * 192.168.206.132 (compute host #2)
 
 
 You should be able to ssh to them (username: vagrant, password: vagrant).
