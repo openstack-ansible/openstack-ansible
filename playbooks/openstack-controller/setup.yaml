@@ -48,8 +48,8 @@
 
 # http://docs.openstack.org/essex/openstack-compute/install/apt/content/setting-up-tenants-users-and-roles.html
   - name: ensure keystone-init.py is present
-    action: copy src=files/keystone_init.py dest=/tmp/keystone_init.py owner=root group=root mode=0755
+    action: copy src=files/keystone-init.py dest=/tmp/keystone-init.py owner=root group=root mode=0755
   - name: ensure kestyone-config.yaml is present
-    action: template src=files/keystone-config.yaml dest=/tmp/keystone-config.yaml owner=root group=root mode=0600
+    action: template src=templates/keystone-config.yaml dest=/tmp/keystone-config.yaml owner=root group=root mode=0600
   - name: ensure keystone database is configured
     action: command /tmp/keystone-init.py /tmp/keystone-config.yaml
