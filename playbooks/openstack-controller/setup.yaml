@@ -1,0 +1,38 @@
+---
+- hosts: controller
+  user: vagrant
+  sudo: True
+  vars:
+    keystone_dbpassword: keysarelocked
+    ntpserver: 192.168.206.130
+
+  tasks:
+  - name: ensure apt repo is up to date
+    action: apt update-cache=yes
+
+  - name: ensure $item is installed
+    action: apt pkg=$item
+    with_items:
+      - ntp # http://docs.openstack.org/essex/openstack-compute/install/apt/content/installing-ntp.html
+      - keystone # http://docs.openstack.org/essex/openstack-compute/install/apt/content/install-keystone.html
+      - python-mysqldb # http://docs.openstack.org/essex/openstack-compute/install/apt/content/install-keystone.html
+      - mysql-server # http://docs.openstack.org/essex/openstack-compute/install/apt/content/install-keystone.html
+
+
+  # http://docs.openstack.org/essex/openstack-compute/install/apt/content/installing-ntp.html
+  - name: update ntp.conf file for server
+    action: copy src=files/ntp.conf dest=/etc/ntp.conf owner=root group=root mode=0644
+
+
+  # http://docs.openstack.org/essex/openstack-compute/install/apt/content/install-keystone.html
+  - name: ensure sqlite keystone database is delete
+    action: file dest=/var/lib/keystone/keystone.db state=absent
+
+  # http://docs.openstack.org/essex/openstack-compute/install/apt/content/install-keystone.html
+  - name: mysql config file that binds to all interfaces
+    action: copy src=files/my.cnf dest=/etc/mysql/my.cnf owner=root group=root mode=0644
+
+  # http://docs.openstack.org/essex/openstack-compute/install/apt/content/install-keystone.html
+  - name: ensure mysql restarted for config change to take effect
+    action: service name=mysql state=restarted
+

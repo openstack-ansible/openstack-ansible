@@ -1,0 +1,17 @@
+---
+- hosts: controller
+  user: vagrant
+  sudo: True
+
+  tasks:
+  - name: ensure apt repo is up to date
+    action: apt update-cache=yes
+
+  - name: ensure $item is installed
+    action: apt pkg=$item
+    with_items:
+
+  # http://docs.openstack.org/essex/openstack-compute/install/apt/content/installing-ntp.html
+  - name: cron job to sync time hourly
+    action: template src=templates/timesync dest=/etc/cron.hourly owner=root group=root mode=0755
+
