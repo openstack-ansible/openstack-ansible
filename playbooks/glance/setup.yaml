@@ -30,6 +30,8 @@
     action: template src=templates/glance-registry.conf dest=/etc/glance/glance-registry.conf owner=glance group=glance mode=0644
   - name: ensure glance-registry-paste.ini file is up to date
     action: file src=files/glance-registry-paste.ini dest=/etc/glance/glance-registry-paste.ini owner=glance group=glance mode=0644
+  - name: ensure glance database is versioned
+    action: command glance-manage version_control 0
   - name: ensure glance database is populated
     action: command glance-manage db_sync
   - name: ensure glance-registry is restarted
