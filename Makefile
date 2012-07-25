@@ -1,11 +1,16 @@
-ANSIBLE=ansible-playbook -i ../../ansible_hosts --private-key ~/.vagrant.d/insecure_private_key setup.yaml
+ANSIBLE=ansible-playbook -i ansible_hosts --private-key vagrant_private_key
 
-.PHONY: controller keystone
+.PHONY: controller keystone glance vms
 
 controller: keystone glance
 
 keystone:
-	cd playbooks/keystone; $(ANSIBLE)
+	$(ANSIBLE) playbooks/keystone/setup.yaml
+
 
 glance:
-	cd playbooks/glance; $(ANSIBLE)
+	$(ANSIBLE) playbooks/glance/setup.yaml
+
+vms:
+	cd vms; vagrant up controller
+
