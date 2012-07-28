@@ -1,4 +1,4 @@
-# OpenStack on Ansible with Vagrant
+# OpenStack on Ansible with Vagrant (WORK IN PROGRESS)
 
 This repository contains script that will deploy OpenStack into Vagrant virtual machines.
 
