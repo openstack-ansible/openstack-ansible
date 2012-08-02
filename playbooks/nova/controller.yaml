@@ -32,5 +32,21 @@
       - nova-scheduler
       - nova-network
 
+
+  # http://docs.openstack.org/trunk/openstack-compute/install/apt/content/compute-minimum-configuration-settings.html
+  - name: ensure nova.conf file is present
+  - action: template src=templates/nova.conf  dest=/etc/nova/nova.conf owner=nova group=nova mode=0640
+
+  - name: ensure services are stopped
+    action: service name=$item state=stopped
+    with_items:
+      - nova-api
+      - nova-compute
+      - nova-network
+      - nova-scheduler
+      - nova-vncproxy
+      - nova-volume
+
+
   handlers:
   - include: handlers.yaml
