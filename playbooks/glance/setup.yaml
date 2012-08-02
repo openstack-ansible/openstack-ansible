@@ -25,7 +25,7 @@
     notify:
       - restart glance-api
   - name: ensure glance-api.conf file is up to date
-    action:  copy src=files/glance-api-paste.ini dest=/etc/glance/glance-api-paste.ini owner=glance group=glance mode=0644
+    action:  copy src=files/glance-api.conf dest=/etc/glance/glance-api.conf owner=glance group=glance mode=0644
     notify:
       - restart glance-api
 
@@ -56,7 +56,7 @@
     - image
 
   tasks:
-  - name: ensure temporary image diretory exists
+  - name: ensure temporary image directory exists
     action: file dest=/tmp/images state=directory
 
   - name: ensure test image has been obtained
@@ -66,4 +66,4 @@
     action: copy src=files/openrc dest=/home/vagrant/openrc
 
   - name: ensure image has been added to glance
-    action: command /usr/bin/glance --os_username=adminUser --os_password=secretword --os_tenant=openstackDemo --os_auth_url=http://127.0.0.1:5000/v2.0 add name=cirros-0.3.0-x86_64 disk_format=qcow2 container_format=bare location=file:///tmp/images/cirros.img
+    action: shell /usr/bin/glance --os_username=adminUser --os_password=secretword --os_tenant=openstackDemo --os_auth_url=http://127.0.0.1:5000/v2.0 add name=cirros-0.3.0-x86_64 disk_format=qcow2 container_format=bare < /tmp/images/cirros.img
