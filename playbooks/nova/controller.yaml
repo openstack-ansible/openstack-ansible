@@ -5,12 +5,7 @@
   vars_files:
     - ../global_vars.yaml
 
-  handlers:
-  - include: handlers.yaml
-
-  # http://docs.openstack.org/essex/openstack-compute/install/apt/content/compute-configuring-guest-network.html
-  - name: ensure bridge-utils are installed
-    action: apt pkg=bridge-utils
+  tasks:
 
     # http://docs.openstack.org/essex/openstack-compute/install/apt/content/compute-configuring-guest-network.html
   - include: tasks/bridge.yaml
@@ -35,4 +30,7 @@
       - nova-consoleauth
       - nova-doc
       - nova-scheduler
-      -  nova-network
+      - nova-network
+
+  handlers:
+  - include: handlers.yaml

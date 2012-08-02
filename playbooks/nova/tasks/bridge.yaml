@@ -1,15 +1,14 @@
-  - name: restart networking
-    action: service name=networking state=restarted
-  # http://docs.openstack.org/essex/openstack-compute/install/apt/content/compute-configuring-guest-network.html
-  - name: ensure bridge-utils are installed
-    action: apt pkg=bridge-utils
+---
+# http://docs.openstack.org/essex/openstack-compute/install/apt/content/compute-configuring-guest-network.html
+- name: ensure bridge-utils are installed
+  action: apt pkg=bridge-utils
 
-  - name: ensure interfaces file has bridge info
-    action: template src=templates/interfaces dest=/etc/network/interfaces owner=root group=root mode=0644
-    notify:
-      - restart networking
+- name: ensure interfaces file has bridge info
+  action: template src=templates/interfaces dest=/etc/network/interfaces owner=root group=root mode=0644
+  notify:
+    - restart networking
 
-  - name: ensure bridge is present
-    action: command /sbin/brctl addbr br100 creates=/sys/class/net/br100
-    notify:
-      - restart networking
+- name: ensure bridge is present
+  action: command /sbin/brctl addbr br100 creates=/sys/class/net/br100
+  notify:
+    - restart networking

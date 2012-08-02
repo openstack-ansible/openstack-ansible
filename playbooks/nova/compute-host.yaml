@@ -5,8 +5,6 @@
   vars_files:
     - ../global_vars.yaml
 
-  handlers:
-  - include: handlers.yaml
 
   tasks:
   - name: ensure apt repo is up to date
@@ -23,3 +21,6 @@
 #    action: apt pkg=$item
 #    with_items:
 #      - 
+
+  handlers:
+  - include: handlers.yaml

@@ -1,0 +1,3 @@
+---
+- name: restart networking
+  action: service name=networking state=restarted
