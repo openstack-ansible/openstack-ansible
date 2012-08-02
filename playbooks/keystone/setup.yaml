@@ -2,6 +2,7 @@
 - hosts: controller
   user: vagrant
   sudo: True
+  gather_facts: False
   vars_files:
     - ../global_vars.yaml
   vars:

@@ -5,8 +5,6 @@
   gather_facts: False
   vars_files:
     - ../global_vars.yaml
-  vars:
-    glance_db_password: ataglance
 
   tasks:
     # http://docs.openstack.org/essex/openstack-compute/install/apt/content/install-glance.html
@@ -23,18 +21,49 @@
 
   # http://docs.openstack.org/essex/openstack-compute/install/apt/content/configure-glance-files.html
   - name: ensure glance-api-paste.ini file is up to date
-    action: file src=files/glance-api-paste.ini dest=/etc/glance/glance-api-paste.ini owner=glance group=glance mode=0644
-  - name: ensure glance-api is restarted
-    action: service name=glance-api state=restarted
+    action: copy src=files/glance-api-paste.ini dest=/etc/glance/glance-api-paste.ini owner=glance group=glance mode=0644
+    notify:
+      - restart glance-api
+  - name: ensure glance-api.conf file is up to date
+    action:  copy src=files/glance-api-paste.ini dest=/etc/glance/glance-api-paste.ini owner=glance group=glance mode=0644
+    notify:
+      - restart glance-api
+
   - name: ensure glance-registry.conf file is up to date
     action: template src=templates/glance-registry.conf dest=/etc/glance/glance-registry.conf owner=glance group=glance mode=0644
+    notify:
+      - restart glance-registry
   - name: ensure glance-registry-paste.ini file is up to date
-    action: file src=files/glance-registry-paste.ini dest=/etc/glance/glance-registry-paste.ini owner=glance group=glance mode=0644
+    action: copy src=files/glance-registry-paste.ini dest=/etc/glance/glance-registry-paste.ini owner=glance group=glance mode=0644
+    notify:
+      - restart glance-registry
   - name: ensure glance database is versioned
     action: command glance-manage version_control 0
   - name: ensure glance database is populated
     action: command glance-manage db_sync
-  - name: ensure glance-registry is restarted
+
+  handlers:
+  - name: restart glance-registry
     action: service name=glance-registry state=restarted
-  - name: ensure glance-api is restarted
+  - name: restart glance-api
     action: service name=glance-api state=restarted
+
+  # http://docs.openstack.org/essex/openstack-compute/install/apt/content/images-verifying-install.html
+- hosts: controller
+  user: vagrant
+  gather_facts: False
+  tags:
+    - image
+
+  tasks:
+  - name: ensure temporary image diretory exists
+    action: file dest=/tmp/images state=directory
+
+  - name: ensure test image has been obtained
+    action: get_url url=https://launchpad.net/cirros/trunk/0.3.0/+download/cirros-0.3.0-x86_64-disk.img dest=/tmp/images/cirros.img
+
+  - name: ensure openrc file has been copied
+    action: copy src=files/openrc dest=/home/vagrant/openrc
+
+  - name: ensure image has been added to glance
+    action: command /usr/bin/glance --os_username=adminUser --os_password=secretword --os_tenant=openstackDemo --os_auth_url=http://127.0.0.1:5000/v2.0 add name=cirros-0.3.0-x86_64 disk_format=qcow2 container_format=bare location=file:///tmp/images/cirros.img
