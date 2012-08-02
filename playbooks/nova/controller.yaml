@@ -17,7 +17,7 @@
   - name: ensure nova database user is present
     action: mysql_user name=nova password=$nova_db_password priv=nova.*:ALL
 
-  - name: ensure $item is installed
+  - name: ensure nova packages are installed
     action: apt pkg=$item
     with_items:
       - rabbitmq-server
