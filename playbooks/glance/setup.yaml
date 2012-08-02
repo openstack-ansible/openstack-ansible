@@ -63,7 +63,7 @@
     action: get_url url=https://launchpad.net/cirros/trunk/0.3.0/+download/cirros-0.3.0-x86_64-disk.img dest=/tmp/images/cirros.img
 
   - name: ensure openrc file has been copied
-    action: copy src=files/openrc dest=/home/vagrant/openrc
+    action: copy src=../openrc dest=/home/vagrant/openrc
 
   - name: ensure image has been added to glance
     action: shell /usr/bin/glance --os_username=adminUser --os_password=secretword --os_tenant=openstackDemo --os_auth_url=http://127.0.0.1:5000/v2.0 add name=cirros-0.3.0-x86_64 disk_format=qcow2 container_format=bare < /tmp/images/cirros.img
