@@ -6,22 +6,14 @@
     - ../global_vars.yaml
 
   handlers:
-  - name: restart networking
-    action: service name=networking state=restarted
+  - include: handlers.yaml
 
   # http://docs.openstack.org/essex/openstack-compute/install/apt/content/compute-configuring-guest-network.html
   - name: ensure bridge-utils are installed
     action: apt pkg=bridge-utils
 
-  - name: ensure interfaces file has bridge info
-    action: template src=templates/interfaces dest=/etc/network/interfaces owner=root group=root mode=0644
-    notify:
-      - restart networking
-
-  - name: ensure bridge is present
-    action: command /sbin/brctl addbr br100
-    notify:
-      - restart networking
+    # http://docs.openstack.org/essex/openstack-compute/install/apt/content/compute-configuring-guest-network.html
+  - include: tasks/bridge.yaml
 
   - name: ensure nova database is present
     action: mysql_db name=nova
@@ -30,7 +22,17 @@
   - name: ensure nova database user is present
     action: mysql_user name=nova password=$nova_db_password priv=nova.*:ALL
 
-#  - name: ensure $item is installed
-#    action: apt pkg=$item
-#    with_items:
-#      - 
+  - name: ensure $item is installed
+    action: apt pkg=$item
+    with_items:
+      - rabbitmq-server
+      - nova-compute
+      - nova-volume
+      - nova-vncproxy
+      - nova-api
+      - nova-ajax-console-proxy
+      - nova-cert
+      - nova-consoleauth
+      - nova-doc
+      - nova-scheduler
+      -  nova-network
