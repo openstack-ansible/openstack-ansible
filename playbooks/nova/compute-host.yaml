@@ -17,11 +17,11 @@
 #  - include: tasks/bridge.yaml
 
   # http://docs.openstack.org/essex/openstack-compute/install/apt/content/installing-additional-compute-nodes.html
-  - name: ensure $item is installed
+  - name: ensure nova-compute packages are installed
     action: apt pkg=$item
     with_items:
       - python-mysqldb
-      - nova-compute
+      - nova-compute-qemu
       - bridge-utils
 
   - name: ensure nova.conf file is present
@@ -32,4 +32,4 @@
 
   handlers:
   - name: restart nova-compute
-    action: service nova-compute state=restarted
+    action: service name=nova-compute state=restarted
