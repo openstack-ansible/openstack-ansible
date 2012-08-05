@@ -3,12 +3,12 @@ Vagrant::Config.run do |config|
   config.vm.box = "precise64"
 
   config.vm.define :controller do |controller_config|
-    controller_config.vm.network :hostonly, "192.168.206.130"
+    controller_config.vm.network :hostonly, "192.168.206.130", :netmask => "255.255.0.0"
     controller_config.vm.host_name = "controller"
   end
 
   config.vm.define :compute1 do |compute1_config|
-    compute1_config.vm.network :hostonly, "192.168.206.131"
+    compute1_config.vm.network :hostonly, "192.168.206.131", :netmask => "255.255.0.0"
     compute1_config.vm.host_name = "compute1"
     compute1_config.vm.customize ["modifyvm", :id, "--memory", 1024]
   end
