@@ -37,11 +37,9 @@
     action: service name=$item state=stopped
     with_items:
       - nova-api
-      - nova-compute
       - nova-network
       - nova-scheduler
       - nova-vncproxy
-      - nova-volume
 
   - name: ensure api-paste.ini is present
     action: template src=templates/api-paste.ini dest=/etc/nova/api-paste.ini owner=nova group=nova mode=0600
@@ -53,14 +51,11 @@
     action: service name=$item state=started
     with_items:
       - nova-api
-      - nova-compute
       - nova-network
       - nova-scheduler
       - nova-vncproxy
-      - nova-volume
       - nova-consoleauth
       - nova-cert
-      - libvirt-bin
       - rabbitmq-server
 
   # http://docs.openstack.org/essex/openstack-compute/install/apt/content/compute-create-network.html
