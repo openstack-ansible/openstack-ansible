@@ -14,7 +14,7 @@
   - name: ensure apt repo is up to date
     action: apt update-cache=yes
 
-  - name: ensure $item is installed
+  - name: ensure keystone packages are installed
     action: apt pkg=$item
     with_items:
       - ntp # http://docs.openstack.org/essex/openstack-compute/install/apt/content/installing-ntp.html
