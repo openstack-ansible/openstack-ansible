@@ -23,6 +23,10 @@
       - python-mysqldb
       - nova-compute-qemu
       - bridge-utils
+      - guestmount
+
+  - name: ensure libguest has been updated
+    action: command /usr/sbin/update-guestfs-appliance
 
   - name: ensure nova.conf file is present
     action: template src=templates/nova.conf dest=/etc/nova/nova.conf owner=nova group=nova mode=0640
