@@ -16,6 +16,10 @@
 #    # http://docs.openstack.org/essex/openstack-compute/install/apt/content/compute-configuring-guest-network.html
 #  - include: tasks/bridge.yaml
 
+  # http://www.mirantis.com/blog/openstack-networking-single-host-flatdhcpmanager/
+  - name: ensure eth2 is in promiscuous mode
+    action: command /sbin/ifconfig eth2 promisc
+
   # http://docs.openstack.org/essex/openstack-compute/install/apt/content/installing-additional-compute-nodes.html
   - name: ensure nova-compute packages are installed
     action: apt pkg=$item
