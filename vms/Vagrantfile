@@ -1,3 +1,4 @@
+
 Vagrant::Config.run do |config|
 
   config.vm.box = "precise64"
@@ -9,10 +10,11 @@ Vagrant::Config.run do |config|
   end
 
   config.vm.define :compute1 do |compute1_config|
-    compute1_config.vm.network :hostonly, "192.168.206.131"
-    compute1_config.vm.network :hostonly, "192.168.100.131"
+    compute1_config.vm.network :hostonly, "192.168.206.131" # nic2
+    compute1_config.vm.network :hostonly, "192.168.100.131" # nic3
     compute1_config.vm.host_name = "compute1"
     compute1_config.vm.customize ["modifyvm", :id, "--memory", 1024]
+    compute1_config.vm.customize ["modifyvm", :id, "--nicpromisc3", "allow-all"]
   end
 
 #  config.vm.define :compute2 do |compute2_config|
