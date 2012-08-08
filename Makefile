@@ -2,7 +2,7 @@ ANSIBLE=ansible-playbook -i ansible_hosts --private-key vagrant_private_key
 
 .PHONY: controller keystone glance vms ssh
 
-all: vms controller compute
+all: vms controller compute run
 
 controller: vms keystone glance nova-controller
 
@@ -28,3 +28,5 @@ ssh:
 destroy:
 	cd vms; vagrant destroy --force
 
+run:
+	./setup.sh
