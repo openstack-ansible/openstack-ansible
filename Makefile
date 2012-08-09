@@ -19,7 +19,6 @@ vms:
 	cd vms; vagrant up
 
 compute:
-	cd vms; vagrant up compute1
 	$(ANSIBLE) playbooks/nova/compute-host.yaml
 
 ssh:
