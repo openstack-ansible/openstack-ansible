@@ -1,6 +1,6 @@
 ANSIBLE=ansible-playbook -i ansible_hosts --private-key vagrant_private_key
 
-.PHONY: controller keystone glance vms ssh
+.PHONY: all vms controller keystone glance nova-controller vms compute destroy run
 
 all: vms controller compute run
 
@@ -20,9 +20,6 @@ vms:
 
 compute:
 	$(ANSIBLE) playbooks/nova/compute-host.yaml
-
-ssh:
-	cd vms; vagrant ssh controller
 
 destroy:
 	cd vms; vagrant destroy --force
