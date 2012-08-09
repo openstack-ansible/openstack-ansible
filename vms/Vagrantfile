@@ -17,10 +17,4 @@ Vagrant::Config.run do |config|
     compute1_config.vm.customize ["modifyvm", :id, "--nicpromisc3", "allow-all"]
   end
 
-#  config.vm.define :compute2 do |compute2_config|
-#    compute2_config.vm.network :hostonly, "192.168.206.132"
-#    compute2_config.vm.host_name = "compute2"
-#    compute2_config.vm.customize ["modifyvm", :id, "--memory", 1024]
-#  end
-
 end
