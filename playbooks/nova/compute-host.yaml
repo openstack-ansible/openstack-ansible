@@ -13,9 +13,6 @@
   - name: cron job to sync time hourly
     action: template src=templates/timesync dest=/etc/cron.hourly/timesync owner=root group=root mode=0755
 
-#    # http://docs.openstack.org/essex/openstack-compute/install/apt/content/compute-configuring-guest-network.html
-#  - include: tasks/bridge.yaml
-
   # http://www.mirantis.com/blog/openstack-networking-single-host-flatdhcpmanager/
   - name: ensure eth2 is in promiscuous mode
     action: command /sbin/ifconfig eth2 promisc
