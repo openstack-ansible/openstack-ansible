@@ -11,6 +11,7 @@ You'll need to install:
 
  * [Vagrant](http://vagrantup.com)
  * [Ansible](http://ansible.github.com)
+ * [python-novaclient](http://pypi.python.org/pypi/python-novaclient/2.6.10) so you can control your instances with the `nova` command-line tool.
 
 The simplest way to get started with Ansible is to install the prequisities,  grab the git repo and source the appropriate file to set your environment variables, no other installation is required:
 
@@ -18,6 +19,8 @@ The simplest way to get started with Ansible is to install the prequisities,  gr
 	git clone git://github.com/ansible/ansible.git
 	cd ./ansible
 	source ./hacking/env-setup
+
+
 
 ## Get an Ubuntu 12.04 (precise) Vagrant box
 
