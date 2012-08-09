@@ -10,43 +10,46 @@
     # http://docs.openstack.org/essex/openstack-compute/install/apt/content/install-glance.html
   - name: ensure glance is installed
     action: apt pkg=glance
+
   - name: ensure glance sqlite is deleted
     action: file dest=/var/lib/glance/glance.sqlite state=absent
 
     # http://docs.openstack.org/essex/openstack-compute/install/apt/content/configure-glance-mysql.html
-  - name: ensure create glance sql script is present
-    action: template src=templates/create-glance-db.sql dest=/tmp/create-glance-db.sql owner=root group=root mode=0600
-  - name: ensure glance sql script is executed
-    action: shell mysql -u root < /tmp/create-glance-db.sql
+  - name: ensure glance database is present
+    action: mysql_db name=glance
+    notify:
+      - version glance database
+      - populate glance database
+
+  - name: ensure glance database user is present
+    action: mysql_user name=glance host=% password=${glance_db_password} priv=glance.*:ALL
 
   # http://docs.openstack.org/essex/openstack-compute/install/apt/content/configure-glance-files.html
   - name: ensure glance-api-paste.ini file is up to date
     action: copy src=files/glance-api-paste.ini dest=/etc/glance/glance-api-paste.ini owner=glance group=glance mode=0644
-    notify:
-      - restart glance-api
+
   - name: ensure glance-api.conf file is up to date
     action:  copy src=files/glance-api.conf dest=/etc/glance/glance-api.conf owner=glance group=glance mode=0644
-    notify:
-      - restart glance-api
 
   - name: ensure glance-registry.conf file is up to date
     action: template src=templates/glance-registry.conf dest=/etc/glance/glance-registry.conf owner=glance group=glance mode=0644
-    notify:
-      - restart glance-registry
+
   - name: ensure glance-registry-paste.ini file is up to date
     action: copy src=files/glance-registry-paste.ini dest=/etc/glance/glance-registry-paste.ini owner=glance group=glance mode=0644
-    notify:
-      - restart glance-registry
-  - name: ensure glance database is versioned
-    action: command glance-manage version_control 0
-  - name: ensure glance database is populated
-    action: command glance-manage db_sync
 
-  handlers:
   - name: restart glance-registry
     action: service name=glance-registry state=restarted
+
   - name: restart glance-api
     action: service name=glance-api state=restarted
+
+  handlers:
+  - name: version glance database
+    action: command glance-manage version_control 0
+
+  - name: populate glance database
+    action: command glance-manage db_sync
+
 
   # http://docs.openstack.org/essex/openstack-compute/install/apt/content/images-verifying-install.html
 - hosts: controller

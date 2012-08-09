@@ -34,10 +34,13 @@
     action: copy src=files/my.cnf dest=/etc/mysql/my.cnf owner=root group=root mode=0644
   - name: ensure mysql restarted for config change to take effect
     action: service name=mysql state=restarted
-  - name: ensure create keystone sql script is present
-    action: template src=templates/create-keystone-db.sql dest=/tmp/create-keystone-db.sql owner=root group=root mode=0600
-  - name: ensure keystone sql script is executed
-    action: shell mysql -u root < /tmp/create-keystone-db.sql
+
+  - name: ensure keystone database is present
+    action: mysql_db name=keystone
+
+  - name: ensure keystone database user is present
+    action: mysql_user name=keystone host=% password=${keystone_db_password} priv=keystone.*:ALL
+
   - name: ensure keystone config script is present
     action: template src=templates/keystone.conf dest=/etc/keystone/keystone.conf owner=root group=root mode=0644
   - name: ensure keystone service restarted
