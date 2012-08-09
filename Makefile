@@ -25,4 +25,5 @@ destroy:
 	cd vms; vagrant destroy --force
 
 run:
-	./setup.sh
+	./boot-cirros.sh
+
