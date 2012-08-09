@@ -9,6 +9,8 @@
 
   - name: ensure nova database is present
     action: mysql_db name=nova
+    notify:
+    - create network
 
   # http://docs.openstack.org/essex/openstack-compute/install/apt/content/setting-up-sql-database-mysql.html
   - name: ensure nova database user is present
@@ -62,6 +64,6 @@
       - rabbitmq-server
 
   # http://docs.openstack.org/essex/openstack-compute/install/apt/content/compute-create-network.html
-  # Note: This action will fail if already called previously, so this isn't strictly idempotent
-  - name: ensure network has been created
+  handlers:
+  - name: create network
     action: shell /usr/bin/nova-manage network create private --fixed_range_v4=192.168.100.0/24 --bridge_interface=br100 --num_networks=1 --network_size=256 || true
