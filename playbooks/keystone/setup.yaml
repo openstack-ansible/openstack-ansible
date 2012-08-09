@@ -37,6 +37,8 @@
 
   - name: ensure keystone database is present
     action: mysql_db name=keystone
+    notify:
+      - populate keystone database
 
   - name: ensure keystone database user is present
     action: mysql_user name=keystone host=% password=${keystone_db_password} priv=keystone.*:ALL
@@ -46,12 +48,14 @@
   - name: ensure keystone service restarted
     action: service name=keystone state=restarted
   - name: ensure keystone database is synced
-    action: command keystone-manage db_sync
+    action: command /usr/bin/keystone-manage db_sync
 
 # http://docs.openstack.org/essex/openstack-compute/install/apt/content/setting-up-tenants-users-and-roles.html
   - name: ensure keystone-init.py is present
     action: copy src=files/keystone-init.py dest=/tmp/keystone-init.py owner=root group=root mode=0755
   - name: ensure kestyone-config.yaml is present
     action: template src=templates/keystone-config.yaml dest=/tmp/keystone-config.yaml owner=root group=root mode=0600
-  - name: ensure keystone database is configured
+
+  handlers:
+  - name: populate keystone database
     action: command /tmp/keystone-init.py /tmp/keystone-config.yaml
