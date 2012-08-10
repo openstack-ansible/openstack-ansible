@@ -34,6 +34,7 @@ Download a 64-bit Ubuntu Vagrant box:
 
 ## Bring up the cloud
 
+	cd ~/ansible/openstack-ansible
 	make all
 
 This will boot two VMs, install OpenStack, and attempt to boot a test VM
