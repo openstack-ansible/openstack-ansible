@@ -46,6 +46,8 @@ If everything works, you should be able to ssh to the instance:
  * username: `cirros`
  * password: `cubswin:)`
 
+Note: You may get a "connection refused" when attempting to ssh to the instance. It can take several minutes for the ssh server to respond to requests, even though the cirros instance has booted and is pingable.
+
 
 ## Vagrant hosts
 
