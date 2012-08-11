@@ -1,4 +1,0 @@
----
-# We don't use service module because "restart networking" doesn't work
-- name: restart networking
-  action: command /etc/init.d/networking restart
