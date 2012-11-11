@@ -43,6 +43,9 @@
   - name: ensure keystone database user is present
     action: mysql_user name=keystone host=% password=${keystone_db_password} priv=keystone.*:ALL
 
+    # See the following links for why anonymous mysql users cause problems:
+    # http://www.tikalk.com/alm/blog/solution-mysql-error-1045-access-denied-userlocalhost-breaks-openstack
+    # http://lists.mysql.com/mysql/128381
   - name: ensure anonymous users removed from mysql
     action: mysql_user name='' host=$item state=absent
     with_items:
