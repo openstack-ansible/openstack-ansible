@@ -2,7 +2,7 @@
 - hosts: controller
   user: vagrant
   sudo: True
-  gather_facts: False
+  gather_facts: True
   vars_files:
     - ../global_vars.yaml
   vars:
@@ -42,6 +42,12 @@
 
   - name: ensure keystone database user is present
     action: mysql_user name=keystone host=% password=${keystone_db_password} priv=keystone.*:ALL
+
+  - name: ensure anonymous users removed from mysql
+    action: mysql_user name='' host=$item state=absent
+    with_items:
+      - localhost
+      - ${ansible_hostname}
 
   - name: ensure keystone config script is present
     action: template src=templates/keystone.conf dest=/etc/keystone/keystone.conf owner=root group=root mode=0644
