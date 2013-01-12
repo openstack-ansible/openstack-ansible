@@ -5,6 +5,9 @@ virtual machines. These scripts are based on the [OpenStack Install and
 Deploy Manual](http://docs.openstack.org/essex/openstack-compute/install/apt/content/),
 Essex release.
 
+See also [Vagrant, Ansible and OpenStack on your laptop](http://www.slideshare.net/lorinh/vagrant-ansible-and-openstack-on-your-laptop)
+on SlideShare.
+
 ## Install prereqs
 
 You'll need to install:
