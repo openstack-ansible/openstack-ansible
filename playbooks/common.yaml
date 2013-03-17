@@ -28,3 +28,15 @@
   handlers:
   - name: restart ntp
     service: name=ntp state=restarted
+
+- name: set up ntpdate client on compute nodes to sync with server
+  hosts: compute
+  user: vagrant
+  sudo: True
+  gather_facts: False
+  tasks:
+    - name: install ntpdate daily cron job
+      template: src=templates/etc/cron.daily/ntpdate dest=/etc/cron.daily/ntpdate owner=root group=root mode=0755
+      tags: ntp
+
+
