@@ -2,8 +2,8 @@
 
 This repository contains script that will deploy OpenStack into Vagrant
 virtual machines. These scripts are based on the [OpenStack Install and
-Deploy Manual](http://docs.openstack.org/essex/openstack-compute/install/apt/content/),
-Essex release.
+Deploy Manual](http://docs.openstack.org/folsom/openstack-compute/install/apt/content/),
+Folsom release.
 
 See also [Vagrant, Ansible and OpenStack on your laptop](http://www.slideshare.net/lorinh/vagrant-ansible-and-openstack-on-your-laptop)
 on SlideShare.
@@ -16,7 +16,7 @@ You'll need to install:
  * [Ansible](http://ansible.github.com)
  * [python-novaclient](http://pypi.python.org/pypi/python-novaclient/2.6.10) so you can control your instances with the `nova` command-line tool.
 
-The simplest way to get started with Ansible is to install the prequisities,  grab the git repo and source the appropriate file to set your environment variables, no other installation is required:
+The simplest way to get started with Ansible is to install the prerequisites,  grab the git repo and source the appropriate file to set your environment variables, no other installation is required:
 
 	sudo pip install paramiko PyYAML Jinja2
 	git clone git://github.com/ansible/ansible.git
