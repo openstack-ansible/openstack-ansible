@@ -1,59 +1,33 @@
 ---
 - hosts: controller
-  user: vagrant
   sudo: True
-  gather_facts: True
-  vars_files:
-    - ../global_vars.yaml
   vars:
-    keystone_db_password: keysarelocked
-    ntpserver: $controller_ip
     admin_token: 012345SECRET99TOKEN012345
 
-  tasks:
-  - name: ensure apt repo is up to date
-    action: apt update-cache=yes
 
-  - name: ensure keystone packages are installed
-    action: apt pkg=$item
-    with_items:
-      - keystone # http://docs.openstack.org/essex/openstack-compute/install/apt/content/install-keystone.html
-      - python-mysqldb # http://docs.openstack.org/essex/openstack-compute/install/apt/content/install-keystone.html
-      - mysql-server # http://docs.openstack.org/essex/openstack-compute/install/apt/content/install-keystone.html
-      - python-yaml # http://docs.openstack.org/essex/openstack-compute/install/apt/content/setting-up-tenants-users-and-roles.html
+  # http://docs.openstack.org/folsom/openstack-compute/install/apt/content/install-keystone.html
+  - name: ensure keystone package is installed
+    apt: pkg=keystone
 
-
-  # http://docs.openstack.org/essex/openstack-compute/install/apt/content/install-keystone.html
   - name: ensure sqlite keystone database is deleted
-    action: file dest=/var/lib/keystone/keystone.db state=absent
-  - name: mysql config file that binds to all interfaces
-    action: copy src=files/my.cnf dest=/etc/mysql/my.cnf owner=root group=root mode=0644
+    file: dest=/var/lib/keystone/keystone.db state=absent
+
   - name: ensure mysql restarted for config change to take effect
-    action: service name=mysql state=restarted
+    service: name=mysql state=restarted
 
   - name: ensure keystone database is present
-    action: mysql_db name=keystone
-    notify:
-      - populate keystone database
+    mysql_db: name=keystone
 
   - name: ensure keystone database user is present
-    action: mysql_user name=keystone host=% password=${keystone_db_password} priv=keystone.*:ALL
-
-    # See the following links for why anonymous mysql users cause problems:
-    # http://www.tikalk.com/alm/blog/solution-mysql-error-1045-access-denied-userlocalhost-breaks-openstack
-    # http://lists.mysql.com/mysql/128381
-  - name: ensure anonymous users removed from mysql
-    action: mysql_user name='' host=$item state=absent
-    with_items:
-      - localhost
-      - ${ansible_hostname}
+    mysql_user: name=keystone host=% password=${keystone_db_password} priv=keystone.*:ALL
 
   - name: ensure keystone config script is present
-    action: template src=templates/keystone.conf dest=/etc/keystone/keystone.conf owner=root group=root mode=0644
-  - name: ensure keystone service restarted
-    action: service name=keystone state=restarted
+    template: src=templates/keystone.conf dest=/etc/keystone/keystone.conf owner=root group=root mode=0644
+    notify: restart keystone
+
   - name: ensure keystone database is synced
-    action: command /usr/bin/keystone-manage db_sync
+    keystone_manage: db_sync
+    notify: restart keystone
 
 # http://docs.openstack.org/essex/openstack-compute/install/apt/content/setting-up-tenants-users-and-roles.html
   - name: ensure keystone-init.py is present
@@ -62,5 +36,8 @@
     action: template src=templates/keystone-config.yaml dest=/tmp/keystone-config.yaml owner=root group=root mode=0600
 
   handlers:
+   - name: restart keystone
+     service: name=keystone service=restarted
+
   - name: populate keystone database
     action: command /tmp/keystone-init.py /tmp/keystone-config.yaml
