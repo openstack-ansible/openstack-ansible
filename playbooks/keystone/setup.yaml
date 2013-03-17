@@ -17,15 +17,11 @@
   - name: ensure keystone packages are installed
     action: apt pkg=$item
     with_items:
-      - ntp # http://docs.openstack.org/essex/openstack-compute/install/apt/content/installing-ntp.html
       - keystone # http://docs.openstack.org/essex/openstack-compute/install/apt/content/install-keystone.html
       - python-mysqldb # http://docs.openstack.org/essex/openstack-compute/install/apt/content/install-keystone.html
       - mysql-server # http://docs.openstack.org/essex/openstack-compute/install/apt/content/install-keystone.html
       - python-yaml # http://docs.openstack.org/essex/openstack-compute/install/apt/content/setting-up-tenants-users-and-roles.html
 
-  # http://docs.openstack.org/essex/openstack-compute/install/apt/content/installing-ntp.html
-  - name: update ntp.conf file for server
-    action: copy src=files/ntp.conf dest=/etc/ntp.conf owner=root group=root mode=0644
 
   # http://docs.openstack.org/essex/openstack-compute/install/apt/content/install-keystone.html
   - name: ensure sqlite keystone database is deleted
