@@ -1,1 +1,2 @@
 ntpdate {{ hostvars[groups['controller'][0]].inventory_hostname }}
+hwclock -w
