@@ -24,8 +24,9 @@
     notify: restart keystone
 
   - name: ensure keystone database is synced
-    keystone_manage: db_sync
+    keystone_manage: action=db_sync
     notify: restart keystone
+    tags: keystone
 
 #### http://docs.openstack.org/essex/openstack-compute/install/apt/content/setting-up-tenants-users-and-roles.html
 ###  - name: ensure keystone-init.py is present
@@ -35,4 +36,4 @@
 
   handlers:
    - name: restart keystone
-     service: name=keystone service=restarted
+     service: name=keystone state=restarted

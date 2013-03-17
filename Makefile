@@ -1,5 +1,5 @@
 ANSIBLE=ansible-playbook
-TAGS=-t mysql
+TAGS=-t keystone
 
 .PHONY: all vms controller keystone glance nova-controller vms compute destroy run
 

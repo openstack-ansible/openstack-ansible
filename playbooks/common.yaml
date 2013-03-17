@@ -72,7 +72,6 @@
         - localhost
         - $inventory_hostname
 
-    handers:
-      - name: restart mysql
-        service: name=mysql state=restarted
-
+  handlers:
+    - name: restart mysql
+      service: name=mysql state=restarted

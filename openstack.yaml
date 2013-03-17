@@ -1,1 +1,2 @@
 - include: playbooks/common.yaml
+- include: playbooks/keystone.yaml
