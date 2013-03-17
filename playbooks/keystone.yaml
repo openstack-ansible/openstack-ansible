@@ -20,15 +20,21 @@
     mysql_user: name=keystone host=% password=${keystone_db_password} priv=keystone.*:ALL
 
   - name: ensure keystone config script is present
-    template: src=templates/etc/keystone/keystone.conf dest=/etc/keystone/keystone.conf owner=root group=root mode=0644
+    template: src=templates/etc/keystone/keystone.conf dest=/etc/keystone/keystone.conf owner=keystone group=keystone mode=0600
     notify: restart keystone
 
-  - name: ensure keystone database is synced
+  - name: initialize keystone database
     keystone_manage: action=db_sync
     notify: restart keystone
+
+  - name: create default tenant
+    keystone_user: token=$admin_token tenant=demo tenant_description="Default Tenant"
     tags: keystone
 
-#### http://docs.openstack.org/essex/openstack-compute/install/apt/content/setting-up-tenants-users-and-roles.html
+  # http://docs.openstack.org/folsom/openstack-compute/install/apt/content/setting-up-tenants-users-and-roles-manually.html
+
+
+#### http://docs.openstack.org/folsom/openstack-compute/install/apt/content/setting-up-tenants-users-and-roles-manually.html
 ###  - name: ensure keystone-init.py is present
 ###    action: copy src=files/keystone-init.py dest=/tmp/keystone-init.py owner=root group=root mode=0755
 ###  - name: ensure kestyone-config.yaml is present
