@@ -3,6 +3,7 @@
   sudo: True
   vars:
     admin_token: 012345SECRET99TOKEN012345
+  tasks:
 
 
   # http://docs.openstack.org/folsom/openstack-compute/install/apt/content/install-keystone.html
@@ -12,9 +13,6 @@
   - name: ensure sqlite keystone database is deleted
     file: dest=/var/lib/keystone/keystone.db state=absent
 
-  - name: ensure mysql restarted for config change to take effect
-    service: name=mysql state=restarted
-
   - name: ensure keystone database is present
     mysql_db: name=keystone
 
@@ -22,22 +20,19 @@
     mysql_user: name=keystone host=% password=${keystone_db_password} priv=keystone.*:ALL
 
   - name: ensure keystone config script is present
-    template: src=templates/keystone.conf dest=/etc/keystone/keystone.conf owner=root group=root mode=0644
+    template: src=templates/etc/keystone/keystone.conf dest=/etc/keystone/keystone.conf owner=root group=root mode=0644
     notify: restart keystone
 
   - name: ensure keystone database is synced
     keystone_manage: db_sync
     notify: restart keystone
 
-# http://docs.openstack.org/essex/openstack-compute/install/apt/content/setting-up-tenants-users-and-roles.html
-  - name: ensure keystone-init.py is present
-    action: copy src=files/keystone-init.py dest=/tmp/keystone-init.py owner=root group=root mode=0755
-  - name: ensure kestyone-config.yaml is present
-    action: template src=templates/keystone-config.yaml dest=/tmp/keystone-config.yaml owner=root group=root mode=0600
+#### http://docs.openstack.org/essex/openstack-compute/install/apt/content/setting-up-tenants-users-and-roles.html
+###  - name: ensure keystone-init.py is present
+###    action: copy src=files/keystone-init.py dest=/tmp/keystone-init.py owner=root group=root mode=0755
+###  - name: ensure kestyone-config.yaml is present
+###    action: template src=templates/keystone-config.yaml dest=/tmp/keystone-config.yaml owner=root group=root mode=0600
 
   handlers:
    - name: restart keystone
      service: name=keystone service=restarted
-
-  - name: populate keystone database
-    action: command /tmp/keystone-init.py /tmp/keystone-config.yaml
