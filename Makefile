@@ -1,4 +1,4 @@
-ANSIBLE=ansible-playbook -i ansible_hosts --private-key vagrant_private_key
+ANSIBLE=ansible-playbook
 
 .PHONY: all vms controller keystone glance nova-controller vms compute destroy run
 
