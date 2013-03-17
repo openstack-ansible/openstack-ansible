@@ -47,6 +47,10 @@
         - python-mysqldb
         - mysql-server
 
+    - name: mysql config file that binds to all interfaces
+      copy: src=files/etc/my.cnf dest=/etc/mysql/my.cnf owner=root group=root mode=0644
+      notify: restart mysql
+
     - name: update mysql root password for all root accounts
       mysql_user: name=root host=localhost password=$root_db_password
 
@@ -67,3 +71,8 @@
       with_items:
         - localhost
         - $inventory_hostname
+
+    handers:
+      - name: restart mysql
+        service: name=mysql state=restarted
+
