@@ -40,8 +40,6 @@
 - name: MySQL setup
   hosts: controller
   sudo: True
-  tags:
-    - mysql
   tasks:
     - name: install mysql and python mysql client
       apt: pkg=$item
@@ -64,10 +62,8 @@
         - 127.0.0.1
         - ::1
 
-
     - name: ensure anonymous users are not in the database
       mysql_user: name='' host=$item state=absent
       with_items:
         - localhost
         - $inventory_hostname
-
