@@ -1,7 +1,6 @@
 ---
 - name: Setup steps that are not specific to a particular OpenStack project
   hosts: cloud
-  user: vagrant
   sudo: True
   gather_facts: False
   tasks:
@@ -31,7 +30,6 @@
 
 - name: set up ntpdate client on compute nodes to sync with server
   hosts: compute
-  user: vagrant
   sudo: True
   gather_facts: False
   tasks:
@@ -39,4 +37,14 @@
       template: src=templates/etc/cron.daily/ntpdate dest=/etc/cron.daily/ntpdate owner=root group=root mode=0755
       tags: ntp
 
-
+- name: MySQL setup
+  hosts: controller
+  sudo: True
+  tags:
+    - mysql
+  tasks:
+    - name: install mysql and python mysql client
+      apt: pkg=$item
+      with_items:
+        - python-mysqldb
+        - mysql-server
