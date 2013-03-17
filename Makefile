@@ -1,6 +1,14 @@
 ANSIBLE=ansible-playbook
+TAGS=-t mysql
 
 .PHONY: all vms controller keystone glance nova-controller vms compute destroy run
+
+openstack: openstack-ansible-modules
+	ansible-playbook openstack.yaml $(TAGS)
+
+openstack-ansible-modules:
+	git submodule init
+	git submodule update
 
 all: vms controller compute run
 
