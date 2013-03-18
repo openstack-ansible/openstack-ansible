@@ -27,18 +27,21 @@
     keystone_manage: action=db_sync
     notify: restart keystone
 
+    # http://docs.openstack.org/folsom/openstack-compute/install/apt/content/setting-up-tenants-users-and-roles-manually.html
+    # Same as keystone tenant-craete
   - name: create default tenant
     keystone_user: token=$admin_token tenant=demo tenant_description="Default Tenant"
     tags: keystone
 
-  # http://docs.openstack.org/folsom/openstack-compute/install/apt/content/setting-up-tenants-users-and-roles-manually.html
+    # Same as keystone user-create
+  - name: create admin user
+    keystone_user: token=$admin_token user=admin tenant=demo password=secrete
+    tags: keystone
 
-
-#### http://docs.openstack.org/folsom/openstack-compute/install/apt/content/setting-up-tenants-users-and-roles-manually.html
-###  - name: ensure keystone-init.py is present
-###    action: copy src=files/keystone-init.py dest=/tmp/keystone-init.py owner=root group=root mode=0755
-###  - name: ensure kestyone-config.yaml is present
-###    action: template src=templates/keystone-config.yaml dest=/tmp/keystone-config.yaml owner=root group=root mode=0600
+    # Same as keystone role-create and keystone user-role-add
+  - name: create admin role and associate it with admin user
+    keystone_user: token=$admin_token role=admin user=admin tenant=demo
+    tags: keystone
 
   handlers:
    - name: restart keystone
