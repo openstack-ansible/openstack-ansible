@@ -1,8 +1,18 @@
 ---
 - hosts: controller
   sudo: True
+  gather_facts: False
   vars:
     admin_token: 012345SECRET99TOKEN012345
+    region: RegionOne
+    services:
+      - name: keystone
+        type: identity
+        description: Keystone Identity Service
+        public_url: http://192.168.206.130:5000/v2.0
+        internal_url: http://192.168.206.130:5000/v2.0
+        admin_url: http://192.168.206.130:35357/v2.0
+
     service_users:
       - glance
       - nova
@@ -26,7 +36,12 @@
     mysql_user: name=keystone host=% password=${keystone_db_password} priv=keystone.*:ALL
 
   - name: ensure keystone config script is present
-    template: src=templates/etc/keystone/keystone.conf dest=/etc/keystone/keystone.conf owner=keystone group=keystone mode=0600
+    template: >
+          src=templates/etc/keystone/keystone.conf
+          dest=/etc/keystone/keystone.conf
+          owner=keystone
+          group=keystone
+          mode=0600
     notify: restart keystone
 
   - name: initialize keystone database
@@ -56,6 +71,21 @@
   - name: add each of the service users to the service tenant with the admin role
     keystone_user: token=$admin_token role=admin user=$item tenant=service
     with_items: $service_users
+
+  - name: add services
+    keystone_service: >
+          token=$admin_token
+          name=${item.name}
+          type=${item.type}
+          description="${item.description}"
+          public_url=${item.publicurl}
+          internal_url=${item.internalurl}
+          admin_url=${item.adminurl}
+
+  - name: see if I can do the right thing with debug
+    debug: msg=${item.name}
+    with_items: $services
+    tags: service
 
 
   handlers:
