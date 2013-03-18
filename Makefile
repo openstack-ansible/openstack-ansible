@@ -1,10 +1,12 @@
-ANSIBLE=ansible-playbook -v
-TAGS=-t keystone
+TAGS=-t service
+#CHECK=--check
+
+ANSIBLE=ansible-playbook -v $(TAGS) $(CHECK)
 
 .PHONY: all vms controller keystone glance nova-controller vms compute destroy run
 
 openstack: openstack-ansible-modules
-	$(ANSIBLE) openstack.yaml $(TAGS)
+	$(ANSIBLE) openstack.yaml
 
 openstack-ansible-modules:
 	git submodule init
