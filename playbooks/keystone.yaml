@@ -3,9 +3,15 @@
   sudo: True
   vars:
     admin_token: 012345SECRET99TOKEN012345
+    service_users:
+      - glance
+      - nova
+      - ec2
+      - swift
+  tags:
+    - keystone
+
   tasks:
-
-
   # http://docs.openstack.org/folsom/openstack-compute/install/apt/content/install-keystone.html
   - name: ensure keystone package is installed
     apt: pkg=keystone
@@ -31,17 +37,26 @@
     # Same as keystone tenant-craete
   - name: create default tenant
     keystone_user: token=$admin_token tenant=demo tenant_description="Default Tenant"
-    tags: keystone
 
     # Same as keystone user-create
   - name: create admin user
     keystone_user: token=$admin_token user=admin tenant=demo password=secrete
-    tags: keystone
 
     # Same as keystone role-create and keystone user-role-add
   - name: create admin role and associate it with admin user
     keystone_user: token=$admin_token role=admin user=admin tenant=demo
-    tags: keystone
+
+  - name: create service tenant
+    keystone_user: token=$admin_token tenant=service tenant_description="Service Tenant"
+
+  - name: create users for each of the services
+    keystone_user: token=$admin_token user=$item tenant=service password=$item
+    with_items: $service_users
+
+  - name: add each of the service users to the service tenant with the admin role
+    keystone_user: token=$admin_token role=admin user=$item tenant=service
+    with_items: $service_users
+
 
   handlers:
    - name: restart keystone
