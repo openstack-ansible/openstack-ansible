@@ -1,4 +1,4 @@
-TAGS=-t service
+TAGS=-t keystone
 #CHECK=--check
 
 ANSIBLE=ansible-playbook -v $(TAGS) $(CHECK)
