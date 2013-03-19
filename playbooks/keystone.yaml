@@ -1,5 +1,47 @@
 ---
-- hosts: controller
+- name: Install keystone
+  hosts: controller
+  sudo: True
+  gather_facts: False
+  vars:
+    admin_token: 012345SECRET99TOKEN012345
+
+  tasks:
+  # http://docs.openstack.org/folsom/openstack-compute/install/apt/content/install-keystone.html
+  - name: ensure keystone package is installed
+    apt: pkg=keystone
+
+  - name: ensure sqlite keystone database is deleted
+    file: dest=/var/lib/keystone/keystone.db state=absent
+
+  - name: ensure keystone database is present
+    mysql_db: name=keystone
+
+  - name: ensure keystone database user is present
+    mysql_user: name=keystone host=% password=${keystone_db_password} priv=keystone.*:ALL
+
+  - name: ensure keystone config script is present
+    template: >
+          src=templates/etc/keystone/keystone.conf
+          dest=/etc/keystone/keystone.conf
+          owner=keystone
+          group=keystone
+          mode=0600
+    notify: restart keystone
+
+  - name: initialize keystone database
+    keystone_manage: action=db_sync
+    notify: restart keystone
+
+  handlers:
+   - name: restart keystone
+     service: name=keystone state=restarted
+
+
+  # We split this into a separate play since the keystone restart must go
+  # through before we can configure
+- name: configure keystone
+  hosts: controller
   sudo: True
   gather_facts: False
   vars:
@@ -8,13 +50,13 @@
 
     service_users:
       - name: glance
-        password: glance
+        password: $glance_identity_password
       - name: nova
-        password: nova
+        password: $nova_identity_password
       - name: ec2
-        password: ec2
+        password: $ec2_identity_password
       - name: swift
-        password: swiftpass
+        password: $swift_identity_password
 
     services:
       - name: keystone
@@ -55,31 +97,6 @@
         admin_url: http://192.168.206.130:8888/v1
 
   tasks:
-  # http://docs.openstack.org/folsom/openstack-compute/install/apt/content/install-keystone.html
-  - name: ensure keystone package is installed
-    apt: pkg=keystone
-
-  - name: ensure sqlite keystone database is deleted
-    file: dest=/var/lib/keystone/keystone.db state=absent
-
-  - name: ensure keystone database is present
-    mysql_db: name=keystone
-
-  - name: ensure keystone database user is present
-    mysql_user: name=keystone host=% password=${keystone_db_password} priv=keystone.*:ALL
-
-  - name: ensure keystone config script is present
-    template: >
-          src=templates/etc/keystone/keystone.conf
-          dest=/etc/keystone/keystone.conf
-          owner=keystone
-          group=keystone
-          mode=0600
-    notify: restart keystone
-
-  - name: initialize keystone database
-    keystone_manage: action=db_sync
-    notify: restart keystone
 
     # http://docs.openstack.org/folsom/openstack-compute/install/apt/content/setting-up-tenants-users-and-roles-manually.html
     # Same as keystone tenant-craete
@@ -118,7 +135,3 @@
     with_items: $services
     tags: keystone
 
-
-  handlers:
-   - name: restart keystone
-     service: name=keystone state=restarted
