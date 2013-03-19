@@ -26,11 +26,6 @@
       - localhost
 
   # http://docs.openstack.org/folsom/openstack-compute/install/apt/content/configure-glance-files.html
-  - name: ensure glance-api-paste.ini file is up to date
-    copy: src=files/etc/glance/glance-api-paste.ini dest=/etc/glance/glance-api-paste.ini owner=glance group=glance mode=0600
-    notify:
-    - restart glance-api
-
   - name: ensure glance-api.conf file is up to date
     template: src=templates/etc/glance/glance-api.conf dest=/etc/glance/glance-api.conf owner=glance group=glance mode=0600
     notify:
@@ -41,18 +36,11 @@
     notify:
     - restart glance-registry
 
-  - name: ensure glance-registry-paste.ini file is up to date
-    copy: src=files/etc/glance/glance-registry-paste.ini dest=/etc/glance/glance-registry-paste.ini owner=glance group=glance mode=0600
-    notify:
-    - restart glance-registry
+  - name: initialize the database
+    glance_manage: action=dbsync
+
 
   handlers:
-  - name: version glance database
-    command: glance-manage version_control 0
-
-  - name: populate glance database
-    command: glance-manage db_sync
-
   - name: restart glance-registry
     service: name=glance-registry state=restarted
 
