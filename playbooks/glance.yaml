@@ -27,7 +27,7 @@
 
   # http://docs.openstack.org/folsom/openstack-compute/install/apt/content/configure-glance-files.html
   - name: ensure glance-api-paste.ini file is up to date
-    template: src=templates/etc/glance/glance-api-paste.ini dest=/etc/glance/glance-api-paste.ini owner=glance group=glance mode=0600
+    copy: src=files/etc/glance/glance-api-paste.ini dest=/etc/glance/glance-api-paste.ini owner=glance group=glance mode=0600
     notify:
     - restart glance-api
 
