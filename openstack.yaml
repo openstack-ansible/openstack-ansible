@@ -1,0 +1,5 @@
+- include: playbooks/common.yaml
+- include: playbooks/keystone.yaml
+- include: playbooks/glance.yaml
+- include: playbooks/nova-controller.yaml
+- include: playbooks/nova-compute.yaml

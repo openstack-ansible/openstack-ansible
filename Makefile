@@ -1,26 +1,21 @@
-ANSIBLE=ansible-playbook -i ansible_hosts --private-key vagrant_private_key
+#TAGS=-t keystone
+#CHECK=--check
 
-.PHONY: all vms controller keystone glance nova-controller vms compute destroy run
+ANSIBLE=ansible-playbook -v $(TAGS) $(CHECK)
 
-all: vms controller compute run
+.PHONY: all vms openstack controller keystone glance nova-controller vms compute destroy run
 
-controller: vms keystone glance nova-controller
+openstack: openstack-ansible-modules
+	$(ANSIBLE) openstack.yaml
 
-keystone:
-	$(ANSIBLE) playbooks/keystone/setup.yaml
+openstack-ansible-modules:
+	git submodule init
+	git submodule update
 
-glance:
-	$(ANSIBLE) playbooks/glance/setup.yaml
-
-nova-controller:
-	$(ANSIBLE) playbooks/nova/controller.yaml
+all: openstack-ansible-modules vms openstack run
 
 vms:
 	cd vms; vagrant up
-
-compute:
-	$(ANSIBLE) playbooks/nova/compute-host.yaml
-
 destroy:
 	cd vms; vagrant destroy --force
 

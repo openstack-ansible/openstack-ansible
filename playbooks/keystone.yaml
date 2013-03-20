@@ -1,0 +1,137 @@
+---
+- name: Install keystone
+  hosts: controller
+  sudo: True
+  gather_facts: False
+  vars:
+    admin_token: 012345SECRET99TOKEN012345
+
+  tasks:
+  # http://docs.openstack.org/folsom/openstack-compute/install/apt/content/install-keystone.html
+  - name: ensure keystone package is installed
+    apt: pkg=keystone
+
+  - name: ensure sqlite keystone database is deleted
+    file: dest=/var/lib/keystone/keystone.db state=absent
+
+  - name: ensure keystone database is present
+    mysql_db: name=keystone
+
+  - name: ensure keystone database user is present
+    mysql_user: name=keystone host=% password=${keystone_db_password} priv=keystone.*:ALL
+
+  - name: ensure keystone config script is present
+    template: >
+          src=templates/etc/keystone/keystone.conf
+          dest=/etc/keystone/keystone.conf
+          owner=keystone
+          group=keystone
+          mode=0600
+    notify: restart keystone
+
+  - name: initialize keystone database
+    keystone_manage: action=db_sync
+    notify: restart keystone
+
+  handlers:
+   - name: restart keystone
+     service: name=keystone state=restarted
+
+
+  # We split this into a separate play since the keystone restart must go
+  # through before we can configure
+- name: configure keystone
+  hosts: controller
+  sudo: True
+  gather_facts: False
+  vars:
+    admin_token: 012345SECRET99TOKEN012345
+    region: RegionOne
+
+    service_users:
+      - name: glance
+        password: $glance_identity_password
+      - name: nova
+        password: $nova_identity_password
+      - name: ec2
+        password: $ec2_identity_password
+      - name: swift
+        password: $swift_identity_password
+
+    services:
+      - name: keystone
+        type: identity
+        description: Identity Service
+        public_url: http://192.168.206.130:5000/v2.0
+        internal_url: http://192.168.206.130:5000/v2.0
+        admin_url: http://192.168.206.130:35357/v2.0
+      - name: nova
+        type: compute
+        description: Compute Service
+        public_url: http://192.168.206.130:8774/v2/%(tenant_id)s
+        internal_url: http://192.168.206.130:8774/v2/%(tenant_id)s
+        admin_url: http://192.168.206.130:8774/v2/%(tenant_id)s
+      - name: volume
+        type: volume
+        description: Volume Service
+        public_url: http://192.168.206.130:8776/v1/%(tenant_id)s
+        internal_url: http://192.168.206.130:8776/v1/%(tenant_id)s
+        admin_url: http://192.168.206.130:8776/v1/%(tenant_id)s
+      - name: glance
+        type: image
+        description: Image Service
+        public_url: http://192.168.206.130:9292
+        internal_url: http://192.168.206.130:9292
+        admin_url: http://192.168.206.130:9292
+      - name: ec2
+        type: ec2
+        description: EC2 Compatibility Layer
+        public_url: http://192.168.206.130:8773/services/Cloud
+        internal_url: http://192.168.206.130:8773/services/Cloud
+        admin_url: http://192.168.206.130:8773/services/Admin
+      - name: swift
+        type: object-store
+        description: Object Storage Service
+        public_url: http://192.168.206.130:8888/v1/AUTH_%(tenant_id)s
+        internal_url: http://192.168.206.130:8888/v1/AUTH_%(tenant_id)s
+        admin_url: http://192.168.206.130:8888/v1
+
+  tasks:
+
+    # http://docs.openstack.org/folsom/openstack-compute/install/apt/content/setting-up-tenants-users-and-roles-manually.html
+    # Same as keystone tenant-craete
+  - name: create default tenant
+    keystone_user: token=$admin_token tenant=demo tenant_description="Default Tenant"
+
+    # Same as keystone user-create
+  - name: create admin user
+    keystone_user: token=$admin_token user=admin tenant=demo password=secrete
+
+    # Same as keystone role-create and keystone user-role-add
+  - name: create admin role and associate it with admin user
+    keystone_user: token=$admin_token role=admin user=admin tenant=demo
+
+  - name: create service tenant
+    keystone_user: token=$admin_token tenant=service tenant_description="Service Tenant"
+
+  - name: create users for each of the services
+    keystone_user: token=$admin_token user=${item.name} tenant=service password=${item.password}
+    with_items: $service_users
+
+  - name: add each of the service users to the service tenant with the admin role
+    keystone_user: token=$admin_token role=admin user=${item.name} tenant=service
+    with_items: $service_users
+
+  - name: add services
+    keystone_service: >
+          token=$admin_token
+          name=${item.name}
+          type=${item.type}
+          description="${item.description}"
+          public_url=${item.public_url}
+          internal_url=${item.internal_url}
+          admin_url=${item.admin_url}
+          region=$region
+    with_items: $services
+    tags: keystone
+

@@ -1,3 +1,7 @@
+[cloud:children]
+controller
+compute
+
 [controller]
 192.168.206.130
 
