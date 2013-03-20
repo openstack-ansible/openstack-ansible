@@ -4,10 +4,6 @@
   sudo: True
 
   tasks:
-  # http://www.mirantis.com/blog/openstack-networking-single-host-flatdhcpmanager/
-  - name: ensure eth2 is in promiscuous mode
-    action: command /sbin/ip link set eth2 promisc on
-
   # http://docs.openstack.org/folsom/openstack-compute/install/apt/content/installing-additional-compute-nodes.html
   - name: ensure nova-compute packages are installed
     apt: pkg=$item update-cache=yes
@@ -15,10 +11,6 @@
       - python-mysqldb
       - nova-compute-qemu
       - bridge-utils
-      - guestmount
-
-  - name: ensure libguest has been updated
-    command: /usr/sbin/update-guestfs-appliance
 
   - name: ensure nova.conf file is present
     template: src=templates/etc/nova/nova.conf dest=/etc/nova/nova.conf owner=nova group=nova mode=0600
