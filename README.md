@@ -5,9 +5,6 @@ virtual machines. These scripts are based on the [OpenStack Install and Deploy
 Manual](http://docs.openstack.org/folsom/openstack-compute/install/apt/content/),
 Folsom release.
 
-See the folsom branch of this repository for ongoing work on 
-updating this for Folsom. When that update is complete, it will become the master branch of this repository.
-
 See also [Vagrant, Ansible and OpenStack on your laptop](http://www.slideshare.net/lorinh/vagrant-ansible-and-openstack-on-your-laptop)
 on SlideShare.
 
