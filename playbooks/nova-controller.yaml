@@ -26,7 +26,6 @@
       - nova-ajax-console-proxy
       - nova-cert
       - nova-consoleauth
-      - nova-doc
       - nova-scheduler
       - nova-network
       - bridge-utils
