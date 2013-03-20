@@ -1,25 +1,16 @@
 ---
-- hosts: compute
-  user: vagrant
+- name: Set up compute node
+  hosts: compute
   sudo: True
-  vars_files:
-    - ../global_vars.yaml
 
   tasks:
-  - name: ensure apt repo is up to date
-    action: apt update-cache=yes
-
-  # http://docs.openstack.org/essex/openstack-compute/install/apt/content/installing-ntp.html
-  - name: cron job to sync time hourly
-    action: template src=templates/timesync dest=/etc/cron.hourly/timesync owner=root group=root mode=0755
-
   # http://www.mirantis.com/blog/openstack-networking-single-host-flatdhcpmanager/
   - name: ensure eth2 is in promiscuous mode
     action: command /sbin/ip link set eth2 promisc on
 
-  # http://docs.openstack.org/essex/openstack-compute/install/apt/content/installing-additional-compute-nodes.html
+  # http://docs.openstack.org/folsom/openstack-compute/install/apt/content/installing-additional-compute-nodes.html
   - name: ensure nova-compute packages are installed
-    action: apt pkg=$item
+    apt: pkg=$item update-cache=yes
     with_items:
       - python-mysqldb
       - nova-compute-qemu
@@ -27,14 +18,19 @@
       - guestmount
 
   - name: ensure libguest has been updated
-    action: command /usr/sbin/update-guestfs-appliance
+    command: /usr/sbin/update-guestfs-appliance
 
   - name: ensure nova.conf file is present
-    action: template src=templates/nova.conf dest=/etc/nova/nova.conf owner=nova group=nova mode=0640
+    template: src=templates/etc/nova/nova.conf dest=/etc/nova/nova.conf owner=nova group=nova mode=0600
+    notify:
+      - restart nova-compute
+    tags: debug
+
+  - name: ensure api-paste.ini is present
+    copy: src=files/etc/nova/api-paste.ini dest=/etc/nova/api-paste.ini owner=nova group=nova mode=0600
     notify:
       - restart nova-compute
 
-
   handlers:
   - name: restart nova-compute
-    action: service name=nova-compute state=restarted
+    service: name=nova-compute state=restarted

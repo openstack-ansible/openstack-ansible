@@ -30,10 +30,25 @@
       - nova-scheduler
       - nova-network
       - bridge-utils
+      - patch
+
+  - name: copy the patch file for the scheduler
+    copy: src=patches/sched.patch dest=/tmp/sched.patch
+    tags: patch
+
+    # https://bugs.launchpad.net/nova/+bug/1096719
+  - name: apply the patch to fix bug 1096719
+    shell: cd /usr/lib/python2.7/dist-packages && patch -p0 < /tmp/sched.patch
+    ignore_errors: True
+    tags: patch
+
+  - name: ensure api-paste.ini is present
+    copy: src=files/etc/nova/api-paste.ini dest=/etc/nova/api-paste.ini owner=nova group=nova mode=0600
 
   # http://docs.openstack.org/folsom/openstack-compute/install/apt/content/compute-minimum-configuration-settings.html
   - name: ensure nova.conf file is present
     template: src=templates/etc/nova/nova.conf dest=/etc/nova/nova.conf owner=nova group=nova mode=0600
+    notify: create network
 
   - name: ensure services are stopped
     service: name=$item state=stopped
@@ -45,8 +60,7 @@
       - nova-consoleauth
       - nova-cert
 
-  - name: ensure api-paste.ini is present
-    copy: src=files/etc/nova/api-paste.ini dest=/etc/nova/api-paste.ini owner=nova group=nova mode=0600
+
 
   # http://docs.openstack.org/folsom/openstack-compute/install/apt/content/compute-db-sync.html
   - name: ensure database is synced
@@ -66,4 +80,5 @@
   # http://docs.openstack.org/folsom/openstack-compute/install/apt/content/compute-create-network.html
   handlers:
   - name: create network
-    action: shell /usr/bin/nova-manage network create private --fixed_range_v4=192.168.100.0/24 --bridge_interface=br100 --num_networks=1 --network_size=256 || true
+    shell: /usr/bin/nova-manage network create private --fixed_range_v4=192.168.100.0/24 --bridge_interface=br100 --num_networks=1 --network_size=256
+    ignore_errors: True
