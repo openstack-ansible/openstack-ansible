@@ -1,6 +1,10 @@
 #!/bin/bash
+set -e
 # Setup and launch an instance
 source openrc
+
+# Echo outputs to screen
+set -x
 nova secgroup-add-rule default tcp 22 22 0.0.0.0/0
 nova secgroup-add-rule default icmp -1 -1 0.0.0.0/0
 nova keypair-add --pub_key ~/.ssh/id_rsa.pub mykey
