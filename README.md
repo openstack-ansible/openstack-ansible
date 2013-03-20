@@ -37,11 +37,9 @@ Download a 64-bit Ubuntu Vagrant box:
 This repository uses a submodule that contains some custom Ansible modules for
 OpenStack, so you'll need to do some submodule commands
 
-	cd ~
 	git clone http://github.com/lorin/openstack-ansible
-    cd ~/openstack-ansible
-    git submodule init
-    git submodule update
+    cd openstack-ansible
+    git submodule update --init
 
 ## Bring up the cloud
 
