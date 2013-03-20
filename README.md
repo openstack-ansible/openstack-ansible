@@ -35,23 +35,31 @@ Download a 64-bit Ubuntu Vagrant box:
 ## Grab this repository
 
 This repository uses a submodule that contains some custom Ansible modules for
-OpenStack, so you'll need to do some submodule commands
+OpenStack, so there's an extra command required after cloning the repo:
 
-	git clone http://github.com/lorin/openstack-ansible
+    git clone http://github.com/lorin/openstack-ansible
     cd openstack-ansible
     git submodule update --init
 
 ## Bring up the cloud
 
-	make all
+    make all
 
 This will boot two VMs, install OpenStack, and attempt to boot a test VM
 inside of OpenStack.
 
-If everything works, you should be able to ssh to the instance:
+If everything works, you should be able to ssh to the instance from the 
+cloud controller:
 
  * username: `cirros`
  * password: `cubswin:)`
+
+If you have a public key in ~/.ssh/id_rsa.pub on your local machine, then
+this key will be placed into the instance.
+
+If you don't have a public key at ~/.ssh/id_rsa.pub, then you may get an error
+when it tries to launch an instance. In that case, edit the boot-cirros.sh
+script as needed.
 
 Note: You may get a "connection refused" when attempting to ssh to the instance.
 It can take several minutes for the ssh server to respond to requests, even
