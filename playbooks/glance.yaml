@@ -15,7 +15,6 @@
   - name: ensure glance database is present
     mysql_db: name=glance
     notify:
-      - populate glance database
       - restart glance-registry
 
   - name: ensure glance database user is present
