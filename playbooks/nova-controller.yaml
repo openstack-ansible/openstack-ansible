@@ -60,7 +60,6 @@
       - nova-cert
 
 
-
   # http://docs.openstack.org/folsom/openstack-compute/install/apt/content/compute-db-sync.html
   - name: ensure database is synced
     command: /usr/bin/nova-manage db sync
