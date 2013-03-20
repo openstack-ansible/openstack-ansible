@@ -12,25 +12,10 @@ openstack-ansible-modules:
 	git submodule init
 	git submodule update
 
-all: openstack-ansible-modules vms openstack
-
-controller: vms keystone glance nova-controller
-
-keystone:
-	$(ANSIBLE) playbooks/keystone/setup.yaml
-
-glance:
-	$(ANSIBLE) playbooks/glance/setup.yaml
-
-nova-controller:
-	$(ANSIBLE) playbooks/nova/controller.yaml
+all: openstack-ansible-modules vms openstack run
 
 vms:
 	cd vms; vagrant up
-
-compute:
-	$(ANSIBLE) playbooks/nova/compute-host.yaml
-
 destroy:
 	cd vms; vagrant destroy --force
 
