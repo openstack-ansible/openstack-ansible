@@ -64,7 +64,7 @@
       template: src=templates/root/.my.cnf dest=/root/.my.cnf owner=root mode=0600
 
     - name: update mysql root password for all root accounts
-      mysql_user: name=root host=localhost password=$root_db_password
+      mysql_user: name=root host=$item password=$root_db_password
       with_items:
         - $ansible_hostname
         - 127.0.0.1
