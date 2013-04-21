@@ -49,8 +49,6 @@
   # http://docs.openstack.org/folsom/openstack-compute/install/apt/content/images-verifying-install.html
 - hosts: controller
   gather_facts: False
-  tags:
-    - image
   vars:
     imgfile: cirros-0.3.0-x86_64-disk.img
     cirros_url: https://launchpad.net/cirros/trunk/0.3.0/+download/$imgfile
