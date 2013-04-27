@@ -14,7 +14,7 @@ You'll need to install:
 
  * [Vagrant](http://vagrantup.com)
  * [Ansible](http://ansible.github.com)
- * [python-novaclient](http://pypi.python.org/pypi/python-novaclient/2.6.10)
+ * [python-novaclient](http://pypi.python.org/pypi/python-novaclient/)
     so you can control your instances with the `nova` command-line tool.
 
 The simplest way to get started with Ansible is to install the prerequisites,
@@ -76,3 +76,13 @@ You should be able to ssh to these VMs (username: `vagrant`, password: `vagrant`
 You can also authenticate  with the vagrant private key, which is included
 here as the file `vagrant_private_key`.
 
+## Interacting with your cloud
+
+You can interact with your cloud directly from your desktop, assuming that you
+have the [python-novaclient](http://pypi.python.org/pypi/python-novaclient/)
+installed.
+
+You need to load the appropriate environment variables, which are defined in
+the openrc file:
+
+    source openrc 

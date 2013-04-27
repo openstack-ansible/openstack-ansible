@@ -3,3 +3,9 @@
 - include: playbooks/glance.yaml
 - include: playbooks/nova-controller.yaml
 - include: playbooks/nova-compute.yaml
+
+-  hosts: controller
+   gather_facts: False
+   tasks:
+     - name: copy the openrc file
+       copy: src=openrc dest=~/openrc
