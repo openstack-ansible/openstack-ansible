@@ -7,7 +7,7 @@
     admin_token: 012345SECRET99TOKEN012345
 
   tasks:
-  # http://docs.openstack.org/folsom/openstack-compute/install/apt/content/install-keystone.html
+  # http://docs.openstack.org/grizzly/openstack-compute/install/apt/content/install-keystone.html
   - name: ensure keystone package is installed
     apt: pkg=keystone
 
@@ -98,8 +98,8 @@
 
   tasks:
 
-    # http://docs.openstack.org/folsom/openstack-compute/install/apt/content/setting-up-tenants-users-and-roles-manually.html
-    # Same as keystone tenant-craete
+    # http://docs.openstack.org/grizzly/openstack-compute/install/apt/content/setting-up-tenants-users-and-roles-manually.html
+    # Same as keystone tenant-create
   - name: create default tenant
     keystone_user: token=$admin_token tenant=demo tenant_description="Default Tenant"
 

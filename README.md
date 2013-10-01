@@ -2,8 +2,8 @@
 
 This repository contains script that will deploy OpenStack into Vagrant
 virtual machines. These scripts are based on the [OpenStack Install and Deploy
-Manual](http://docs.openstack.org/folsom/openstack-compute/install/apt/content/),
-Folsom release.
+Manual](http://docs.openstack.org/grizzly/openstack-compute/install/apt/content/),
+grizzly release.
 
 See also [Vagrant, Ansible and OpenStack on your laptop](http://www.slideshare.net/lorinh/vagrant-ansible-and-openstack-on-your-laptop)
 on SlideShare.

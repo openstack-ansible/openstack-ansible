@@ -16,9 +16,9 @@
     - name: update apt cache
       apt: update_cache=yes
 
-      # http://docs.openstack.org/folsom/openstack-compute/install/apt/content/installing-the-cloud-controller.html
+      # http://docs.openstack.org/grizzly/openstack-compute/install/apt/content/installing-the-cloud-controller.html
     - name: install cloud archive
-      apt_repository: repo="deb http://ubuntu-cloud.archive.canonical.com/ubuntu precise-updates/folsom main"
+      apt_repository: repo="deb http://ubuntu-cloud.archive.canonical.com/ubuntu precise-updates/grizzly main"
 
     - name: update the cache
       apt: update_cache=yes
