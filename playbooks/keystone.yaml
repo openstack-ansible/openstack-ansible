@@ -33,6 +33,9 @@
     keystone_manage: action=db_sync
     notify: restart keystone
 
+  - name: wait for keystone to come back up
+    wait_for: port=35357
+
   handlers:
    - name: restart keystone
      service: name=keystone state=restarted
