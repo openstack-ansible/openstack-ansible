@@ -33,13 +33,9 @@
     keystone_manage: action=db_sync
     notify: restart keystone
 
-  - name: wait for keystone to come back up
-    wait_for: port=35357
-
   handlers:
    - name: restart keystone
      service: name=keystone state=restarted
-
 
   # We split this into a separate play since the keystone restart must go
   # through before we can configure
@@ -100,6 +96,9 @@
         admin_url: http://192.168.206.130:8888/v1
 
   tasks:
+
+  - name: wait for keystone to come back up
+    wait_for: port=35357 
 
     # http://docs.openstack.org/grizzly/openstack-compute/install/apt/content/setting-up-tenants-users-and-roles-manually.html
     # Same as keystone tenant-create
