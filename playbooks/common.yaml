@@ -5,6 +5,9 @@
   gather_facts: False
   tasks:
 
+    - name: update apt cache
+      apt: update_cache=yes
+
       # This is necessary to use the apt_repository module
     - name: ensure add-apt-repository, ubuntu-cloud-keyring and ntp are present
       apt: pkg=$item update_cache=yes
@@ -12,9 +15,6 @@
         - python-software-properties
         - ubuntu-cloud-keyring
         - ntp
-
-    - name: update apt cache
-      apt: update_cache=yes
 
       # http://docs.openstack.org/grizzly/openstack-compute/install/apt/content/installing-the-cloud-controller.html
     - name: install cloud archive
