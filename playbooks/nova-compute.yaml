@@ -10,6 +10,7 @@
     with_items:
       - python-mysqldb
       - nova-compute-qemu
+      - nova-network
       - bridge-utils
 
   - name: ensure nova.conf file is present

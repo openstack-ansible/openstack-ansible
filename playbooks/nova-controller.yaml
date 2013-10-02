@@ -20,26 +20,16 @@
     apt: pkg=$item
     with_items:
       - rabbitmq-server
+      - bridge-utils
       - nova-novncproxy
       - novnc
       - nova-api
       - nova-ajax-console-proxy
       - nova-cert
+      - nova-conductor
       - nova-consoleauth
       - nova-scheduler
       - nova-network
-      - bridge-utils
-      - patch
-
-  - name: copy the patch file for the scheduler
-    copy: src=patches/sched.patch dest=/tmp/sched.patch
-    tags: patch
-
-    # https://bugs.launchpad.net/nova/+bug/1096719
-  - name: apply the patch to fix bug 1096719
-    shell: cd /usr/lib/python2.7/dist-packages && patch -p0 < /tmp/sched.patch
-    ignore_errors: True
-    tags: patch
 
   - name: ensure api-paste.ini is present
     copy: src=files/etc/nova/api-paste.ini dest=/etc/nova/api-paste.ini owner=nova group=nova mode=0600
@@ -53,6 +43,7 @@
     service: name=$item state=stopped
     with_items:
       - nova-api
+      - nova-conductor
       - nova-network
       - nova-scheduler
       - nova-novncproxy
@@ -68,6 +59,7 @@
     service: name=$item state=started
     with_items:
       - nova-api
+      - nova-conductor
       - nova-network
       - nova-scheduler
       - nova-novncproxy
