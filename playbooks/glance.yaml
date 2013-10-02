@@ -6,7 +6,7 @@
   tasks:
     # http://docs.openstack.org/essex/openstack-compute/install/apt/content/install-glance.html
   - name: ensure glance is installed
-    apt: pkg=glance
+    apt: pkg=glance state=latest
 
   - name: ensure glance sqlite is deleted
     file: dest=/var/lib/glance/glance.sqlite state=absent
@@ -16,12 +16,16 @@
     mysql_db: name=glance
     notify:
       - restart glance-registry
+      - restart glance-api
 
   - name: ensure glance database user is present
     mysql_user: name=glance host=$item password=${glance_db_password} priv=glance.*:ALL
     with_items:
       - '%'
       - localhost
+    notify:
+      - restart glance-registry
+      - restart glance-api
 
   # http://docs.openstack.org/folsom/openstack-compute/install/apt/content/configure-glance-files.html
   - name: ensure glance-api.conf file is up to date
@@ -50,8 +54,8 @@
 - hosts: controller
   gather_facts: False
   vars:
-    imgfile: cirros-0.3.0-x86_64-disk.img
-    cirros_url: https://launchpad.net/cirros/trunk/0.3.0/+download/$imgfile
+    imgfile: cirros-0.3.1-x86_64-disk.img
+    cirros_url: http://download.cirros-cloud.net/0.3.1/$imgfile
 
   tasks:
   - name: ensure temporary image directory exists

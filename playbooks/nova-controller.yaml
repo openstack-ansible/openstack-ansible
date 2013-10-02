@@ -17,19 +17,18 @@
 
     # http://docs.openstack.org/folsom/openstack-compute/install/apt/content/installing-the-cloud-controller.html
   - name: ensure nova packages are installed
-    apt: pkg=$item
+    apt: pkg=$item state=latest
     with_items:
-      - rabbitmq-server
-      - bridge-utils
-      - nova-novncproxy
-      - novnc
       - nova-api
-      - nova-ajax-console-proxy
       - nova-cert
+      - nova-common
       - nova-conductor
-      - nova-consoleauth
       - nova-scheduler
-      - nova-network
+      - python-nova
+      - python-novaclient
+      - nova-consoleauth
+      - novnc
+      - nova-novncproxy
 
   - name: ensure api-paste.ini is present
     copy: src=files/etc/nova/api-paste.ini dest=/etc/nova/api-paste.ini owner=nova group=nova mode=0600

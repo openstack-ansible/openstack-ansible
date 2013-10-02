@@ -5,16 +5,27 @@
   gather_facts: False
   tasks:
 
+    - name: install gplhost archive
+      apt_repository: repo="deb http://archive.gplhost.com/debian grizzly main"
+
+    - name: install gplhost backports archive
+      apt_repository: repo="deb http://archive.gplhost.com/debian grizzly-backports main"
+
     - name: update apt cache
-      apt: update_cache=yes
+      apt: update_cache=yes force=yes
 
       # This is necessary to use the apt_repository module
     - name: ensure add-apt-repository, ubuntu-cloud-keyring and ntp are present
-      apt: pkg=$item update_cache=yes
+      apt: pkg=$item state=latest
       with_items:
         - python-software-properties
         - ubuntu-cloud-keyring
         - ntp
+        - gplhost-archive-keyring
+
+    # reboot from ansible?
+    #- name: upgrade software packages to latest version
+    #  apt: upgrade=dist update_cache=yes
 
       # http://docs.openstack.org/grizzly/openstack-compute/install/apt/content/installing-the-cloud-controller.html
     - name: install cloud archive
@@ -22,7 +33,6 @@
 
     - name: update the cache
       apt: update_cache=yes
-
 
     - name: update ntp.conf file for server
       action: copy src=files/etc/ntp.conf dest=/etc/ntp.conf owner=root group=root mode=0644
@@ -45,8 +55,15 @@
   hosts: controller
   sudo: True
   tasks:
+
+    - name: disable net.ipv4.conf.all.rp_filter in sysctl
+      sysctl: name=net.ipv4.conf.all.rp_filter value=0 state=present 
+
+    - name: disable net.ipv4.conf.default.rp_filter in sysctl
+      sysctl: name=net.ipv4.conf.default.rp_filter value=0 state=present 
+
     - name: install mysql and python mysql client
-      apt: pkg=$item
+      apt: pkg=$item state=latest
       with_items:
         - python-mysqldb
         - mysql-server
@@ -75,6 +92,9 @@
       with_items:
         - localhost
         - $inventory_hostname
+
+    - name: install rabbitmq server
+      apt: pkg=rabbitmq-server state=latest
 
   handlers:
     - name: restart mysql

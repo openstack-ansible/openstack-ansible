@@ -9,7 +9,11 @@
   tasks:
   # http://docs.openstack.org/grizzly/openstack-compute/install/apt/content/install-keystone.html
   - name: ensure keystone package is installed
-    apt: pkg=keystone
+    apt: pkg=$item state=latest
+    with_items:
+      - keystone
+      - python-keystone
+      - python-keystoneclient
 
   - name: ensure sqlite keystone database is deleted
     file: dest=/var/lib/keystone/keystone.db state=absent
@@ -48,14 +52,18 @@
     region: RegionOne
 
     service_users:
-      - name: glance
-        password: $glance_identity_password
       - name: nova
         password: $nova_identity_password
-      - name: ec2
-        password: $ec2_identity_password
+      - name: glance
+        password: $glance_identity_password
+      - name: quantum 
+        password: $quantum_identity_password
+      - name: cinder
+        password: $cinder_identity_password
       - name: swift
         password: $swift_identity_password
+      - name: ec2
+        password: $ec2_identity_password
 
     services:
       - name: keystone
@@ -70,30 +78,36 @@
         public_url: http://192.168.206.130:8774/v2/%(tenant_id)s
         internal_url: http://192.168.206.130:8774/v2/%(tenant_id)s
         admin_url: http://192.168.206.130:8774/v2/%(tenant_id)s
-      - name: volume
-        type: volume
-        description: Volume Service
-        public_url: http://192.168.206.130:8776/v1/%(tenant_id)s
-        internal_url: http://192.168.206.130:8776/v1/%(tenant_id)s
-        admin_url: http://192.168.206.130:8776/v1/%(tenant_id)s
       - name: glance
         type: image
         description: Image Service
         public_url: http://192.168.206.130:9292
         internal_url: http://192.168.206.130:9292
         admin_url: http://192.168.206.130:9292
-      - name: ec2
-        type: ec2
-        description: EC2 Compatibility Layer
-        public_url: http://192.168.206.130:8773/services/Cloud
-        internal_url: http://192.168.206.130:8773/services/Cloud
-        admin_url: http://192.168.206.130:8773/services/Admin
+      - name: quantum
+        type: network
+        description: Networking Service
+        public_url: http://192.168.206.130:9696
+        internal_url: http://192.168.206.130:9696
+        admin_url: http://192.168.206.130:9696
+      - name: cinder
+        type: volume
+        description: Volume Service
+        public_url: http://192.168.206.130:8776/v1/%(tenant_id)s
+        internal_url: http://192.168.206.130:8776/v1/%(tenant_id)s
+        admin_url: http://192.168.206.130:8776/v1/%(tenant_id)s
       - name: swift
         type: object-store
         description: Object Storage Service
         public_url: http://192.168.206.130:8888/v1/AUTH_%(tenant_id)s
         internal_url: http://192.168.206.130:8888/v1/AUTH_%(tenant_id)s
         admin_url: http://192.168.206.130:8888/v1
+      - name: ec2
+        type: ec2
+        description: EC2 Compatibility Layer
+        public_url: http://192.168.206.130:8773/services/Cloud
+        internal_url: http://192.168.206.130:8773/services/Cloud
+        admin_url: http://192.168.206.130:8773/services/Admin
 
   tasks:
 
