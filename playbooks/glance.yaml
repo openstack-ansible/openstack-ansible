@@ -65,4 +65,4 @@
     get_url: url=$cirros_url dest=/tmp/images/$imgfile
 
   - name: add cirros image
-    glance: name=cirros-0.3.0-x86_64 file=/tmp/images/$imgfile disk_format=qcow2 is_public=true user=admin tenant=demo password=secrete region=RegionOne auth_url=http://192.168.206.130:5000/v2.0
+    glance: name=cirros-0.3.1-x86_64 file=/tmp/images/$imgfile disk_format=qcow2 is_public=true user=admin tenant=demo password=secrete region=RegionOne auth_url=http://10.10.10.10:5000/v2.0

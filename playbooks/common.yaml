@@ -5,14 +5,8 @@
   gather_facts: False
   tasks:
 
-    - name: install gplhost archive
-      apt_repository: repo="deb http://archive.gplhost.com/debian grizzly main"
-
-    - name: install gplhost backports archive
-      apt_repository: repo="deb http://archive.gplhost.com/debian grizzly-backports main"
-
     - name: update apt cache
-      apt: update_cache=yes force=yes
+      apt: update_cache=yes
 
       # This is necessary to use the apt_repository module
     - name: ensure add-apt-repository, ubuntu-cloud-keyring and ntp are present
@@ -21,27 +15,45 @@
         - python-software-properties
         - ubuntu-cloud-keyring
         - ntp
-        - gplhost-archive-keyring
-
-    # reboot from ansible?
-    #- name: upgrade software packages to latest version
-    #  apt: upgrade=dist update_cache=yes
 
       # http://docs.openstack.org/grizzly/openstack-compute/install/apt/content/installing-the-cloud-controller.html
     - name: install cloud archive
       apt_repository: repo="deb http://ubuntu-cloud.archive.canonical.com/ubuntu precise-updates/grizzly main"
 
+    - name: install gplhost grizzly archive
+      apt_repository: repo="deb http://archive.gplhost.com/debian grizzly main"
+
+    - name: install gplhost grizzly-backports archive
+      apt_repository: repo="deb http://archive.gplhost.com/debian grizzly-backports main"
+
+    - name: install gplhost precise-grizzly-backports archive
+      apt_repository: repo="deb http://archive.gplhost.com/debian precise-grizzly-backports main"
+
+    - name: update apt cache
+      apt: update_cache=yes force=yes
+
+    - name: ensure gplhost-archive-keyring is present
+      apt: pkg=gplhost-archive-keyring state=latest force=yes
+
     - name: update the cache
       apt: update_cache=yes
 
+    # reboot from ansible?
+    - name: upgrade software packages to latest version
+      apt: upgrade=dist update_cache=yes
+
+    - name: autoremove unneeded packages
+      command: apt-get -y autoremove
+
     - name: update ntp.conf file for server
-      action: copy src=files/etc/ntp.conf dest=/etc/ntp.conf owner=root group=root mode=0644
+      template: src=templates/etc/ntp.conf dest=/etc/ntp.conf owner=root group=root mode=0644
       notify: restart ntp
 
   handlers:
   - name: restart ntp
     service: name=ntp state=restarted
 
+# FIXME: this is not quite right
 - name: set up ntpdate client on compute nodes to sync with server
   hosts: compute
   sudo: True

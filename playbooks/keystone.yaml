@@ -69,45 +69,45 @@
       - name: keystone
         type: identity
         description: Identity Service
-        public_url: http://192.168.206.130:5000/v2.0
-        internal_url: http://192.168.206.130:5000/v2.0
-        admin_url: http://192.168.206.130:35357/v2.0
+        public_url: http://10.10.10.10:5000/v2.0
+        internal_url: http://10.10.10.10:5000/v2.0
+        admin_url: http://10.10.10.10:35357/v2.0
       - name: nova
         type: compute
         description: Compute Service
-        public_url: http://192.168.206.130:8774/v2/%(tenant_id)s
-        internal_url: http://192.168.206.130:8774/v2/%(tenant_id)s
-        admin_url: http://192.168.206.130:8774/v2/%(tenant_id)s
+        public_url: http://10.10.10.10:8774/v2/%(tenant_id)s
+        internal_url: http://10.10.10.10:8774/v2/%(tenant_id)s
+        admin_url: http://10.10.10.10:8774/v2/%(tenant_id)s
       - name: glance
         type: image
         description: Image Service
-        public_url: http://192.168.206.130:9292
-        internal_url: http://192.168.206.130:9292
-        admin_url: http://192.168.206.130:9292
+        public_url: http://10.10.10.10:9292
+        internal_url: http://10.10.10.10:9292
+        admin_url: http://10.10.10.10:9292
       - name: quantum
         type: network
         description: Networking Service
-        public_url: http://192.168.206.130:9696
-        internal_url: http://192.168.206.130:9696
-        admin_url: http://192.168.206.130:9696
+        public_url: http://10.10.10.10:9696
+        internal_url: http://10.10.10.10:9696
+        admin_url: http://10.10.10.10:9696
       - name: cinder
         type: volume
         description: Volume Service
-        public_url: http://192.168.206.130:8776/v1/%(tenant_id)s
-        internal_url: http://192.168.206.130:8776/v1/%(tenant_id)s
-        admin_url: http://192.168.206.130:8776/v1/%(tenant_id)s
+        public_url: http://10.10.10.10:8776/v1/%(tenant_id)s
+        internal_url: http://10.10.10.10:8776/v1/%(tenant_id)s
+        admin_url: http://10.10.10.10:8776/v1/%(tenant_id)s
       - name: swift
         type: object-store
         description: Object Storage Service
-        public_url: http://192.168.206.130:8888/v1/AUTH_%(tenant_id)s
-        internal_url: http://192.168.206.130:8888/v1/AUTH_%(tenant_id)s
-        admin_url: http://192.168.206.130:8888/v1
+        public_url: http://10.10.10.10:8888/v1/AUTH_%(tenant_id)s
+        internal_url: http://10.10.10.10:8888/v1/AUTH_%(tenant_id)s
+        admin_url: http://10.10.10.10:8888/v1
       - name: ec2
         type: ec2
         description: EC2 Compatibility Layer
-        public_url: http://192.168.206.130:8773/services/Cloud
-        internal_url: http://192.168.206.130:8773/services/Cloud
-        admin_url: http://192.168.206.130:8773/services/Admin
+        public_url: http://10.10.10.10:8773/services/Cloud
+        internal_url: http://10.10.10.10:8773/services/Cloud
+        admin_url: http://10.10.10.10:8773/services/Admin
 
   tasks:
 
