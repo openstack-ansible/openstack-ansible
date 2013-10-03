@@ -39,12 +39,13 @@
       apt: update_cache=yes
 
     # reboot from ansible?
-    - name: upgrade software packages to latest version
-      apt: upgrade=dist update_cache=yes
+    # - name: upgrade software packages to latest version
+    #  apt: upgrade=dist update_cache=yes
 
     - name: autoremove unneeded packages
       command: apt-get -y autoremove
 
+    # FIXME: proper setup of ntp on nodes
     - name: update ntp.conf file for server
       template: src=templates/etc/ntp.conf dest=/etc/ntp.conf owner=root group=root mode=0644
       notify: restart ntp

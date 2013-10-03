@@ -5,8 +5,10 @@ root_db_password: jab4id9nud3yoyft2i
 keystone_db_password: feld8eib6hu5twiev5
 glance_db_password: rig3ak2yu2heb5hed6
 nova_db_password: cre7eth6ta8grum5ce
+quantum_db_password: quantum
 
-glance_identity_password: glance
 nova_identity_password: nova
-ec2_identity_password: ec2
+glance_identity_password: glance
+quantum_identity_password: quantum
 swift_identity_password: swiftpass
+ec2_identity_password: ec2
