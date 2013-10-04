@@ -1,11 +1,12 @@
 ---
-controller_ip: ${hostvars.${groups.{controller}}.inventory_hostname}
+controller_ip: 10.10.10.10
 mysqlserver: $controller_ip
 root_db_password: jab4id9nud3yoyft2i
 keystone_db_password: feld8eib6hu5twiev5
 glance_db_password: rig3ak2yu2heb5hed6
 nova_db_password: cre7eth6ta8grum5ce
 quantum_db_password: quantum
+ext_net_nic: eth1
 
 nova_identity_password: nova
 glance_identity_password: glance

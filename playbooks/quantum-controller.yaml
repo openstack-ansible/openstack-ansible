@@ -14,8 +14,8 @@
     mysql_db: name=quantum
 
   # http://docs.openstack.org/folsom/openstack-compute/install/apt/content/setting-up-sql-database-mysql.html
-  - name: ensure nova database user is present
-    mysql_user: name=quantum host=$item password=$quantum_db_password priv=nova.*:ALL
+  - name: ensure quantum database user is present
+    mysql_user: name=quantum host=$item password=$quantum_db_password priv=quantum.*:ALL
     with_items:
       - '%'
       - localhost
