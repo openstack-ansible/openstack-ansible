@@ -40,7 +40,7 @@
 
     # reboot from ansible?
     # - name: upgrade software packages to latest version
-    #  apt: upgrade=dist update_cache=yes
+    #   apt: upgrade=dist update_cache=yes
 
     - name: autoremove unneeded packages
       command: apt-get -y autoremove
