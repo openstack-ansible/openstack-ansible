@@ -1,21 +1,10 @@
 ---
-- hosts: controller
+- hosts: mysql
   sudo: True
   gather_facts: False
 
   tasks:
 
-    # http://docs.openstack.org/essex/openstack-compute/install/apt/content/install-glance.html
-  - name: ensure glance is installed
-    apt: pkg=glance state=latest
-
-  - name: ensure glance service are stopped
-    service: name=$item state=stopped
-    with_items:
-      - glance-registry
-      - glance-api
-
-    # http://docs.openstack.org/essex/openstack-compute/install/apt/content/configure-glance-mysql.html
   - name: ensure glance database is present
     mysql_db: name=glance
 
@@ -25,10 +14,25 @@
       - '%'
       - localhost
 
+
+- hosts: glance
+  sudo: True
+  gather_facts: False
+
+  tasks:
+
+  - name: ensure glance is installed
+    apt: pkg=glance state=latest
+
+  - name: ensure glance service are stopped
+    service: name=$item state=stopped
+    with_items:
+      - glance-api
+      - glance-registry
+
   - name: ensure glance sqlite is deleted
     file: dest=/var/lib/glance/glance.sqlite state=absent
 
-  # http://docs.openstack.org/folsom/openstack-compute/install/apt/content/configure-glance-files.html
   - name: update glance-api.conf file from template
     template: src=templates/etc/glance/glance-api.conf dest=/etc/glance/glance-api.conf owner=glance group=glance mode=0600
 
@@ -41,11 +45,11 @@
   - name: ensure services are started
     service: name=$item state=started
     with_items:
-      - glance-registry
       - glance-api
+      - glance-registry
 
-  # http://docs.openstack.org/folsom/openstack-compute/install/apt/content/images-verifying-install.html
-- hosts: controller
+
+- hosts: glance
   gather_facts: False
   vars:
     imgfile: cirros-0.3.1-x86_64-disk.img
@@ -59,4 +63,8 @@
     get_url: url=$cirros_url dest=/tmp/images/$imgfile
 
   - name: add cirros image
-    glance: name=cirros-0.3.1-x86_64 file=/tmp/images/$imgfile disk_format=qcow2 is_public=true user=admin tenant=demo password=secrete region=RegionOne auth_url=http://10.10.10.10:5000/v2.0
+    glance: >
+            name=cirros-0.3.1-x86_64 file=/tmp/images/$imgfile 
+            disk_format=qcow2 is_public=true region=RegionOne 
+            tenant=demo user=admin password=secrete 
+            auth_url=http://10.10.10.10:5000/v2.0

@@ -1,5 +1,31 @@
 ---
-- hosts: network
+- hosts: cloud
+  sudo: True
+  tasks:
+
+  - name: disable net.ipv4.conf.all.rp_filter in sysctl
+    sysctl: name=net.ipv4.conf.all.rp_filter value=0 state=present
+
+  - name: disable net.ipv4.conf.default.rp_filter in sysctl
+    sysctl: name=net.ipv4.conf.default.rp_filter value=0 state=present
+
+
+- hosts: mysql
+  sudo: True
+  tasks:
+
+  - name: ensure nova database is present
+    mysql_db: name=quantum
+
+  # http://docs.openstack.org/folsom/openstack-compute/install/apt/content/setting-up-sql-database-mysql.html
+  - name: ensure quantum database user is present
+    mysql_user: name=quantum host=$item password=$quantum_db_password priv=quantum.*:ALL
+    with_items:
+      - '%'
+      - localhost
+
+
+- hosts: quantum
   sudo: True
   tasks:
 
@@ -9,13 +35,6 @@
   - name: enable net.ipv4.conf.all.forwarding in sysctl
     sysctl: name=net.ipv4.conf.all.forwarding value=1 state=present
 
-  - name: disable net.ipv4.conf.all.rp_filter in sysctl
-    sysctl: name=net.ipv4.conf.all.rp_filter value=0 state=present
-
-  - name: disable net.ipv4.conf.default.rp_filter in sysctl
-    sysctl: name=net.ipv4.conf.default.rp_filter value=0 state=present
-
-   # http://docs.openstack.org/folsom/openstack-compute/install/apt/content/installing-the-cloud-controller.html
   - name: ensure quantum packages are installed
     apt: pkg=$item state=latest
     with_items:
@@ -101,3 +120,29 @@
       - quantum-metadata-agent
       - quantum-l3-agent
 
+- hosts: quantum-api
+  sudo: True
+  tasks:
+
+    # http://docs.openstack.org/folsom/openstack-compute/install/apt/content/installing-the-cloud-controller.html
+  - name: ensure quantum packages are installed
+    apt: pkg=quantum-server state=latest
+
+  - name: ensure services are stopped
+    service: name=quantum-server state=stopped
+
+  - name: ensure quantum sqlite is deleted
+    file: dest=/var/lib/quantum/quantum.sqlite state=absent
+
+  # http://docs.openstack.org/folsom/openstack-compute/install/apt/content/compute-minimum-configuration-settings.html
+  - name: update quantum.conf from template
+    template: src=templates/etc/quantum/quantum.conf dest=/etc/quantum/quantum.conf owner=quantum group=quantum mode=0600
+
+  - name: update ovs_quantum_plugin.ini from template
+    template: src=templates/etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini dest=/etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini owner=quantum group=quantum mode=0600
+
+  - name: make sure symlink to ovs_quantum_plugin.ini exists
+    file: src=/etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini dest=/etc/quantum/plugin.ini state=link
+
+  - name: ensure services are started
+    service: name=quantum-server state=started

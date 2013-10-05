@@ -1,28 +1,34 @@
 ---
-- name: Install keystone
-  hosts: controller
+- name: Install or Verify Keystone Database
+  hosts: mysql
   sudo: True
-  gather_facts: False
-  vars:
-    admin_token: 012345SECRET99TOKEN012345
-
+  gather_facts: false
   tasks:
-  # http://docs.openstack.org/grizzly/openstack-compute/install/apt/content/install-keystone.html
-  - name: ensure keystone package is installed
-    apt: pkg=$item state=latest
-    with_items:
-      - keystone
-      - python-keystone
-      - python-keystoneclient
-
-  - name: ensure sqlite keystone database is deleted
-    file: dest=/var/lib/keystone/keystone.db state=absent
 
   - name: ensure keystone database is present
     mysql_db: name=keystone
 
   - name: ensure keystone database user is present
     mysql_user: name=keystone host=% password=${keystone_db_password} priv=keystone.*:ALL
+
+- name: Install keystone
+  hosts: keystone
+  sudo: True
+  gather_facts: False
+  vars:
+    admin_token: 012345SECRET99TOKEN012345
+  tasks:
+
+  - name: ensure keystone packages are installed
+    apt: pkg=$item state=latest
+    with_items:
+      - ntp
+      - keystone
+      - python-keystone
+      - python-keystoneclient
+
+  - name: ensure sqlite keystone database is deleted
+    file: dest=/var/lib/keystone/keystone.db state=absent
 
   - name: ensure keystone config script is present
     template: >
@@ -37,14 +43,15 @@
     keystone_manage: action=db_sync
     notify: restart keystone
 
-  handlers:
-   - name: restart keystone
-     service: name=keystone state=restarted
+  - name: start keystone
+    service: name=keystone state=started
 
-  # We split this into a separate play since the keystone restart must go
-  # through before we can configure
-- name: configure keystone
-  hosts: controller
+    # keystone seems to take a while...
+  - name: wait for keystone to come back up
+    wait_for: port=35357 
+
+- name: Configure keystone
+  hosts: keystone
   sudo: True
   gather_facts: False
   vars:
@@ -111,8 +118,6 @@
 
   tasks:
 
-  - name: wait for keystone to come back up
-    wait_for: port=35357 
 
     # http://docs.openstack.org/grizzly/openstack-compute/install/apt/content/setting-up-tenants-users-and-roles-manually.html
     # Same as keystone tenant-create

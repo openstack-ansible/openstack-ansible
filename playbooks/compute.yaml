@@ -1,3 +1,4 @@
+# FIXME: break this up between quantum and nova...
 ---
 - name: Set up compute node
   hosts: compute
@@ -5,17 +6,10 @@
 
   tasks:
 
-  - name: disable net.ipv4.conf.all.rp_filter in sysctl
-    sysctl: name=net.ipv4.conf.all.rp_filter value=0 state=present
-
-  - name: disable net.ipv4.conf.default.rp_filter in sysctl
-    sysctl: name=net.ipv4.conf.default.rp_filter value=0 state=present
-
   # http://docs.openstack.org/folsom/openstack-compute/install/apt/content/installing-additional-compute-nodes.html
   - name: ensure nova-compute packages are installed
     apt: pkg=$item update-cache=yes
     with_items:
-      - python-mysqldb
       - nova-compute-qemu
       - build-essential
       - dkms
@@ -52,7 +46,6 @@
   - name: update api-paste.ini from template
     template: src=templates/etc/nova/api-paste.ini dest=/etc/nova/api-paste.ini owner=nova group=nova mode=0600
 
-  # FIXME: check
   - name: ensure quantum sqlite is deleted
     file: dest=/var/lib/quantum/quantum.sqlite state=absent
 
