@@ -10,7 +10,7 @@
     mysql_db: name=glance
 
   - name: ensure glance database user is present
-    mysql_user: name=glance host=$item password=${glance_db_password} priv=glance.*:ALL
+    mysql_user: name=glance host=$item password=${glance_mysql_password} priv=glance.*:ALL
     with_items:
       - '%'
       - localhost
@@ -58,7 +58,7 @@
 
   - name: add glance endpoint
     keystone_service: >
-          token="$keystone_endpoint_token"
+          token="$keystone_admin_token"
           region="$keystone_default_region"
           name=glance
           type=image

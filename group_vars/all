@@ -2,8 +2,8 @@
 mysql_host: 10.10.10.10
 mysql_root_password: mysql
 
-rabbitmq_host: 10.10.10.10
-rabbitmq_password: rabbitmq
+rabbit_host: 10.10.10.10
+rabbit_password: rabbitmq
 
 keystone_endpoint_host: 10.10.10.10
 keystone_mysql_password: keystone
@@ -16,11 +16,12 @@ glance_identity_password: glance
 
 nova_endpoint_host: 10.10.10.10
 nova_mysql_password: nova
-mova_identity_password: nova
+nova_identity_password: nova
 
 quantum_endpoint_host: 10.10.10.10
 quantum_mysql_password: quantum
 quantum_identity_password: quantum
+quantum_metadata_proxy_shared_secret: secrete
 quantum_external_nic: eth1
 
 

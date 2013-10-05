@@ -98,5 +98,6 @@
 
     - name: ensure openstack vhost is present
       rabbitmq_vhost: name=/openstack state=present
+
     - name: ensure openstack user is present
       rabbitmq_user: user=openstack password="$rabbitmq_password" vhost=/openstack state=present

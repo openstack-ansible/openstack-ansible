@@ -71,7 +71,7 @@
 
   - name: add nova endpoint
     keystone_service: >
-          token="$keystone_endpoint_token"
+          token="$keystone_admin_token"
           region="$keystone_default_region"
           name=nova
           type=compute
@@ -82,7 +82,7 @@
 
   - name: add ec2 compatibility layer endpoint
     keystone_service: >
-          token="$keystone_endpoint_token"
+          token="$keystone_admin_token"
           region="$keystone_default_region"
           name=ec2
           type=ec2
