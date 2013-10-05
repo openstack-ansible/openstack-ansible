@@ -1,5 +1,0 @@
----
-controller_ip: 192.168.206.130
-mysqlserver: $controller_ip
-glance_db_password: ataglance
-nova_db_password: supernova

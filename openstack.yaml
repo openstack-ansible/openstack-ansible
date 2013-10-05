@@ -1,10 +1,11 @@
 - include: playbooks/common.yaml
 - include: playbooks/keystone.yaml
 - include: playbooks/glance.yaml
-- include: playbooks/nova-controller.yaml
-- include: playbooks/nova-compute.yaml
+- include: playbooks/nova.yaml
+- include: playbooks/quantum.yaml
+- include: playbooks/setup.yaml
 
--  hosts: controller
+-  hosts: setup
    gather_facts: False
    tasks:
      - name: copy the openrc file
