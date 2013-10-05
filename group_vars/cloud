@@ -8,7 +8,7 @@ rabbitmq_password: rabbitmq
 keystone_endpoint_host: 10.10.10.10
 keystone_mysql_password: keystone
 keystone_admin_token: 01234ADMIN567890
-keystone_default_region: RegionOne
+keystone_region: RegionOne
 keystone_default_tenant: default
 keystone_admin_password: admin
 

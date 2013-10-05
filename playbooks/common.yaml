@@ -1,6 +1,6 @@
 ---
 - name: Setup steps that are not specific to a particular OpenStack project
-  hosts: cloud
+  hosts: all
   sudo: True
   gather_facts: False
   tasks:
@@ -35,11 +35,12 @@
     - name: autoremove unneeded packages
       command: apt-get -y autoremove
 
+    # FIXME: better automation, at least only reboot if kernel is upgraded.
     - name: reboot since there may have been a kernel upgrade
       command: /sbin/reboot
 
     - name: wait for reboot
-      pause: prompt="Need better automation here. Wait for reboot, then press [Enter]" 
+      pause: prompt="Wait for all servers to reboot, then press [Enter]" 
 
 - name: MySQL setup
   hosts: mysql
