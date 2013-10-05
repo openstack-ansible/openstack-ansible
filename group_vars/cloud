@@ -1,15 +1,27 @@
 ---
-controller_ip: 10.10.10.10
-mysqlserver: $controller_ip
-root_db_password: jab4id9nud3yoyft2i
-keystone_db_password: feld8eib6hu5twiev5
-glance_db_password: rig3ak2yu2heb5hed6
-nova_db_password: cre7eth6ta8grum5ce
-quantum_db_password: quantum
-ext_net_nic: eth1
+mysql_host: 10.10.10.10
+mysql_root_password: mysql
 
-nova_identity_password: nova
+rabbitmq_host: 10.10.10.10
+rabbitmq_password: rabbitmq
+
+keystone_endpoint_host: 10.10.10.10
+keystone_mysql_password: keystone
+keystone_admin_token: 01234ADMIN567890
+keystone_default_region: RegionOne
+keystone_default_tenant: default
+keystone_admin_password: admin
+
+glance_endpoint_host: 10.10.10.10
+glance_mysql_password: glance
 glance_identity_password: glance
+
+nova_endpoint_host: 10.10.10.10
+nova_mysql_password: nova
+mova_identity_password: nova
+
+quantum_endpoint_host: 10.10.10.10
+quantum_mysql_password: quantum
 quantum_identity_password: quantum
-swift_identity_password: swiftpass
-ec2_identity_password: ec2
+
+external_network: 10.0.0.0/16

@@ -15,8 +15,6 @@
   hosts: keystone
   sudo: True
   gather_facts: False
-  vars:
-    admin_token: 012345SECRET99TOKEN012345
   tasks:
 
   - name: ensure keystone packages are installed
@@ -55,7 +53,6 @@
   sudo: True
   gather_facts: False
   vars:
-    admin_token: 012345SECRET99TOKEN012345
     region: RegionOne
 
     service_users:
@@ -119,7 +116,6 @@
   tasks:
 
 
-    # http://docs.openstack.org/grizzly/openstack-compute/install/apt/content/setting-up-tenants-users-and-roles-manually.html
     # Same as keystone tenant-create
   - name: create default tenant
     keystone_user: token=$admin_token tenant=demo tenant_description="Default Tenant"
