@@ -42,6 +42,7 @@
     - name: wait for reboot
       pause: prompt="Wait for all servers to reboot, then press [Enter]" 
 
+
 - name: MySQL setup
   hosts: mysql
   sudo: True
@@ -55,21 +56,23 @@
 
     - name: mysql config file that binds to all interfaces
       template: src=common/etc/my.cnf dest=/etc/mysql/my.cnf owner=root group=root mode=0644
-      notify: restart mysql
 
-    # Need to do this for idempotency, see
-    # http://ansible.cc/docs/modules.html#mysql-user
-    - name: copy .my.cnf file with root password credentials
-      template: src=common/root/.my.cnf dest=/root/.my.cnf owner=root group=root mode=0600
 
     - name: start mysql
       service: name=mysql state=started
 
+    # Need to do this for idempotency, see
+    # http://ansible.cc/docs/modules.html#mysql-user
     - name: update mysql root password for all root accounts
       mysql_user: name=root host=localhost password="$mysql_root_password"
 
+    - name: copy .my.cnf file with root password credentials
+      template: src=common/root/.my.cnf dest=/root/.my.cnf owner=root group=root mode=0600
+
+    # 'localhost' needs to be the last item for idempotency, see
+    # http://ansible.cc/docs/modules.html#mysql-user
     - name: update mysql root password for all root accounts
-      mysql_user: name=root host=$item password="$mysql_root_password"
+      mysql_user: name=root host=$item password="$mysql_root_password" priv=*.*:ALL,GRANT
       with_items:
         - $ansible_hostname
         - 127.0.0.1
@@ -80,6 +83,7 @@
       with_items:
         - localhost
         - $inventory_hostname
+
 
 - name: RabbitMQ setup
   hosts: rabbitmq

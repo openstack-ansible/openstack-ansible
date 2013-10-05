@@ -1,4 +1,6 @@
 ---
+# FIXME add ntp client install...
+
 - name: Install or Verify Keystone Database
   hosts: mysql
   sudo: True
@@ -9,7 +11,7 @@
     mysql_db: name=keystone
 
   - name: ensure keystone database user is present
-    mysql_user: name=keystone host=% password=${keystone_db_password} priv=keystone.*:ALL
+    mysql_user: name=keystone host=% password="${keystone_mysql_password}" priv=keystone.*:ALL
 
 - name: Install keystone
   hosts: keystone
@@ -25,130 +27,40 @@
       - python-keystone
       - python-keystoneclient
 
+  - name: ensure keystone is stopped
+    service: name=keystone state=stopped
+
   - name: ensure sqlite keystone database is deleted
     file: dest=/var/lib/keystone/keystone.db state=absent
 
   - name: ensure keystone config script is present
     template: >
-          src=templates/etc/keystone/keystone.conf
+          src=keystone/etc/keystone/keystone.conf
           dest=/etc/keystone/keystone.conf
           owner=keystone
           group=keystone
           mode=0600
-    notify: restart keystone
 
   - name: initialize keystone database
     keystone_manage: action=db_sync
-    notify: restart keystone
 
-  - name: start keystone
+  - name: ensure keystone is started
     service: name=keystone state=started
 
     # keystone seems to take a while...
   - name: wait for keystone to come back up
     wait_for: port=35357 
 
-- name: Configure keystone
-  hosts: keystone
-  sudo: True
-  gather_facts: False
-  vars:
-    region: RegionOne
-
-    service_users:
-      - name: nova
-        password: $nova_identity_password
-      - name: glance
-        password: $glance_identity_password
-      - name: quantum 
-        password: $quantum_identity_password
-      - name: cinder
-        password: $cinder_identity_password
-      - name: swift
-        password: $swift_identity_password
-      - name: ec2
-        password: $ec2_identity_password
-
-    services:
-      - name: keystone
-        type: identity
-        description: Identity Service
-        public_url: http://10.10.10.10:5000/v2.0
-        internal_url: http://10.10.10.10:5000/v2.0
-        admin_url: http://10.10.10.10:35357/v2.0
-      - name: nova
-        type: compute
-        description: Compute Service
-        public_url: http://10.10.10.10:8774/v2/%(tenant_id)s
-        internal_url: http://10.10.10.10:8774/v2/%(tenant_id)s
-        admin_url: http://10.10.10.10:8774/v2/%(tenant_id)s
-      - name: glance
-        type: image
-        description: Image Service
-        public_url: http://10.10.10.10:9292
-        internal_url: http://10.10.10.10:9292
-        admin_url: http://10.10.10.10:9292
-      - name: quantum
-        type: network
-        description: Networking Service
-        public_url: http://10.10.10.10:9696
-        internal_url: http://10.10.10.10:9696
-        admin_url: http://10.10.10.10:9696
-      - name: cinder
-        type: volume
-        description: Volume Service
-        public_url: http://10.10.10.10:8776/v1/%(tenant_id)s
-        internal_url: http://10.10.10.10:8776/v1/%(tenant_id)s
-        admin_url: http://10.10.10.10:8776/v1/%(tenant_id)s
-      - name: swift
-        type: object-store
-        description: Object Storage Service
-        public_url: http://10.10.10.10:8888/v1/AUTH_%(tenant_id)s
-        internal_url: http://10.10.10.10:8888/v1/AUTH_%(tenant_id)s
-        admin_url: http://10.10.10.10:8888/v1
-      - name: ec2
-        type: ec2
-        description: EC2 Compatibility Layer
-        public_url: http://10.10.10.10:8773/services/Cloud
-        internal_url: http://10.10.10.10:8773/services/Cloud
-        admin_url: http://10.10.10.10:8773/services/Admin
-
-  tasks:
-
-
-    # Same as keystone tenant-create
-  - name: create default tenant
-    keystone_user: token=$admin_token tenant=demo tenant_description="Default Tenant"
-
-    # Same as keystone user-create
-  - name: create admin user
-    keystone_user: token=$admin_token user=admin tenant=demo password=secrete
-
-    # Same as keystone role-create and keystone user-role-add
-  - name: create admin role and associate it with admin user
-    keystone_user: token=$admin_token role=admin user=admin tenant=demo
-
   - name: create service tenant
-    keystone_user: token=$admin_token tenant=service tenant_description="Service Tenant"
+    keystone_user: token="$keystone_admin_token" tenant=service tenant_description="Service Tenant"
 
-  - name: create users for each of the services
-    keystone_user: token=$admin_token user=${item.name} tenant=service password=${item.password}
-    with_items: $service_users
-
-  - name: add each of the service users to the service tenant with the admin role
-    keystone_user: token=$admin_token role=admin user=${item.name} tenant=service
-    with_items: $service_users
-
-  - name: add services
+  - name: add keystone endpoint information
     keystone_service: >
-          token=$admin_token
-          name=${item.name}
-          type=${item.type}
-          description="${item.description}"
-          public_url=${item.public_url}
-          internal_url=${item.internal_url}
-          admin_url=${item.admin_url}
-          region=$region
-    with_items: $services
-    tags: keystone
-
+          token="$keystone_admin_token"
+          region="$keystone_default_region"
+          name=keystone
+          type=identity
+          description="Identity Service"
+          public_url="http://${keystone_endpoint_host}:5000/v2.0"
+          internal_url="http://${keystone_endpoint_host}:5000/v2.0"
+          admin_url="http://${keystone_endpoint_host}:35357/v2.0"

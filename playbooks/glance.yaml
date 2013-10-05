@@ -1,5 +1,6 @@
 ---
-- hosts: mysql
+- name: Install or Verify glance database
+  hosts: mysql
   sudo: True
   gather_facts: False
 
@@ -15,7 +16,8 @@
       - localhost
 
 
-- hosts: glance
+- name: Install glance
+  hosts: glance
   sudo: True
   gather_facts: False
 
@@ -34,10 +36,10 @@
     file: dest=/var/lib/glance/glance.sqlite state=absent
 
   - name: update glance-api.conf file from template
-    template: src=templates/etc/glance/glance-api.conf dest=/etc/glance/glance-api.conf owner=glance group=glance mode=0600
+    template: src=glance/etc/glance/glance-api.conf dest=/etc/glance/glance-api.conf owner=glance group=glance mode=0600
 
   - name: update glance-registry.conf file from template
-    template: src=templates/etc/glance/glance-registry.conf dest=/etc/glance/glance-registry.conf owner=glance group=glance mode=0600
+    template: src=glance/etc/glance/glance-registry.conf dest=/etc/glance/glance-registry.conf owner=glance group=glance mode=0600
 
   - name: ensure database is synced
     glance_manage: action=dbsync
@@ -48,23 +50,19 @@
       - glance-api
       - glance-registry
 
+  - name: create glance user in keystone
+    keystone_user: token="$keystone_admin_token" user=glance tenant=service password="$glance_identity_password"
 
-- hosts: glance
-  gather_facts: False
-  vars:
-    imgfile: cirros-0.3.1-x86_64-disk.img
-    cirros_url: http://download.cirros-cloud.net/0.3.1/$imgfile
+  - name: add glance user to the service tenant with the admin role
+    keystone_user: token="$keystone_admin_token" tenant=service user=glance role=admin
 
-  tasks:
-  - name: ensure temporary image directory exists
-    file: dest=/tmp/images state=directory
-
-  - name: ensure test image has been obtained
-    get_url: url=$cirros_url dest=/tmp/images/$imgfile
-
-  - name: add cirros image
-    glance: >
-            name=cirros-0.3.1-x86_64 file=/tmp/images/$imgfile 
-            disk_format=qcow2 is_public=true region=RegionOne 
-            tenant=demo user=admin password=secrete 
-            auth_url=http://10.10.10.10:5000/v2.0
+  - name: add glance endpoint
+    keystone_service: >
+          token="$keystone_endpoint_token"
+          region="$keystone_default_region"
+          name=glance
+          type=image
+          description="Image Service"
+          public_url="http://${glance_endpoint_host}:9292"
+          internal_url="http://${glance_endpoint_host}:9292"
+          admin_url="http://${glance_endpoint_host}:9292"

@@ -1,5 +1,6 @@
 ---
-- hosts: cloud
+- name: Basic setup for networking
+  hosts: all
   sudo: True
   tasks:
 
@@ -10,16 +11,16 @@
     sysctl: name=net.ipv4.conf.default.rp_filter value=0 state=present
 
 
-- hosts: mysql
+- name: Install or Verify quantum database
+  hosts: mysql
   sudo: True
   tasks:
 
-  - name: ensure nova database is present
+  - name: ensure quantum database is present
     mysql_db: name=quantum
 
-  # http://docs.openstack.org/folsom/openstack-compute/install/apt/content/setting-up-sql-database-mysql.html
   - name: ensure quantum database user is present
-    mysql_user: name=quantum host=$item password=$quantum_db_password priv=quantum.*:ALL
+    mysql_user: name=quantum host=$item password="$quantum_mysql_password" priv=quantum.*:ALL
     with_items:
       - '%'
       - localhost
@@ -48,6 +49,14 @@
       - quantum-dhcp-agent
       - quantum-l3-agent
 
+  - name: ensure services are stopped
+    service: name=$item state=stopped
+    with_items: 
+      - quantum-plugin-openvswitch-agent
+      - quantum-dhcp-agent
+      - quantum-metadata-agent
+      - quantum-l3-agent
+
   - name: ensure OVS kernel module is loaded
     action: command /sbin/modprobe openvswitch_mod
     register: modprobe_result
@@ -64,50 +73,40 @@
     command: /usr/bin/ovs-vsctl -- --may-exist add-br br-ex
 
   - name: ensure br-ex has eth1 enslaved
-    command: /usr/bin/ovs-vsctl -- --may-exist add-port br-ex $ext_net_nic
+    command: /usr/bin/ovs-vsctl -- --may-exist add-port br-ex $quantum_external_nic
 
   - name: add default ovs bridge br-int for agent
     action: command /usr/bin/ovs-vsctl -- --may-exist add-br br-int
 
   - name: update network interfaces from template
-    template: src=templates/etc/network/interfaces dest=/etc/network/interfaces owner=quantum group=quantum mode=0644
+    template: src=quantum/etc/network/interfaces dest=/etc/network/interfaces owner=quantum group=quantum mode=0644
 
   - name: restart networking
     service: name=networking state=restarted
 
   - name: ensure iptables configuration is present
-    copy: src=files/etc/iptables.rules dest=/etc/iptables.rules owner=root group=root mode=0644
+    template: src=quantum/etc/iptables.rules dest=/etc/iptables.rules owner=root group=root mode=0644
 
   - name: ensure iptables configuration is loaded at boot
-    copy: src=files/etc/network/if-pre-up.d/iptablesload dest=/etc/network/if-pre-up.d/iptablesload owner=root group=root mode=0755
+    template: src=quantum/etc/network/if-pre-up.d/iptablesload dest=/etc/network/if-pre-up.d/iptablesload owner=root group=root mode=0755
 
   - name: load iptables rules
     shell: /sbin/iptables-restore < /etc/iptables.rules
 
-  - name: ensure services are stopped
-    service: name=$item state=stopped
-    with_items: 
-      - quantum-plugin-openvswitch-agent
-      - quantum-dhcp-agent
-      - quantum-metadata-agent
-      - quantum-l3-agent
-
-  # FIXME: check
   - name: ensure quantum sqlite is deleted
     file: dest=/var/lib/quantum/quantum.sqlite state=absent
 
-  # http://docs.openstack.org/folsom/openstack-compute/install/apt/content/compute-minimum-configuration-settings.html
   - name: update quantum.conf from template
-    template: src=templates/etc/quantum/quantum.conf dest=/etc/quantum/quantum.conf owner=quantum group=quantum mode=0600
+    template: src=quantum/etc/quantum/quantum.conf dest=/etc/quantum/quantum.conf owner=quantum group=quantum mode=0600
 
   - name: update dhcp_agent.ini from template
-    template: src=templates/etc/quantum/dhcp_agent.ini dest=/etc/quantum/dhcp_agent.ini owner=quantum group=quantum mode=0600
+    template: src=quantum/etc/quantum/dhcp_agent.ini dest=/etc/quantum/dhcp_agent.ini owner=quantum group=quantum mode=0600
 
   - name: update metadata_agent.ini from template
-    template: src=templates/etc/quantum/metadata_agent.ini dest=/etc/quantum/dhcp_agent.ini owner=quantum group=quantum mode=0600
+    template: src=quantum/etc/quantum/metadata_agent.ini dest=/etc/quantum/dhcp_agent.ini owner=quantum group=quantum mode=0600
 
   - name: update ovs_quantum_plugin.ini from template
-    template: src=templates/etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini dest=/etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini owner=quantum group=quantum mode=0600
+    template: src=quantum/etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini dest=/etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini owner=quantum group=quantum mode=0600
 
   - name: make sure symlink to ovs_quantum_plugin.ini exists
     file: src=/etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini dest=/etc/quantum/plugin.ini state=link
@@ -124,8 +123,7 @@
   sudo: True
   tasks:
 
-    # http://docs.openstack.org/folsom/openstack-compute/install/apt/content/installing-the-cloud-controller.html
-  - name: ensure quantum packages are installed
+  - name: ensure quantum-api packages are installed
     apt: pkg=quantum-server state=latest
 
   - name: ensure services are stopped
@@ -134,15 +132,32 @@
   - name: ensure quantum sqlite is deleted
     file: dest=/var/lib/quantum/quantum.sqlite state=absent
 
-  # http://docs.openstack.org/folsom/openstack-compute/install/apt/content/compute-minimum-configuration-settings.html
   - name: update quantum.conf from template
-    template: src=templates/etc/quantum/quantum.conf dest=/etc/quantum/quantum.conf owner=quantum group=quantum mode=0600
+    template: src=quantum/etc/quantum/quantum.conf dest=/etc/quantum/quantum.conf owner=quantum group=quantum mode=0600
 
   - name: update ovs_quantum_plugin.ini from template
-    template: src=templates/etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini dest=/etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini owner=quantum group=quantum mode=0600
+    template: src=quantum/etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini dest=/etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini owner=quantum group=quantum mode=0600
 
   - name: make sure symlink to ovs_quantum_plugin.ini exists
     file: src=/etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini dest=/etc/quantum/plugin.ini state=link
 
   - name: ensure services are started
     service: name=quantum-server state=started
+
+  - name: create quantum service user
+    keystone_user: token="$keystone_admin_token" user=quantum tenant=service password="$quantum_identity_password"
+
+  - name: add quantum service user to the service tenant with the admin role
+    keystone_user: token="$keystone_admin_token" tenant=service user=quantum role=admin
+
+  - name: add services
+    keystone_service: >
+          token="$keystone_admin_token"
+          region="$keystone_default_region"
+          name=quantum
+          type=network
+          description="Networking Service"
+          public_url="http://${quantum_endpoint_host}:9696"
+          internal_url="http://${quantum_endpoint_host}:9696"
+          admin_url="http://${quantum_endpoint_host}:9696"
+
