@@ -20,6 +20,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
   config.vm.define "compute-001" do |machine|
+    machine.vm.network :private_network, ip: "10.0.0.11" # FIXME: remove eventually...
     machine.vm.network :private_network, ip: "10.10.10.11" 
     machine.vm.hostname = "compute-001"
     machine.vm.provider :virtualbox do |v| 

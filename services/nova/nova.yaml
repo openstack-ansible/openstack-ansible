@@ -1,18 +1,4 @@
 ---
-- hosts: mysql
-  sudo: True
-  tasks:
-
-  - name: ensure nova database is present
-    mysql_db: name=nova
-
-  - name: ensure nova database user is present
-    mysql_user: name=nova host=$item password="$nova_mysql_password" priv=nova.*:ALL
-    with_items:
-      - '%'
-      - localhost
-
-
 - hosts: nova
   sudo: True
   tasks:
@@ -45,10 +31,10 @@
     file: dest=/var/lib/nova/nova.sqlite state=absent
 
   - name: update nova.conf from template
-    template: src=nova/etc/nova/nova.conf dest=/etc/nova/nova.conf owner=nova group=nova mode=0600
+    template: src=templates/etc/nova/nova.conf dest=/etc/nova/nova.conf owner=nova group=nova mode=0600
 
   - name: update api-paste.ini from template
-    template: src=nova/etc/nova/api-paste.ini dest=/etc/nova/api-paste.ini owner=nova group=nova mode=0600
+    template: src=templates/etc/nova/api-paste.ini dest=/etc/nova/api-paste.ini owner=nova group=nova mode=0600
 
   - name: ensure database is synced
     command: /usr/bin/nova-manage db sync
@@ -90,3 +76,4 @@
           public_url="http://${nova_endpoint_host}:8773/services/Cloud"
           internal_url="http://${nova_endpoint_host}:8773/services/Cloud"
           admin_url="http://${nova_endpoint_host}:8773/services/Admin"
+

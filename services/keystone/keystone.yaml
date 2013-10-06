@@ -1,18 +1,4 @@
 ---
-# FIXME add ntp client install...
-
-- name: Install or Verify Keystone Database
-  hosts: mysql
-  sudo: True
-  gather_facts: false
-  tasks:
-
-  - name: ensure keystone database is present
-    mysql_db: name=keystone
-
-  - name: ensure keystone database user is present
-    mysql_user: name=keystone host=% password="${keystone_mysql_password}" priv=keystone.*:ALL
-
 - name: Install keystone
   hosts: keystone
   sudo: True
@@ -35,7 +21,7 @@
 
   - name: ensure keystone config script is present
     template: >
-          src=keystone/etc/keystone/keystone.conf
+          src=templates/etc/keystone/keystone.conf
           dest=/etc/keystone/keystone.conf
           owner=keystone
           group=keystone

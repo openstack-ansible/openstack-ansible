@@ -1,0 +1,55 @@
+---
+- name: Set up compute node
+  hosts: compute
+  sudo: True
+
+  tasks:
+
+  - name: ensure quantum-compute packages are installed
+    apt: pkg=$item update-cache=yes
+    with_items:
+      - openvswitch-common
+      - openvswitch-switch
+      - quantum-plugin-openvswitch-agent
+      
+  - name: ensure services are stopped
+    service: name=quantum-plugin-openvswitch-agent state=stopped
+
+  - name: ensure quantum sqlite is deleted
+    file: dest=/var/lib/quantum/quantum.sqlite state=absent
+
+  - name: update quantum.conf from template
+    template: src=templates/etc/quantum/quantum.conf dest=/etc/quantum/quantum.conf owner=quantum group=quantum mode=0600
+
+  - name: update ovs_quantum_plugin.ini from template
+    template: src=templates/etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini dest=/etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini owner=quantum group=quantum mode=0600
+
+  - name: make sure symlink to ovs_quantum_plugin.ini exists
+    file: src=/etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini dest=/etc/quantum/plugin.ini state=link
+
+  - name: ensure OVS kernel module is loaded
+    action: command /sbin/modprobe openvswitch_mod
+    register: modprobe_result
+    ignore_errors: True
+
+  - name: ensure packages to build openvswitch module are installed
+    apt: pkg=$item update-cache=yes
+    with_items:
+      - build-essential
+      - dkms
+      - openvswitch-datapath-dkms
+      - openvswitch-datapath-source
+    when: modprobe_result|failed
+
+  - name: build openvswitch-datapath kernel module - this may take a while
+    action: command /usr/bin/module-assistant -i auto-install openvswitch-datapath
+    when: modprobe_result|failed
+
+  - name: ensure openvswitch-switch is started
+    service: name=openvswitch-switch state=started
+
+  - name: ensure ovs bridge for gateway br-ex present
+    command: /usr/bin/ovs-vsctl -- --may-exist add-br br-int
+
+  - name: ensure services are started
+    service: name=quantum-plugin-openvswitch-agent state=started

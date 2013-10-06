@@ -1,21 +1,4 @@
 ---
-- name: Install or Verify glance database
-  hosts: mysql
-  sudo: True
-  gather_facts: False
-
-  tasks:
-
-  - name: ensure glance database is present
-    mysql_db: name=glance
-
-  - name: ensure glance database user is present
-    mysql_user: name=glance host=$item password=${glance_mysql_password} priv=glance.*:ALL
-    with_items:
-      - '%'
-      - localhost
-
-
 - name: Install glance
   hosts: glance
   sudo: True
@@ -36,10 +19,10 @@
     file: dest=/var/lib/glance/glance.sqlite state=absent
 
   - name: update glance-api.conf file from template
-    template: src=glance/etc/glance/glance-api.conf dest=/etc/glance/glance-api.conf owner=glance group=glance mode=0600
+    template: src=templates/etc/glance/glance-api.conf dest=/etc/glance/glance-api.conf owner=glance group=glance mode=0600
 
   - name: update glance-registry.conf file from template
-    template: src=glance/etc/glance/glance-registry.conf dest=/etc/glance/glance-registry.conf owner=glance group=glance mode=0600
+    template: src=templates/etc/glance/glance-registry.conf dest=/etc/glance/glance-registry.conf owner=glance group=glance mode=0600
 
   - name: ensure database is synced
     glance_manage: action=dbsync

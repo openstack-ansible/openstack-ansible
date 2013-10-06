@@ -17,6 +17,7 @@ glance_identity_password: glance
 nova_endpoint_host: 10.10.10.10
 nova_mysql_password: nova
 nova_identity_password: nova
+nova_compute_package: nova-compute-qemu
 
 quantum_endpoint_host: 10.10.10.10
 quantum_mysql_password: quantum
