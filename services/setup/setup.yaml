@@ -1,0 +1,34 @@
+---
+- hosts: setup
+  gather_facts: False
+  vars:
+    imgfile: cirros-0.3.1-x86_64-disk.img
+    cirros_url: http://download.cirros-cloud.net/0.3.1/$imgfile
+  
+  tasks:
+
+  - name: create tenant
+    keystone_user: token="$keystone_admin_token" tenant="$setup_tenant" tenant_description="$setup_tenant"
+
+  - name: create admin user
+    keystone_user: token="$keystone_admin_token" tenant="$setup_tenant" user=admin password="$setup_admin_password"
+
+  - name: create admin role and associate it with admin user
+    keystone_user: token="$keystone_admin_token" tenant="$setup_tenant" user=admin role=admin
+
+  - name: ensure temporary image directory exists
+    file: dest=/tmp/images state=directory
+
+  - name: ensure test image has been obtained
+    get_url: url=$cirros_url dest=/tmp/images/$imgfile
+
+  - name: add cirros image
+    glance: >
+            name=cirros-0.3.1-x86_64 
+            file=/tmp/images/$imgfile 
+            disk_format=qcow2 
+            is_public=true region="$keystone_default_region"
+            tenant="$setup_tenant" 
+            user=admin 
+            password="$setup_admin_password"
+            auth_url="http://${keystone_endpoint_host}:5000/v2.0"
