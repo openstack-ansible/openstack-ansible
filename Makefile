@@ -6,7 +6,7 @@ ANSIBLE=ansible-playbook -v $(TAGS) $(CHECK)
 .PHONY: all vms openstack controller keystone glance nova-controller vms compute destroy run
 
 openstack: openstack-ansible-modules
-    chmod 0600 vagrant_private_key
+	chmod 0600 vagrant_private_key
 	$(ANSIBLE) openstack.yaml
 
 openstack-ansible-modules:
