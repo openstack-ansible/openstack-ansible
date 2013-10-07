@@ -15,9 +15,10 @@
 
     - name: ensure openstack user is present
       rabbitmq_user: user=openstack 
-                     password="$rabbitmq_password" 
+                     password="$rabbit_password" 
                      vhost=/openstack 
                      configure_priv=.*
                      read_priv=.*
                      write_priv=.*
                      state=present
+                     force=yes

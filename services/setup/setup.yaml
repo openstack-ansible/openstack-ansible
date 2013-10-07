@@ -32,3 +32,25 @@
             user=admin 
             password="$setup_admin_password"
             auth_url="http://${keystone_endpoint_host}:5000/v2.0"
+
+  - name: create the external network
+    quantum_network: state=present login_username=admin login_password="$setup_admin_password" provider_network_type=local
+                     login_tenant_name="$setup_tenant" name={{ external_network_name }} router_external=true
+    register: network
+
+  - name: create external router
+    quantum_router: state=present login_username={{ admin_tenant_user }} login_password={{ admin_pass }} 
+                    login_tenant_name={{ admin_tenant }} name={{ external_router_name }}
+    register: router
+
+  - name: create the subnet for external  network
+    quantum_subnet: state=present login_username={{ admin_tenant_user }} login_password={{ admin_pass }} 
+                    login_tenant_name={{ admin_tenant }} enable_dhcp=false network_name={{ external_network_name }} 
+                    name={{ external_subnet_name }} cidr={{ external_subnet_cidr }}
+
+  - name: create external interface for router
+    quantum_router_gateway: state=present login_username={{ admin_tenant_user }} login_password={{ admin_pass }} 
+                            login_tenant_name={{ admin_tenant }} router_name={{ external_router_name }} 
+                            network_name={{ external_network_name }}
+
+

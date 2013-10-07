@@ -2,7 +2,7 @@
 - name: Setup steps that are not specific to a particular OpenStack project
   hosts: all
   sudo: True
-  gather_facts: False
+  gather_facts: True
   tasks:
 
     - name: update apt cache
@@ -42,3 +42,19 @@
     - name: wait for reboot
       pause: prompt="Wait for all servers to reboot, then press [Enter]" 
 
+    - name: attempt to load vboxguest module if in Virtualbox
+      command: /sbin/modprobe vboxguest
+      register: modprobe_result
+      ignore_errors: True
+      when: ansible_virtualization_type == "virtualbox"
+
+    - name: install packages needed to build virtualbox modules
+      apt: pkg=$item state=latest
+      with_items:
+        - build-essential
+        - dkms
+      when: modprobe_result is defined and modprobe_result|failed
+
+    - name: "build virtualbox modules -- NOTE: /vagrant will not be mounted right now"
+      command: /etc/init.d/vboxadd setup
+      when: modprobe_result is defined and modprobe_result|failed

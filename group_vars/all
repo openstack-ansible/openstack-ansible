@@ -1,4 +1,7 @@
 ---
+global_log_verbose: True
+global_log_debug: True
+
 mysql_host: 10.10.10.10
 mysql_root_password: mysql
 
