@@ -7,6 +7,7 @@
   
   tasks:
 
+  # keystone
   - name: create tenant
     keystone_user: token="$keystone_admin_token" tenant="$setup_tenant" tenant_description="$setup_tenant"
 
@@ -16,6 +17,7 @@
   - name: create admin role and associate it with admin user
     keystone_user: token="$keystone_admin_token" tenant="$setup_tenant" user=admin role=admin
 
+  # glance
   - name: ensure temporary image directory exists
     file: dest=/tmp/images state=directory
 
@@ -33,24 +35,79 @@
             password="$setup_admin_password"
             auth_url="http://${keystone_endpoint_host}:5000/v2.0"
 
-  - name: create the external network
-    quantum_network: state=present login_username=admin login_password="$setup_admin_password" provider_network_type=local
-                     login_tenant_name="$setup_tenant" name={{ external_network_name }} router_external=true
+  # quantum
+  - name: create the internal network
+    quantum_network: name="$setup_internal_network_name" 
+                     provider_network_type=gre
+                     provider_segmentation_id=5
+                     login_tenant_name="$setup_tenant" 
+                     login_username=admin 
+                     login_password="$setup_admin_password" 
+                     auth_url="http://${keystone_endpoint_host}:35357/v2.0/"
+                     state=present
     register: network
 
-  - name: create external router
-    quantum_router: state=present login_username={{ admin_tenant_user }} login_password={{ admin_pass }} 
-                    login_tenant_name={{ admin_tenant }} name={{ external_router_name }}
+                    #dns_nameservers="$setup_internal_network_subnet_nameservers"
+  - name: create the subnet for internal network
+    quantum_subnet: name="$setup_internal_network_subnet_name" 
+                    network_name="$setup_internal_network_name"
+                    cidr="$setup_internal_network_subnet_cidr"
+                    enable_dhcp=true
+                    gateway_ip="$setup_internal_network_subnet_gateway_ip"
+                    login_tenant_name="$setup_tenant" 
+                    login_username=admin 
+                    login_password="$setup_admin_password" 
+                    auth_url="http://${keystone_endpoint_host}:35357/v2.0/"
+                    state=present
+
+  - name: create the external network
+    quantum_network: name="$setup_external_network_name" 
+                     router_external=True
+                     login_tenant_name="$setup_tenant" 
+                     login_username=admin 
+                     login_password="$setup_admin_password" 
+                     auth_url="http://${keystone_endpoint_host}:35357/v2.0/"
+                     state=present
+    register: network
+
+  - name: create the subnet for external network
+    quantum_subnet: name="$setup_external_network_subnet_name" 
+                    network_name="$setup_external_network_name"
+                    cidr="$setup_external_network_subnet_cidr"
+                    enable_dhcp=false
+                    gateway_ip="$setup_external_network_subnet_gateway_ip"
+                    allocation_pool_start="$setup_external_network_subnet_allocation_pool_start"
+                    allocation_pool_end="$setup_external_network_subnet_allocation_pool_end"
+                    login_tenant_name="$setup_tenant" 
+                    login_username=admin 
+                    login_password="$setup_admin_password" 
+                    auth_url="http://${keystone_endpoint_host}:35357/v2.0/"
+                    state=present
+
+  - name: create router
+    quantum_router: name="$setup_router_name"
+                    login_tenant_name="$setup_tenant" 
+                    login_username=admin 
+                    login_password="$setup_admin_password" 
+                    auth_url="http://${keystone_endpoint_host}:35357/v2.0/"
+                    state=present 
     register: router
 
-  - name: create the subnet for external  network
-    quantum_subnet: state=present login_username={{ admin_tenant_user }} login_password={{ admin_pass }} 
-                    login_tenant_name={{ admin_tenant }} enable_dhcp=false network_name={{ external_network_name }} 
-                    name={{ external_subnet_name }} cidr={{ external_subnet_cidr }}
 
-  - name: create external interface for router
-    quantum_router_gateway: state=present login_username={{ admin_tenant_user }} login_password={{ admin_pass }} 
-                            login_tenant_name={{ admin_tenant }} router_name={{ external_router_name }} 
-                            network_name={{ external_network_name }}
+  - name: create internal interface for router
+    quantum_router_interface: router_name="$setup_router_name"
+                              subnet_name="$setup_internal_network_subnet_name"
+                              login_tenant_name="$setup_tenant" 
+                              login_username=admin 
+                              login_password="$setup_admin_password" 
+                              auth_url="http://${keystone_endpoint_host}:35357/v2.0/"
+                              state=present 
 
-
+  - name: create external gateway for router
+    quantum_router_gateway: router_name="$setup_router_name"
+                            network_name="$setup_external_network_name"
+                            login_tenant_name="$setup_tenant" 
+                            login_username=admin 
+                            login_password="$setup_admin_password" 
+                            auth_url="http://${keystone_endpoint_host}:35357/v2.0/"
+                            state=present

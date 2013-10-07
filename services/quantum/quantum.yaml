@@ -38,7 +38,7 @@
     template: src=templates/etc/quantum/dhcp_agent.ini dest=/etc/quantum/dhcp_agent.ini owner=quantum group=quantum mode=0600
 
   - name: update metadata_agent.ini from template
-    template: src=templates/etc/quantum/metadata_agent.ini dest=/etc/quantum/dhcp_agent.ini owner=quantum group=quantum mode=0600
+    template: src=templates/etc/quantum/metadata_agent.ini dest=/etc/quantum/metadata_agent.ini owner=quantum group=quantum mode=0600
 
   - name: update ovs_quantum_plugin.ini from template
     template: src=templates/etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini dest=/etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini owner=quantum group=quantum mode=0600
