@@ -38,6 +38,7 @@
   # quantum
   - name: create the internal network
     quantum_network: name="$setup_internal_network_name" 
+                     router_external=False
                      provider_network_type=gre
                      provider_segmentation_id=5
                      login_tenant_name="$setup_tenant" 
