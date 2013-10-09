@@ -1,6 +1,6 @@
 ---
 global_log_verbose: True
-global_log_debug: True
+global_log_debug: False
 
 mysql_host: 10.10.10.10
 mysql_root_password: mysql
@@ -25,6 +25,7 @@ nova_compute_package: nova-compute-qemu
 quantum_endpoint_host: 10.10.10.10
 quantum_mysql_password: quantum
 quantum_identity_password: quantum
+quantum_ovs_mysql_password: quantum_ovs
 quantum_metadata_proxy_shared_secret: secrete
 quantum_external_nic: eth1
 
@@ -39,7 +40,7 @@ setup_router_name: demo-router
 setup_external_network_name: public
 setup_external_network_subnet_name: public-subnet
 setup_external_network_subnet_cidr: 10.0.0.0/24
-setup_external_network_subnet_gateway_ip: 10.5.5.1
+setup_internal_network_subnet_gateway_ip: 10.0.0.1
 setup_external_network_subnet_allocation_pool_start: 10.0.0.200
 setup_external_network_subnet_allocation_pool_end: 10.0.0.250
 

@@ -64,7 +64,7 @@
     when: modprobe_result|failed
 
   - name: ensure openvswitch is started
-    service: name=openvswitch-switch state=started
+    service: name=openvswitch-switch state=started enabled=yes
 
   - name: add default ovs bridge br-int for agent
     action: command /usr/bin/ovs-vsctl -- --may-exist add-br br-int
@@ -75,14 +75,14 @@
   - name: ensure br-ex has externat nic enslaved
     command: /usr/bin/ovs-vsctl -- --may-exist add-port br-ex $quantum_external_nic
 
-  # - name: update network interfaces from template
-  #  template: src=templates/etc/network/interfaces dest=/etc/network/interfaces owner=quantum group=quantum mode=0644
+  #- name: update network interfaces from template
+  #  template: src=templates/etc/network/interfaces dest=/etc/network/interfaces owner=root group=root mode=0644
 
-  # - name: restart networking
+  #- name: restart networking
   #  service: name=networking state=restarted
 
   - name: ensure services are started
-    service: name=$item state=started
+    service: name=$item state=started enabled=yes
     with_items: 
       - quantum-plugin-openvswitch-agent
       - quantum-dhcp-agent
