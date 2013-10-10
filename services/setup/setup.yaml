@@ -1,0 +1,159 @@
+---
+- hosts: setup
+  gather_facts: False
+  vars:
+    imgfile: cirros-0.3.1-x86_64-disk.img
+    cirros_url: http://download.cirros-cloud.net/0.3.1/$imgfile
+  
+  tasks:
+
+  # keystone
+  - name: create tenant
+    keystone_user: token="$keystone_admin_token" 
+                   tenant="$setup_tenant" 
+                   tenant_description="$setup_tenant"
+
+  - name: create admin user
+    keystone_user: token="$keystone_admin_token" 
+                   tenant="$setup_tenant" 
+                   user=admin password="$setup_admin_password"
+
+  - name: create admin role and associate it with admin user
+    keystone_user: token="$keystone_admin_token" 
+                   tenant="$setup_tenant" 
+                   user=admin 
+                   role=admin
+
+  # glance
+  - name: ensure temporary image directory exists
+    file: dest=/tmp/images state=directory
+
+  - name: ensure test image has been obtained
+    get_url: url=$cirros_url dest=/tmp/images/$imgfile
+
+  - name: add cirros image
+    glance: >
+            name=cirros-0.3.1-x86_64 
+            file=/tmp/images/$imgfile 
+            disk_format=qcow2 
+            is_public=true region="$keystone_default_region"
+            tenant="$setup_tenant" 
+            user=admin 
+            password="$setup_admin_password"
+            auth_url="http://${keystone_endpoint_host}:5000/v2.0"
+    register: image_id
+
+  # quantum
+  - name: create the internal network
+    quantum_network: name="$setup_internal_network_name" 
+                     router_external=False
+                     provider_network_type=gre
+                     provider_segmentation_id=5
+                     login_tenant_name="$setup_tenant" 
+                     login_username=admin 
+                     login_password="$setup_admin_password" 
+                     auth_url="http://${keystone_endpoint_host}:35357/v2.0/"
+                     state=present
+    register: network_id
+
+                    #dns_nameservers="$setup_internal_network_subnet_nameservers"
+  - name: create the subnet for internal network
+    quantum_subnet: name="$setup_internal_network_subnet_name" 
+                    network_name="$setup_internal_network_name"
+                    cidr="$setup_internal_network_subnet_cidr"
+                    enable_dhcp=true
+                    gateway_ip="$setup_internal_network_subnet_gateway_ip"
+                    login_tenant_name="$setup_tenant" 
+                    login_username=admin 
+                    login_password="$setup_admin_password" 
+                    auth_url="http://${keystone_endpoint_host}:35357/v2.0/"
+                    state=present
+
+  - name: create the external network
+    quantum_network: name="$setup_external_network_name" 
+                     router_external=True
+                     login_tenant_name="$setup_tenant" 
+                     login_username=admin 
+                     login_password="$setup_admin_password" 
+                     auth_url="http://${keystone_endpoint_host}:35357/v2.0/"
+                     state=present
+
+  - name: create the subnet for external network
+    quantum_subnet: name="$setup_external_network_subnet_name" 
+                    network_name="$setup_external_network_name"
+                    cidr="$setup_external_network_subnet_cidr"
+                    enable_dhcp=false
+                    gateway_ip="$setup_external_network_subnet_gateway_ip"
+                    allocation_pool_start="$setup_external_network_subnet_allocation_pool_start"
+                    allocation_pool_end="$setup_external_network_subnet_allocation_pool_end"
+                    login_tenant_name="$setup_tenant" 
+                    login_username=admin 
+                    login_password="$setup_admin_password" 
+                    auth_url="http://${keystone_endpoint_host}:35357/v2.0/"
+                    state=present
+
+  - name: create router
+    quantum_router: name="$setup_router_name"
+                    login_tenant_name="$setup_tenant" 
+                    login_username=admin 
+                    login_password="$setup_admin_password" 
+                    auth_url="http://${keystone_endpoint_host}:35357/v2.0/"
+                    state=present 
+    register: router
+
+
+  - name: create internal interface for router
+    quantum_router_interface: router_name="$setup_router_name"
+                              subnet_name="$setup_internal_network_subnet_name"
+                              login_tenant_name="$setup_tenant" 
+                              login_username=admin 
+                              login_password="$setup_admin_password" 
+                              auth_url="http://${keystone_endpoint_host}:35357/v2.0/"
+                              state=present 
+
+  - name: create external gateway for router
+    quantum_router_gateway: router_name="$setup_router_name"
+                            network_name="$setup_external_network_name"
+                            login_tenant_name="$setup_tenant" 
+                            login_username=admin 
+                            login_password="$setup_admin_password" 
+                            auth_url="http://${keystone_endpoint_host}:35357/v2.0/"
+                            state=present
+
+  # - name: add rule to allow ping to default security group
+
+  # - name: add rule to allow ssh to default security group
+
+  # - name: create ssh keypair
+
+  - name: add ssh keypair to nova
+    nova_keypair: name=default
+                  public_key=~/.ssh/id_rsa.pub
+                  login_tenant_name="$setup_tenant" 
+                  login_username=admin 
+                  login_password="$setup_admin_password" 
+                  auth_url="http://${keystone_endpoint_host}:35357/v2.0/"
+                  state=present
+
+  - name: create a new virtual machine instance
+    nova_compute: name=cirros
+                  flavor_id=1
+                  image_id=${image_id}
+                  key_name=default
+                  nics=[${network_id}]
+                  security_groups=default
+                  wait=yes
+                  login_tenant_name="$setup_tenant" 
+                  login_username=admin 
+                  login_password="$setup_admin_password" 
+                  auth_url="http://${keystone_endpoint_host}:35357/v2.0/"
+                  state=present
+
+    - name: associate a floating ip with the instance
+      quantum_floating_ip: instance_name=cirros
+                           network_name="$setup_external_network_name"
+                           login_tenant_name="$setup_tenant" 
+                           login_username=admin 
+                           login_password="$setup_admin_password" 
+                           auth_url="http://${keystone_endpoint_host}:35357/v2.0/"
+                           state=present

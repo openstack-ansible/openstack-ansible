@@ -1,0 +1,13 @@
+---
+- hosts: mysql
+  sudo: True
+  tasks:
+
+  - name: ensure nova database is present
+    mysql_db: name=nova
+
+  - name: ensure nova database user is present
+    mysql_user: name=nova host=$item password="$nova_mysql_password" priv=nova.*:ALL
+    with_items:
+      - '%'
+      - localhost

@@ -1,0 +1,51 @@
+---
+- name: Install glance
+  hosts: glance
+  sudo: True
+  gather_facts: False
+
+  tasks:
+
+  - name: ensure glance is installed
+    apt: pkg=glance state=latest
+
+  - name: ensure glance service are stopped
+    service: name=$item state=stopped
+    with_items:
+      - glance-api
+      - glance-registry
+
+  - name: ensure glance sqlite is deleted
+    file: dest=/var/lib/glance/glance.sqlite state=absent
+
+  - name: update glance-api.conf file from template
+    template: src=templates/etc/glance/glance-api.conf dest=/etc/glance/glance-api.conf owner=glance group=glance mode=0600
+
+  - name: update glance-registry.conf file from template
+    template: src=templates/etc/glance/glance-registry.conf dest=/etc/glance/glance-registry.conf owner=glance group=glance mode=0600
+
+  - name: ensure database is synced
+    glance_manage: action=dbsync
+
+  - name: ensure services are started
+    service: name=$item state=started
+    with_items:
+      - glance-api
+      - glance-registry
+
+  - name: create glance user in keystone
+    keystone_user: token="$keystone_admin_token" user=glance tenant=service password="$glance_identity_password"
+
+  - name: add glance user to the service tenant with the admin role
+    keystone_user: token="$keystone_admin_token" tenant=service user=glance role=admin
+
+  - name: add glance endpoint
+    keystone_service: >
+          token="$keystone_admin_token"
+          region="$keystone_default_region"
+          name=glance
+          type=image
+          description="Image Service"
+          public_url="http://${glance_endpoint_host}:9292"
+          internal_url="http://${glance_endpoint_host}:9292"
+          admin_url="http://${glance_endpoint_host}:9292"

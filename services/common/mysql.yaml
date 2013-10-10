@@ -1,0 +1,41 @@
+---
+- name: MySQL setup
+  hosts: mysql
+  sudo: True
+  tasks:
+
+    - name: ensure mysql-server is installed
+      apt: pkg=mysql-server state=latest
+
+    - name: stop mysql
+      service: name=mysql state=stopped
+
+    - name: mysql config file that binds to all interfaces
+      template: src=templates/etc/my.cnf dest=/etc/mysql/my.cnf owner=root group=root mode=0644
+
+
+    - name: start mysql
+      service: name=mysql state=started
+
+    # Need to do this for idempotency, see
+    # http://ansible.cc/docs/modules.html#mysql-user
+    - name: update mysql root password for all root accounts
+      mysql_user: name=root host=localhost password="$mysql_root_password"
+
+    - name: copy .my.cnf file with root password credentials
+      template: src=templates/root/.my.cnf dest=/root/.my.cnf owner=root group=root mode=0600
+
+    # 'localhost' needs to be the last item for idempotency, see
+    # http://ansible.cc/docs/modules.html#mysql-user
+    - name: update mysql root password for all root accounts
+      mysql_user: name=root host=$item password="$mysql_root_password" priv=*.*:ALL,GRANT
+      with_items:
+        - $ansible_hostname
+        - 127.0.0.1
+        - ::1
+
+    - name: ensure anonymous users are not in the database
+      mysql_user: name='' host=$item state=absent
+      with_items:
+        - localhost
+        - $inventory_hostname

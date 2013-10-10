@@ -1,0 +1,60 @@
+---
+- name: Setup steps that are not specific to a particular OpenStack project
+  hosts: all
+  sudo: True
+  gather_facts: True
+  tasks:
+
+    - name: update apt cache
+      apt: update_cache=yes
+
+    - name: ensure required base packages are present
+      apt: pkg="$item" state=latest
+      with_items:
+        - python-mysqldb
+        - python-software-properties
+        - ubuntu-cloud-keyring
+
+    - name: ensure needed repositories are present
+      apt_repository: repo="$item" state=present
+      with_items:
+        - deb http://ubuntu-cloud.archive.canonical.com/ubuntu precise-updates/grizzly main
+        - deb http://archive.gplhost.com/debian grizzly main
+        - deb http://archive.gplhost.com/debian grizzly-backports main
+        - deb http://archive.gplhost.com/debian precise-grizzly-backports main
+
+    - name: update apt cache
+      apt: update_cache=yes force=yes
+
+    - name: ensure gplhost-archive-keyring is present
+      apt: pkg=gplhost-archive-keyring state=latest force=yes
+
+    - name: upgrade software packages to latest version
+      apt: upgrade=dist update_cache=yes
+
+    - name: autoremove unneeded packages
+      command: apt-get -y autoremove
+
+    # FIXME: better automation, at least only reboot if kernel is upgraded.
+    - name: reboot since there may have been a kernel upgrade
+      command: /sbin/reboot
+
+    - name: wait for reboot
+      pause: prompt="Wait for all servers to reboot, then press [Enter]" 
+
+    - name: attempt to load vboxguest module if in Virtualbox
+      command: /sbin/modprobe vboxguest
+      register: modprobe_result
+      ignore_errors: True
+      when: ansible_virtualization_type == "virtualbox"
+
+    - name: install packages needed to build virtualbox modules
+      apt: pkg=$item state=latest
+      with_items:
+        - build-essential
+        - dkms
+      when: modprobe_result is defined and modprobe_result|failed
+
+    - name: "build virtualbox modules -- NOTE: /vagrant will not be mounted right now"
+      command: /etc/init.d/vboxadd setup
+      when: modprobe_result is defined and modprobe_result|failed

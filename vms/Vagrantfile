@@ -7,15 +7,21 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.box = "precise64"
   
-  config.vm.define :controller do |machine|
-    machine.vm.network :private_network, ip: "192.168.206.130"
-    machine.vm.network :private_network, ip: "192.168.100.130"
+  config.vm.define "controller" do |machine|
+    machine.vm.network :private_network, ip: "10.0.0.10"
+    machine.vm.network :private_network, ip: "10.10.10.10"
     machine.vm.hostname = "controller"
   end
 
+  config.vm.define "network" do |machine|
+    machine.vm.network :private_network, ip: "10.0.0.9"
+    machine.vm.network :private_network, ip: "10.10.10.9"
+    machine.vm.hostname = "network"
+  end
+
   config.vm.define "compute-001" do |machine|
-    machine.vm.network :private_network, ip: "192.168.206.131" 
-    machine.vm.network :private_network, ip: "192.168.100.131" 
+    machine.vm.network :private_network, ip: "10.0.0.11" # FIXME: remove eventually...
+    machine.vm.network :private_network, ip: "10.10.10.11" 
     machine.vm.hostname = "compute-001"
     machine.vm.provider :virtualbox do |v| 
       v.customize ["modifyvm", :id, "--memory", 1024]
