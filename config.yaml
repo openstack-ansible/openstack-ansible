@@ -1,0 +1,42 @@
+---
+global_log_verbose: False
+global_log_debug: False
+
+mysql_host: 10.10.10.10
+rabbit_host: 10.10.10.10
+keystone_endpoint_host: 10.10.10.10
+keystone_mysql_password: keystone
+keystone_admin_token: 01234ADMIN567890
+keystone_default_region: RegionOne
+
+glance_endpoint_host: 10.10.10.10
+glance_mysql_password: glance
+glance_identity_password: glance
+
+nova_endpoint_host: 10.10.10.10
+nova_mysql_password: nova
+nova_identity_password: nova
+nova_compute_package: nova-compute-qemu
+
+quantum_endpoint_host: 10.10.10.10
+quantum_mysql_password: quantum
+quantum_identity_password: quantum
+quantum_ovs_mysql_password: quantum_ovs
+quantum_metadata_proxy_shared_secret: secrete
+quantum_external_nic: eth1
+
+setup_admin_password: admin
+setup_tenant: demo
+setup_internal_network_name: demo
+setup_internal_network_subnet_name: demo-subnet
+setup_internal_network_subnet_cidr: 10.5.5.0/24
+setup_internal_network_subnet_dns_nameservers: 8.8.8.8
+setup_internal_network_subnet_gateway_ip: 10.5.5.1
+setup_router_name: demo-router
+setup_external_network_name: public
+setup_external_network_subnet_name: public-subnet
+setup_external_network_subnet_cidr: 10.0.0.0/24
+setup_internal_network_subnet_gateway_ip: 10.0.0.1
+setup_external_network_subnet_allocation_pool_start: 10.0.0.200
+setup_external_network_subnet_allocation_pool_end: 10.0.0.250
+
