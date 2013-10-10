@@ -29,18 +29,23 @@
     - name: ensure gplhost-archive-keyring is present
       apt: pkg=gplhost-archive-keyring state=latest force=yes
 
-    - name: upgrade software packages to latest version
-      apt: upgrade=dist update_cache=yes
+    # - name: upgrade software packages to latest version
+    #   apt: upgrade=dist update_cache=yes
 
     - name: autoremove unneeded packages
       command: apt-get -y autoremove
 
     # FIXME: better automation, at least only reboot if kernel is upgraded.
-    - name: reboot since there may have been a kernel upgrade
-      command: /sbin/reboot
+    #- name: reboot since there may have been a kernel upgrade
+    #  command: /sbin/reboot
 
-    - name: wait for reboot
-      pause: prompt="Wait for all servers to reboot, then press [Enter]" 
+    - name: vagrant reload?
+      sudo: False
+      delegate_to: localhost
+      shell: cd {{inventory_dir}}/vms; vagrant reload {{inventory_host}}
+
+    #- name: wait for reboot
+    #  pause: prompt="Wait for all servers to reboot, then press [Enter]" 
 
     - name: attempt to load vboxguest module if in Virtualbox
       command: /sbin/modprobe vboxguest
