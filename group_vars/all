@@ -1,5 +1,5 @@
 ---
-global_log_verbose: True
+global_log_verbose: False
 global_log_debug: False
 
 mysql_host: 10.10.10.10
