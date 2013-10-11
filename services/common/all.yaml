@@ -36,16 +36,17 @@
       command: apt-get -y autoremove
 
     # FIXME: better automation, at least only reboot if kernel is upgraded.
-    #- name: reboot since there may have been a kernel upgrade
-    #  command: /sbin/reboot
+    - name: reboot since there may have been a kernel upgrade
+      command: /sbin/reboot
 
-    - name: vagrant reload?
-      sudo: False
-      delegate_to: localhost
-      shell: cd {{inventory_dir}}/vms; vagrant reload {{inventory_host}}
+    - name: wait for reboot
+      pause: prompt="Wait for all servers to reboot, then press [Enter]" minutes=5
+    
+    #- name: vagrant reload?
+    #  sudo: False
+    #  delegate_to: localhost
+    #  shell: cd {{inventory_dir}}/vms; vagrant reload {{ansible_host}}
 
-    #- name: wait for reboot
-    #  pause: prompt="Wait for all servers to reboot, then press [Enter]" 
 
     - name: attempt to load vboxguest module if in Virtualbox
       command: /sbin/modprobe vboxguest
