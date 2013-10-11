@@ -14,6 +14,7 @@
         - python-mysqldb
         - python-software-properties
         - ubuntu-cloud-keyring
+        - ntp
 
     - name: ensure needed repositories are present
       apt_repository: repo="$item" state=present
@@ -46,3 +47,23 @@
 
     - include: reboot.yaml
       when: installed_kernel.stdout != running_kernel.stdout
+
+    - name: ensure ntp server is stopped
+      service: name=ntp state=stopped
+
+    - name: install ntp.conf 
+      template: src=templates/etc/ntp.conf dest=/etc/ntp.conf owner=root group=root mode=0644
+
+    - name: set clock on ntp server
+      command: ntpdate $external_ntp_host
+      when: "'ntpserver' in group_names"
+
+    - name: set clock on other machines
+      command: ntpdate $external_ntp_host
+      when: "'ntpserver' not in group_names"
+
+    - name: save system clock to hardware
+      command: hwclock --systohc
+
+    - name: make sure ntp is started and enabled
+      service: name=ntp state=started enabled=yes

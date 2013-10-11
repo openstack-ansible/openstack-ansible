@@ -10,6 +10,7 @@ data_network = 10.10.10.0/24
 mysql_host = 10.10.10.10
 rabbit_host = 10.10.10.10
 ntp_host = 10.10.10.10
+external_ntp_host = uk.pool.ntp.org
 
 keystone_endpoint_host = 10.0.0.10
 keystone_default_region = RegionOne
@@ -43,7 +44,7 @@ controller ansible_ssh_host=10.10.10.10
 [rabbitmq]
 controller ansible_ssh_host=10.10.10.10
 
-[ntp]
+[ntpserver]
 controller ansible_ssh_host=10.10.10.10
 
 [keystone]
