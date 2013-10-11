@@ -2,6 +2,7 @@
 - name: MySQL setup
   hosts: mysql
   sudo: True
+  gather_facts: False
   tasks:
 
     - name: ensure mysql-server is installed

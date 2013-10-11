@@ -1,16 +1,18 @@
 ---
-- name: Install or Verify glance database
+- name: Install or verify Glance database
   hosts: mysql
   sudo: True
   gather_facts: False
-
   tasks:
 
-  - name: ensure glance database is present
-    mysql_db: name=glance
+    - name: ensure glance database is present
+      mysql_db: name=glance
 
-  - name: ensure glance database user is present
-    mysql_user: name=glance host=$item password=${glance_mysql_password} priv=glance.*:ALL
-    with_items:
-      - '%'
-      - localhost
+    - name: ensure glance database user is present
+      mysql_user: name=glance 
+                  host="{{ item }}"
+                  password="{{ glance_mysql_password }}"
+                  priv=glance.*:ALL
+      with_items:
+        - "%"
+        - localhost

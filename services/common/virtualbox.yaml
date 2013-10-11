@@ -21,13 +21,8 @@
   shell: cd {{ inventory_dir }}/vms; vagrant halt {{ inventory_hostname }}
   ignore_errors: True
 
-- name: repeatedly try to vagrant up until successful
+- name: vagrant up
   sudo: False
   delegate_to: localhost
   shell: cd {{ inventory_dir }}/vms; vagrant up {{ inventory_hostname }}
-  register: vagrant_result
-  until: vagrant_result|success
-  retries: 5
-  delay: 10
-  failed_when: vagrant_result.attempts == 5
   

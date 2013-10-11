@@ -2,18 +2,18 @@
 - name: Set up compute node
   hosts: compute
   sudo: True
-
+  gather_facts: False
   tasks:
 
-  - name: enable net.ipv4.ip_forward in sysctl
-    sysctl: name=net.ipv4.ip_forward value=1 state=present
+    - name: enable net.ipv4.ip_forward in sysctl
+      sysctl: name=net.ipv4.ip_forward value=1 state=present
 
-  - name: ensure quantum-compute packages are installed
-    apt: pkg=$item update-cache=yes
-    with_items:
-      - openvswitch-common
-      - openvswitch-switch
-      - quantum-plugin-openvswitch-agent
+    - name: ensure quantum-compute packages are installed
+      apt: pkg=$item update-cache=yes
+      with_items:
+        - openvswitch-common
+        - openvswitch-switch
+        - quantum-plugin-openvswitch-agent
       
   - name: ensure services are stopped
     service: name=quantum-plugin-openvswitch-agent state=stopped

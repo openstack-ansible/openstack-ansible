@@ -2,6 +2,7 @@
 - name: RabbitMQ setup
   hosts: rabbitmq
   sudo: True
+  gather_facts: False
   tasks:
 
     - name: ensure rabbitmq server is installed

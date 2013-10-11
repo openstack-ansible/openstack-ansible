@@ -1,8 +1,8 @@
-#- include: services/common/main.yaml
+- include: services/common/main.yaml
 - include: services/keystone/main.yaml
 - include: services/glance/main.yaml
-- include: services/nova/main.yaml
-- include: services/quantum/main.yaml
+#- include: services/nova/main.yaml
+#- include: services/quantum/main.yaml
 #- include: services/setup/main.yaml
 
 -  hosts: setup

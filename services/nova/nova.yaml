@@ -1,79 +1,89 @@
 ---
-- hosts: nova
+- name: Install noa
+  hosts: nova
   sudo: True
+  gather_facts: False
   tasks:
 
-  - name: ensure nova packages are installed
-    apt: pkg=$item state=latest
-    with_items:
-      - nova-api
-      - nova-cert
-      - nova-common
-      - nova-conductor
-      - nova-scheduler
-      - python-nova
-      - python-novaclient
-      - nova-consoleauth
-      - novnc
-      - nova-novncproxy
+    - name: ensure nova packages are installed
+      apt: pkg="{{ item }}" state=latest
+      with_items:
+        - nova-api
+        - nova-cert
+        - nova-common
+        - nova-conductor
+        - nova-scheduler
+        - python-nova
+        - python-novaclient
+        - nova-consoleauth
+        - novnc
+        - nova-novncproxy
 
-  - name: ensure services are stopped
-    service: name=$item state=stopped
-    with_items:
-      - nova-api
-      - nova-cert
-      - nova-conductor
-      - nova-consoleauth
-      - nova-scheduler
-      - nova-novncproxy
+    - name: ensure services are stopped
+      service: name="{{ item }}" state=stopped
+      with_items:
+        - nova-api
+        - nova-cert
+        - nova-conductor
+        - nova-consoleauth
+        - nova-scheduler
+        - nova-novncproxy
 
-  - name: ensure nova sqlite is deleted
-    file: dest=/var/lib/nova/nova.sqlite state=absent
+    - name: ensure nova sqlite is deleted
+      file: dest=/var/lib/nova/nova.sqlite state=absent
 
-  - name: update nova.conf from template
-    template: src=templates/etc/nova/nova.conf dest=/etc/nova/nova.conf owner=nova group=nova mode=0600
+    - name: update nova.conf from template
+      template: src=templates/etc/nova/nova.conf 
+                dest=/etc/nova/nova.conf 
+                owner=nova group=nova mode=0600
 
-  - name: update api-paste.ini from template
-    template: src=templates/etc/nova/api-paste.ini dest=/etc/nova/api-paste.ini owner=nova group=nova mode=0600
+    - name: update api-paste.ini from template
+      template: src=templates/etc/nova/api-paste.ini 
+                dest=/etc/nova/api-paste.ini 
+                owner=nova group=nova mode=0600
 
-  - name: ensure database is synced
-    command: /usr/bin/nova-manage db sync
+    - name: ensure database is synced
+      command: /usr/bin/nova-manage db sync
 
-  - name: ensure services are started
-    service: name=$item state=started
-    with_items:
-      - nova-api
-      - nova-cert
-      - nova-conductor
-      - nova-consoleauth
-      - nova-scheduler
-      - nova-novncproxy
+    - name: ensure services are started
+      service: name="{{ item }}" state=started enabled=yes
+      with_items:
+        - nova-api
+        - nova-cert
+        - nova-conductor
+        - nova-consoleauth
+        - nova-scheduler
+        - nova-novncproxy
 
-  - name: create nova user in keystone
-    keystone_user: token="$keystone_admin_token" user=nova tenant=service password="$nova_identity_password"
+    - name: create nova user in keystone
+      keystone_user: token="{{ keystone_admin_token }}" 
+                     tenant=service 
+                     user=nova 
+                     password="{{ nova_identity_password }}"
 
-  - name: add nova user to the service tenant with the admin role
-    keystone_user: token="$keystone_admin_token" tenant=service user=nova role=admin
+    - name: add nova user to the service tenant with the admin role
+      keystone_user: token="{{ keystone_admin_token }}" 
+                     tenant=service 
+                     user=nova 
+                     role=admin
 
-  - name: add nova endpoint
-    keystone_service: >
-          token="$keystone_admin_token"
-          region="$keystone_default_region"
-          name=nova
-          type=compute
-          description="Compute Service"
-          public_url="http://${nova_endpoint_host}:8774/v2/%(tenant_id)s"
-          internal_url="http://${nova_endpoint_host}:8774/v2/%(tenant_id)s"
-          admin_url="http://${nova_endpoint_host}:8774/v2/%(tenant_id)s"
+    - name: add nova endpoint
+      keystone_service: token="{{ keystone_admin_token }}"
+                        region="{{ keystone_default_region }}"
+                        name=nova
+                        type=compute
+                        description="Compute Service"
+                        public_url="http://{{ nova_endpoint_host }}:8774/v2/%(tenant_id)s"
+                        internal_url="http://{{ nova_endpoint_host }}:8774/v2/%(tenant_id)s"
+                        admin_url="http://{{ nova_endpoint_host }}:8774/v2/%(tenant_id)s"
 
-  - name: add ec2 compatibility layer endpoint
-    keystone_service: >
-          token="$keystone_admin_token"
-          region="$keystone_default_region"
-          name=ec2
-          type=ec2
-          description="EC2 Compatibility Layer"
-          public_url="http://${nova_endpoint_host}:8773/services/Cloud"
-          internal_url="http://${nova_endpoint_host}:8773/services/Cloud"
-          admin_url="http://${nova_endpoint_host}:8773/services/Admin"
+    - name: add ec2 compatibility layer endpoint
+      keystone_service: token="{{ keystone_admin_token }}"
+                        region="{{ keystone_default_region }}"
+                        name=ec2
+                        type=ec2
+                        description="EC2 Compatibility Layer"
+                        public_url="http://{{ nova_endpoint_host }}:8773/services/Cloud"
+                        internal_url="http://{{ nova_endpoint_host }}:8773/services/Cloud"
+                        admin_url="http://{{ nova_endpoint_host }}:8773/services/Admin"
 
