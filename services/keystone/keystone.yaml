@@ -8,7 +8,6 @@
   - name: ensure keystone packages are installed
     apt: pkg=$item state=latest
     with_items:
-      - ntp
       - keystone
       - python-keystone
       - python-keystoneclient

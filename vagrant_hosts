@@ -2,17 +2,24 @@
 global_log_verbose = False
 global_log_debug = False
 
+api_network = 10.0.0.0/24
+management_network = 10.10.10.0/24
+external_network = 10.0.0.0/24
+data_network = 10.10.10.0/24
+
 mysql_host = 10.10.10.10
 rabbit_host = 10.10.10.10
-keystone_endpoint_host = 10.10.10.10
+ntp_host = 10.10.10.10
+
+keystone_endpoint_host = 10.0.0.10
 keystone_default_region = RegionOne
 
-glance_endpoint_host = 10.10.10.10
+glance_endpoint_host = 10.0.0.10
 
-nova_endpoint_host = 10.10.10.10
+nova_endpoint_host = 10.0.0.10
 nova_compute_package = nova-compute-qemu
 
-quantum_endpoint_host = 10.10.10.10
+quantum_endpoint_host = 10.0.0.10
 quantum_external_nic = eth1
 
 setup_admin_password = admin
@@ -31,28 +38,31 @@ setup_external_network_subnet_allocation_pool_start = 10.0.0.200
 setup_external_network_subnet_allocation_pool_end = 10.0.0.250
 
 [mysql]
-10.10.10.10
+controller ansible_ssh_host=10.10.10.10
 
 [rabbitmq]
-10.10.10.10
+controller ansible_ssh_host=10.10.10.10
+
+[ntp]
+controller ansible_ssh_host=10.10.10.10
 
 [keystone]
-10.10.10.10
+controller ansible_ssh_host=10.10.10.10
 
 [glance]
-10.10.10.10
+controller ansible_ssh_host=10.10.10.10
 
 [nova]
-10.10.10.10
+controller ansible_ssh_host=10.10.10.10
 
 [quantum-api]
-10.10.10.10
+controller ansible_ssh_host=10.10.10.10
 
 [quantum]
-10.10.10.9
+network ansible_ssh_host=10.10.10.9
 
 [compute]
-10.10.10.11
+compute-001 ansible_ssh_host=10.10.10.11
 
 [setup]
-10.10.10.10
+controller ansible_ssh_host=10.10.10.10

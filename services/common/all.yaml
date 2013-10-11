@@ -23,44 +23,26 @@
         - deb http://archive.gplhost.com/debian grizzly-backports main
         - deb http://archive.gplhost.com/debian precise-grizzly-backports main
 
-    - name: update apt cache
-      apt: update_cache=yes force=yes
+    - name: update apt cache again
+      apt: update_cache=yes force=yes cache_valid_time=1
 
     - name: ensure gplhost-archive-keyring is present
       apt: pkg=gplhost-archive-keyring state=latest force=yes
 
-    # - name: upgrade software packages to latest version
-    #   apt: upgrade=dist update_cache=yes
+    - name: upgrade software packages to latest version
+      apt: upgrade=dist update_cache=yes
 
     - name: autoremove unneeded packages
       command: apt-get -y autoremove
 
-    # FIXME: better automation, at least only reboot if kernel is upgraded.
-    - name: reboot since there may have been a kernel upgrade
-      command: /sbin/reboot
+    - name: register running kernel version
+      command: uname -r
+      register: running_kernel
 
-    - name: wait for reboot
-      pause: prompt="Wait for all servers to reboot, then press [Enter]" minutes=5
-    
-    #- name: vagrant reload?
-    #  sudo: False
-    #  delegate_to: localhost
-    #  shell: cd {{inventory_dir}}/vms; vagrant reload {{ansible_host}}
+    # FIXME: a more reliable command?
+    - name: register installed kernel version
+      shell: dpkg -l | grep "linux-image-[0-9]" | sort | tail -1 | perl -ane 'print substr($F[1], 12), "\n"'
+      register: installed_kernel
 
-
-    - name: attempt to load vboxguest module if in Virtualbox
-      command: /sbin/modprobe vboxguest
-      register: modprobe_result
-      ignore_errors: True
-      when: ansible_virtualization_type == "virtualbox"
-
-    - name: install packages needed to build virtualbox modules
-      apt: pkg=$item state=latest
-      with_items:
-        - build-essential
-        - dkms
-      when: modprobe_result is defined and modprobe_result|failed
-
-    - name: "build virtualbox modules -- NOTE: /vagrant will not be mounted right now"
-      command: /etc/init.d/vboxadd setup
-      when: modprobe_result is defined and modprobe_result|failed
+    - include: reboot.yaml
+      when: installed_kernel.stdout != running_kernel.stdout

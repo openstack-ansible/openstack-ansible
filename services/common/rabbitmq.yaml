@@ -7,6 +7,9 @@
     - name: ensure rabbitmq server is installed
       apt: pkg=rabbitmq-server state=latest
 
+    - name: ensure reabbitmq server is started and enabled
+      service: name=rabbitmq-server state=started enabled=yes
+
     - name: ensure anonymous guest user is absent
       rabbitmq_user: user=guest state=absent
 

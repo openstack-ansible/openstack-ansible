@@ -1,0 +1,9 @@
+---
+- name: reboot when there has been a kernel upgrade
+  command: /sbin/reboot
+
+- name: wait for reboot
+  pause: minutes=5
+
+- include: virtualbox.yaml
+  when: ansible_virtualization_type == "virtualbox"

@@ -1,6 +1,4 @@
 ---
-# FIXME add ntp client install...
-
 - name: Install or Verify Keystone Database
   hosts: mysql
   sudo: True

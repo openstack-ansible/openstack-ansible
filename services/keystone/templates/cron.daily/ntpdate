@@ -1,2 +1,0 @@
-ntpdate {{ controller_ip }}
-hwclock -w
