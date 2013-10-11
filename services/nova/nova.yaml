@@ -2,7 +2,7 @@
 - name: Install noa
   hosts: nova
   sudo: True
-  gather_facts: False
+  gather_facts: True
   tasks:
 
     - name: ensure nova packages are installed
@@ -56,19 +56,22 @@
         - nova-novncproxy
 
     - name: create nova user in keystone
-      keystone_user: token="{{ keystone_admin_token }}" 
+      keystone_user: endpoint="http://{{ keystone_endpoint_host }}:35357/v2.0/"
+                     token="{{ keystone_admin_token }}" 
                      tenant=service 
                      user=nova 
                      password="{{ nova_identity_password }}"
 
     - name: add nova user to the service tenant with the admin role
-      keystone_user: token="{{ keystone_admin_token }}" 
+      keystone_user: endpoint="http://{{ keystone_endpoint_host }}:35357/v2.0/"
+                     token="{{ keystone_admin_token }}" 
                      tenant=service 
                      user=nova 
                      role=admin
 
     - name: add nova endpoint
-      keystone_service: token="{{ keystone_admin_token }}"
+      keystone_service: endpoint="http://{{ keystone_endpoint_host }}:35357/v2.0/"
+                        token="{{ keystone_admin_token }}"
                         region="{{ keystone_default_region }}"
                         name=nova
                         type=compute
@@ -78,7 +81,8 @@
                         admin_url="http://{{ nova_endpoint_host }}:8774/v2/%(tenant_id)s"
 
     - name: add ec2 compatibility layer endpoint
-      keystone_service: token="{{ keystone_admin_token }}"
+      keystone_service: endpoint="http://{{ keystone_endpoint_host }}:35357/v2.0/"
+                        token="{{ keystone_admin_token }}"
                         region="{{ keystone_default_region }}"
                         name=ec2
                         type=ec2

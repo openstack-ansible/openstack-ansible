@@ -2,10 +2,10 @@
 global_log_verbose = False
 global_log_debug = False
 
-api_network = 10.0.0.0/24
 management_network = 10.10.10.0/24
-external_network = 10.0.0.0/24
 data_network = 10.10.10.0/24
+api_network = 10.0.0.0/24
+external_network = 10.0.0.0/24
 
 mysql_host = 10.10.10.10
 rabbit_host = 10.10.10.10
