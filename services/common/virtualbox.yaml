@@ -5,7 +5,7 @@
   ignore_errors: True
 
 - name: make sure packages needed to rebuild virtualbox modules are installed
-  apt: pkg=$item state=latest
+  apt: pkg="{{ item }}" state=latest
   with_items:
     - build-essential
     - dkms
@@ -18,13 +18,13 @@
 - name: vagrant needs to be stopped and restarted to remount shared directory
   sudo: False
   delegate_to: localhost
-  shell: cd {{inventory_dir}}/vms; vagrant halt {{inventory_hostname}}
+  shell: cd {{ inventory_dir }}/vms; vagrant halt {{ inventory_hostname }}
   ignore_errors: True
 
 - name: repeatedly try to vagrant up until successful
   sudo: False
   delegate_to: localhost
-  shell: cd {{inventory_dir}}/vms; vagrant up {{inventory_hostname}}
+  shell: cd {{ inventory_dir }}/vms; vagrant up {{ inventory_hostname }}
   register: vagrant_result
   until: vagrant_result|success
   retries: 5
