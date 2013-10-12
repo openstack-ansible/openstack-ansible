@@ -18,11 +18,24 @@
                 dest=/etc/network/if-pre-up.d/iptablesload 
                 owner=root group=root mode=0755
 
+    - name: ensure udev rule to configure br-ex is in place
+      template: src=templates/etc/udev/rules.d/configure_br-ex.rules
+                dest=/etc/udev/rules.d/configure_br-ex.rules
+                owner=root group=root mode=0644
+
+     - name: ensure udev script for br-ex is present
+       template: src=templates/etc/udev/configure_br-ex
+                 dest=/etc/udev/configure_br-ex
+                 owner=root group=root mode=0755
+
     - name: ensure ovs bridge for gateway br-ex present
       command: /usr/bin/ovs-vsctl -- --may-exist add-br br-ex
 
     - name: ensure br-ex has externat nic enslaved
-      command: /usr/bin/ovs-vsctl -- --may-exist add-port br-ex $quantum_external_nic
+      command: /usr/bin/ovs-vsctl -- --may-exist add-port br-ex {{ quantum_external_nic }}
+
+    - name: ensure configure script is run at least once
+      command: /etc/udev/configure_br-ex
 
     - name: ensure quantum packages are installed
       apt: pkg="{{ item }}" state=latest update_cache=yes cache_valid_time=600

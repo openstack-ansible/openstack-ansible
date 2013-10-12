@@ -1,0 +1,1 @@
+SUBSYSTEM=="net", KERNEL=="br-ex", ACTION=="add", RUN+="/etc/udev/configure_br-ex"
