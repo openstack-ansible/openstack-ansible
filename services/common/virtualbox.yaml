@@ -21,8 +21,26 @@
   shell: cd {{ inventory_dir }}/vms; vagrant halt {{ inventory_hostname }}
   ignore_errors: True
 
+# FIXME: do-until loops not working yet, so just try 3 times...
+
 - name: vagrant up
   sudo: False
   delegate_to: localhost
+  register: vagrantup_result
+  ignore_errors: True
   shell: cd {{ inventory_dir }}/vms; vagrant up {{ inventory_hostname }}
   
+- name: vagrant up
+  sudo: False
+  delegate_to: localhost
+  register: vagrantup_result
+  ignore_errors: True
+  shell: cd {{ inventory_dir }}/vms; vagrant up {{ inventory_hostname }}
+  when: vagrantup_result|failed
+
+- name: vagrant up
+  sudo: False
+  delegate_to: localhost
+  register: vagrantup_result
+  shell: cd {{ inventory_dir }}/vms; vagrant up {{ inventory_hostname }}
+  when: vagrantup_result|failed
