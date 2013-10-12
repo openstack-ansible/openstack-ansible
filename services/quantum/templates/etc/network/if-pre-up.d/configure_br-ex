@@ -2,7 +2,6 @@
 # FIXME: get net mask...
 {% set external_ipnet = ansible_all_ipv4_addresses|ipmatch(external_network) + "/24" %}
 ip addr del {{ external_ipnet }} dev {{ quantum_external_nic }}
-ip addr add 0.0.0.0 dev {{ quantum_external_nic }}
 ip link set {{ quantum_external_nic }} up
 ip link set {{ quantum_external_nic }} promisc on
 ip addr add {{ external_ipnet }} dev br-ex

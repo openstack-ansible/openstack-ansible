@@ -1,4 +1,7 @@
 [all:vars]
+global_log_verbose = True
+global_log_debug = True
+
 management_network = 10.10.10.0/24
 data_network = 10.10.10.0/24
 api_network = 10.0.0.0/24
