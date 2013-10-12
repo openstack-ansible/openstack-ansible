@@ -1,5 +1,7 @@
 - include: services/common/main.yaml
 - include: services/keystone/main.yaml
+#- include: services/swift/main.yaml
 - include: services/glance/main.yaml
 - include: services/quantum/main.yaml
+#- include: services/cinder/main.yaml
 - include: services/nova/main.yaml

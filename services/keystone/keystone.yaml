@@ -36,12 +36,13 @@
       wait_for: host="{{ keystone_endpoint_host }}" port=35357
 
     - name: create service tenant
-      keystone_user: endpoint="http://{{ keystone_endpoint_host }}:35357/v2.0/"
+      keystone_user: endpoint="http://{{ keystone_endpoint_host }}:35357/v2.0"
                      token="{{ keystone_admin_token }}" 
-                     tenant=service tenant_description="Service Tenant"
+                     tenant=service 
+                     tenant_description="Service Tenant"
 
     - name: add keystone endpoint information
-      keystone_service: endpoint="http://{{ keystone_endpoint_host }}:35357/v2.0/"
+      keystone_service: endpoint="http://{{ keystone_endpoint_host }}:35357/v2.0"
                         token="{{ keystone_admin_token }}" 
                         token="{{ keystone_admin_token }}"
                         region="{{ keystone_default_region }}"

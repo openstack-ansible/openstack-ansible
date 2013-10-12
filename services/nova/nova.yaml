@@ -1,5 +1,5 @@
 ---
-- name: Install noa
+- name: Install nova
   hosts: nova
   sudo: True
   gather_facts: True

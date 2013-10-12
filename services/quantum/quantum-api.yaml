@@ -19,6 +19,16 @@
                 dest=/etc/quantum/quantum.conf 
                 owner=quantum group=quantum mode=0600
 
+    - name: update ovs_quantum_plugin.ini from template
+      template: src=templates/etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini 
+                dest=/etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini 
+                owner=quantum group=quantum mode=0600
+
+    - name: make sure symlink to ovs_quantum_plugin.ini exists
+      file: src=/etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini 
+            dest=/etc/quantum/plugin.ini 
+            state=link
+
     - name: ensure quantum-api services are started and enabled
       service: name=quantum-server state=started enabled=yes
 

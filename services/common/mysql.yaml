@@ -28,7 +28,10 @@
                 owner=root group=root mode=0600
 
     - name: update mysql root password for all root accounts
-      mysql_user: name=root host="{{ item }}" password="{{ mysql_root_password }}" priv=*.*:ALL,GRANT
+      mysql_user: name=root 
+                  host="{{ item }}" 
+                  password="{{ mysql_root_password }}" 
+                  priv=*.*:ALL,GRANT
       with_items:
         - "{{ ansible_hostname }}"
         - 127.0.0.1
@@ -37,5 +40,9 @@
     - name: ensure anonymous users are not in the database
       mysql_user: name='' host={{ item }} state=absent
       with_items:
-        - localhost
+        - "{{ ansible_hostname }}"
         - "{{ inventory_hostname }}"
+        - localhost
+        - 127.0.0.1
+        - ::1
+        - "%"

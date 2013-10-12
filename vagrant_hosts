@@ -1,7 +1,4 @@
 [all:vars]
-global_log_verbose = True
-global_log_debug = True
-
 management_network = 10.10.10.0/24
 data_network = 10.10.10.0/24
 api_network = 10.0.0.0/24
@@ -18,6 +15,7 @@ quantum_endpoint_host = 10.0.0.10
 external_ntp_host = uk.pool.ntp.org
 keystone_default_region = RegionOne
 nova_compute_package = nova-compute-qemu
+quantum_internal_nic = eth2
 quantum_external_nic = eth1
 
 [mysql]

@@ -62,7 +62,7 @@
 
     # quantum
     - name: create the internal network
-      quantum_network: auth_url="http://{{ keystone_endpoint_host }}:35357/v2.0/"
+      quantum_network: auth_url="http://{{ keystone_endpoint_host }}:5000/v2.0"
                        login_tenant_name="{{ tenant }}" 
                        login_username=admin 
                        login_password="{{ admin_password }}" 
@@ -74,7 +74,7 @@
       register: network_id
 
     - name: create the subnet for internal network
-      quantum_subnet: auth_url="http://{{ keystone_endpoint_host }}:35357/v2.0/"
+      quantum_subnet: auth_url="http://{{ keystone_endpoint_host }}:5000/v2.0"
                       login_tenant_name="{{ tenant }}" 
                       login_username=admin 
                       login_password="{{ admin_password }}" 
@@ -86,7 +86,7 @@
                       state=present
 
     - name: create the external network
-      quantum_network: auth_url="http://{{ keystone_endpoint_host }}:35357/v2.0/"
+      quantum_network: auth_url="http://{{ keystone_endpoint_host }}:5000/v2.0"
                        login_tenant_name="{{ tenant }}" 
                        login_username=admin 
                        login_password="{{ admin_password }}" 
@@ -97,7 +97,7 @@
                        state=present
 
     - name: create the subnet for external network
-      quantum_subnet: auth_url="http://{{ keystone_endpoint_host }}:35357/v2.0/"
+      quantum_subnet: auth_url="http://{{ keystone_endpoint_host }}:5000/v2.0"
                       name="{{ internal_network_name }}" 
                       login_tenant_name="{{ tenant }}" 
                       login_username=admin 
@@ -105,14 +105,14 @@
                       name="{{ external_network_subnet_name }}" 
                       network_name="{{ external_network_name }}"
                       cidr="{{ external_network_subnet_cidr }}"
-                      enable_dhcp=False
+                      enable_dhcp=false
                       gateway_ip="{{ external_network_subnet_gateway_ip }}"
                       allocation_pool_start="{{ external_network_subnet_allocation_pool_start }}"
                       allocation_pool_end="{{ external_network_subnet_allocation_pool_end }}"
                       state=present
 
     - name: create router
-      quantum_router: auth_url="http://{{ keystone_endpoint_host }}:35357/v2.0/"
+      quantum_router: auth_url="http://{{ keystone_endpoint_host }}:5000/v2.0"
                       login_tenant_name="{{ tenant }}" 
                       login_username=admin 
                       login_password="{{ admin_password }}" 
@@ -122,7 +122,7 @@
 
 
     - name: create internal interface for router
-      quantum_router_interface: auth_url="http://{{ keystone_endpoint_host }}:35357/v2.0/"
+      quantum_router_interface: auth_url="http://{{ keystone_endpoint_host }}:5000/v2.0"
                                 login_tenant_name="{{ tenant }}" 
                                 login_username=admin 
                                 login_password="{{ admin_password }}" 
@@ -131,7 +131,7 @@
                                 state=present 
 
     - name: create external gateway for router
-      quantum_router_gateway: auth_url="http://{{ keystone_endpoint_host }}:35357/v2.0/"
+      quantum_router_gateway: auth_url="http://{{ keystone_endpoint_host }}:5000/v2.0"
                               login_tenant_name="{{ tenant }}" 
                               login_username=admin 
                               login_password="{{ admin_password }}" 
@@ -146,7 +146,7 @@
     # - name: create ssh keypair
 
     - name: add ssh keypair to nova
-      nova_keypair: auth_url="http://{{ keystone_endpoint_host }}:35357/v2.0/"
+      nova_keypair: auth_url="http://{{ keystone_endpoint_host }}:5000/v2.0"
                     login_tenant_name="{{ tenant }}" 
                     login_username=admin 
                     login_password="{{ admin_password }}" 
@@ -155,7 +155,7 @@
                     state=present
 
     - name: create a new virtual machine instance
-      nova_compute: auth_url="http://{{ keystone_endpoint_host }}:35357/v2.0/"
+      nova_compute: auth_url="http://{{ keystone_endpoint_host }}:5000/v2.0"
                     login_tenant_name="{{ tenant }}" 
                     login_username=admin 
                     login_password="{{ admin_password }}" 
@@ -169,7 +169,7 @@
                     state=present
 
     - name: associate a floating ip with the instance
-      quantum_floating_ip: auth_url="http://{{ keystone_endpoint_host }}:35357/v2.0/"
+      quantum_floating_ip: auth_url="http://{{ keystone_endpoint_host }}:5000/v2.0"
                            login_tenant_name="{{ tenant }}" 
                            login_username=admin 
                            login_password="{{ admin_password }}" 

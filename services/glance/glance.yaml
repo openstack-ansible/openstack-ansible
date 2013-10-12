@@ -37,7 +37,7 @@
         - glance-registry
 
     - name: create glance user in keystone
-      keystone_user: endpoint="http://{{ keystone_endpoint_host }}:35357/v2.0/"
+      keystone_user: endpoint="http://{{ keystone_endpoint_host }}:35357/v2.0"
                      token="{{ keystone_admin_token }}" 
                      tenant=service 
                      user=glance 
@@ -45,14 +45,14 @@
 
     - name: add glance user to the service tenant with the admin role
       keystone_user: 
-                     endpoint="http://{{ keystone_endpoint_host }}:35357/v2.0/"
+                     endpoint="http://{{ keystone_endpoint_host }}:35357/v2.0"
                      token="{{ keystone_admin_token }}" 
                      tenant=service 
                      user=glance 
                      role=admin
 
     - name: add glance endpoint
-      keystone_service: endpoint="http://{{ keystone_endpoint_host }}:35357/v2.0/"
+      keystone_service: endpoint="http://{{ keystone_endpoint_host }}:35357/v2.0"
                         token="{{ keystone_admin_token }}"
                         region="{{ keystone_default_region }}"
                         name=glance

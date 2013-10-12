@@ -1,21 +1,21 @@
 ---
-mysql_root_password: "{{lookup('password', inventory_dir + '/credentials/mysql-root length=15')}}"
+mysql_root_password: mysql
 
-rabbit_password: "{{lookup('password', inventory_dir + '/credentials/rabbitmq length=32')}}"
+rabbit_password: rabbit
 
-keystone_mysql_password: "{{lookup('password', inventory_dir + '/credentials/mysql-keystone length=15')}}"
-keystone_admin_token: "{{lookup('password', inventory_dir + '/credentials/keystone-admin-token length=32')}}"
+keystone_mysql_password: keystone
+keystone_admin_token: 012345ADMIN67890 
 
-glance_mysql_password: "{{lookup('password', inventory_dir + '/credentials/mysql-glance length=15')}}"
-glance_identity_password: "{{lookup('password', inventory_dir + '/credentials/keystone-glance length=32')}}"
+glance_mysql_password: glance
+glance_identity_password: glance
 
-nova_mysql_password: "{{lookup('password', inventory_dir + '/credentials/mysql-nova length=15')}}"
-nova_identity_password: "{{lookup('password', inventory_dir + '/credentials/keystone-nova length=32')}}"
+nova_mysql_password: nova
+nova_identity_password: nova 
 
-metadata_proxy_shared_secret: "{{lookup('password', inventory_dir + '/credentials/metadata-proxy-shared-secret length=32')}}"
+metadata_proxy_shared_secret: 012345METADATA67890
 
-quantum_mysql_password: "{{lookup('password', inventory_dir + '/credentials/mysql-quantum length=15')}}"
-quantum_identity_password: "{{lookup('password', inventory_dir + '/credentials/keystone-quantum length=32')}}"
-quantum_ovs_mysql_password: "{{lookup('password', inventory_dir + '/credentials/mysql-quantum_ovs length=15')}}"
+quantum_mysql_password: quantum
+quantum_identity_password: quantum
+quantum_ovs_mysql_password: quantum
 
-setup_admin_password: "{{lookup('password', inventory_dir + '/credentials/keystone-admin length=32')}}"
+admin_password: admin 
