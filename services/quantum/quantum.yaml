@@ -1,100 +1,66 @@
-# FIXME: modularize openvswitch-switch...
 ---
-- hosts: quantum
+- name: Install quantum server agents
+  hosts: quantum
   sudo: True
+  gather_facts: False
   tasks:
 
-  - name: enable net.ipv4.ip_forward in sysctl
-    sysctl: name=net.ipv4.ip_forward value=1 state=present
+    - name: ensure iptables configuration is present
+      template: src=templates/etc/iptables.rules 
+                dest=/etc/iptables.rules 
+                owner=root group=root mode=0644
 
-  - name: enable net.ipv4.conf.all.forwarding in sysctl
-    sysctl: name=net.ipv4.conf.all.forwarding value=1 state=present
+    - name: load iptables rules
+      shell: /sbin/iptables-restore < /etc/iptables.rules
 
-  - name: ensure quantum packages are installed
-    apt: pkg=$item state=latest
-    with_items:
-      - openvswitch-common
-      - openvswitch-switch
-      - quantum-plugin-openvswitch-agent
-      - quantum-dhcp-agent
-      - quantum-metadata-agent
-      - quantum-l3-agent
+    - name: ensure iptables configuration is loaded at boot
+      template: src=templates/etc/network/if-pre-up.d/iptablesload 
+                dest=/etc/network/if-pre-up.d/iptablesload 
+                owner=root group=root mode=0755
 
-  - name: ensure services are stopped
-    service: name=$item state=stopped
-    with_items: 
-      - quantum-plugin-openvswitch-agent
-      - quantum-dhcp-agent
-      - quantum-metadata-agent
-      - quantum-l3-agent
+    - name: ensure ovs bridge for gateway br-ex present
+      command: /usr/bin/ovs-vsctl -- --may-exist add-br br-ex
 
-  - name: ensure quantum sqlite is deleted
-    file: dest=/var/lib/quantum/quantum.sqlite state=absent
+    - name: ensure br-ex has externat nic enslaved
+      command: /usr/bin/ovs-vsctl -- --may-exist add-port br-ex $quantum_external_nic
 
-  - name: update quantum.conf from template
-    template: src=templates/etc/quantum/quantum.conf dest=/etc/quantum/quantum.conf owner=quantum group=quantum mode=0600
+    - name: ensure quantum packages are installed
+      apt: pkg="{{ item }}" state=latest update_cache=yes cache_valid_time=600
+      with_items:
+        - quantum-dhcp-agent
+        - quantum-metadata-agent
+        - quantum-l3-agent
 
-  - name: update dhcp_agent.ini from template
-    template: src=templates/etc/quantum/dhcp_agent.ini dest=/etc/quantum/dhcp_agent.ini owner=quantum group=quantum mode=0600
+    - name: ensure services are stopped
+      service: name="{{ item }}" state=stopped
+      with_items: 
+        - quantum-plugin-openvswitch-agent
+        - quantum-dhcp-agent
+        - quantum-metadata-agent
+        - quantum-l3-agent
 
-  - name: update metadata_agent.ini from template
-    template: src=templates/etc/quantum/metadata_agent.ini dest=/etc/quantum/metadata_agent.ini owner=quantum group=quantum mode=0600
+    - name: ensure quantum sqlite is deleted
+      file: dest=/var/lib/quantum/quantum.sqlite state=absent
 
-  - name: update ovs_quantum_plugin.ini from template
-    template: src=templates/etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini dest=/etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini owner=quantum group=quantum mode=0600
+    - name: update quantum.conf from template
+      template: src=templates/etc/quantum/quantum.conf 
+                dest=/etc/quantum/quantum.conf 
+                owner=quantum group=quantum mode=0600
 
-  - name: make sure symlink to ovs_quantum_plugin.ini exists
-    file: src=/etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini dest=/etc/quantum/plugin.ini state=link
-  - name: ensure OVS kernel module is loaded
-    action: command /sbin/modprobe openvswitch_mod
-    register: modprobe_result
-    ignore_errors: True
- 
-  - name: ensure packages needed to build openvswitch_mod are installed
-    apt: pkg=$item state=latest
-    with_items:
-      - build-essential
-      - dkms
-      - openvswitch-datapath-dkms
-      - openvswitch-datapath-source
-    when: modprobe_result|failed
+    - name: update dhcp_agent.ini from template
+      template: src=templates/etc/quantum/dhcp_agent.ini 
+                dest=/etc/quantum/dhcp_agent.ini 
+                owner=quantum group=quantum mode=0600
 
-  - name: build openvswitch-datapath kernel module - this may take a while
-    action: command /usr/bin/module-assistant -i auto-install openvswitch-datapath
-    when: modprobe_result|failed
+    - name: update metadata_agent.ini from template
+      template: src=templates/etc/quantum/metadata_agent.ini 
+                dest=/etc/quantum/metadata_agent.ini 
+                owner=quantum group=quantum mode=0600
 
-  - name: ensure openvswitch is started
-    service: name=openvswitch-switch state=started enabled=yes
-
-  - name: add default ovs bridge br-int for agent
-    action: command /usr/bin/ovs-vsctl -- --may-exist add-br br-int
-
-  - name: ensure ovs bridge for gateway br-ex present
-    command: /usr/bin/ovs-vsctl -- --may-exist add-br br-ex
-
-  - name: ensure br-ex has externat nic enslaved
-    command: /usr/bin/ovs-vsctl -- --may-exist add-port br-ex $quantum_external_nic
-
-  #- name: update network interfaces from template
-  #  template: src=templates/etc/network/interfaces dest=/etc/network/interfaces owner=root group=root mode=0644
-
-  #- name: restart networking
-  #  service: name=networking state=restarted
-
-  - name: ensure services are started
-    service: name=$item state=started enabled=yes
-    with_items: 
-      - quantum-plugin-openvswitch-agent
-      - quantum-dhcp-agent
-      - quantum-metadata-agent
-      - quantum-l3-agent
-
-  - name: ensure iptables configuration is present
-    template: src=templates/etc/iptables.rules dest=/etc/iptables.rules owner=root group=root mode=0644
-
-  - name: ensure iptables configuration is loaded at boot
-    template: src=templates/etc/network/if-pre-up.d/iptablesload dest=/etc/network/if-pre-up.d/iptablesload owner=root group=root mode=0755
-
-  - name: load iptables rules
-    shell: /sbin/iptables-restore < /etc/iptables.rules
-
+    - name: ensure services are started
+      service: name=$item state=started enabled=yes
+      with_items: 
+        - quantum-plugin-openvswitch-agent
+        - quantum-dhcp-agent
+        - quantum-metadata-agent
+        - quantum-l3-agent
