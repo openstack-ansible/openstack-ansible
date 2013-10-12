@@ -23,21 +23,21 @@
       service: name=quantum-server state=started enabled=yes
 
     - name: create quantum service user
-      keystone_user: endpoint="http://{{ keystone_endpoint_host }}:35357/v2.0/"
+      keystone_user: endpoint="http://{{ keystone_endpoint_host }}:35357/v2.0"
                      token="{{ keystone_admin_token }}" 
                      tenant=service 
                      user=quantum 
                      password="{{ quantum_identity_password }}"
 
     - name: add quantum service user to the service tenant with the admin role
-      keystone_user: endpoint="http://{{ keystone_endpoint_host }}:35357/v2.0/"
+      keystone_user: endpoint="http://{{ keystone_endpoint_host }}:35357/v2.0"
                      token="{{ keystone_admin_token }}" 
                      tenant=service 
                      user=quantum 
                      role=admin
 
     - name: add quantum endpoint to keystone
-      keystone_service: endpoint="http://{{ keystone_endpoint_host }}:35357/v2.0/"
+      keystone_service: endpoint="http://{{ keystone_endpoint_host }}:35357/v2.0"
                         token="{{ keystone_admin_token }}" 
                         region="{{ keystone_default_region }}"
                         name=quantum
