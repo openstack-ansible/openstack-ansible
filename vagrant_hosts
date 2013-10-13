@@ -4,19 +4,19 @@ data_network = 10.10.10.0/24
 api_network = 10.0.0.0/24
 external_network = 10.0.0.0/24
 
-mysql_host = 10.10.10.10
-rabbit_host = 10.10.10.10
-ntp_host = 10.10.10.10
-keystone_endpoint_host = 10.0.0.10
-glance_endpoint_host = 10.0.0.10
-nova_endpoint_host = 10.0.0.10
-quantum_endpoint_host = 10.0.0.10
+#mysql_host = 10.10.10.10
+#rabbit_host = 10.10.10.10
+#ntp_host = 10.10.10.10
+#keystone_endpoint_host = 10.0.0.10
+#glance_endpoint_host = 10.0.0.10
+#nova_endpoint_host = 10.0.0.10
+#quantum_endpoint_host = 10.0.0.10
 
 external_ntp_host = uk.pool.ntp.org
 keystone_default_region = RegionOne
 nova_compute_package = nova-compute-qemu
 
-quantum_internal_nic = eth2
+quantum_data_nic = eth2
 quantum_external_nic = eth1
 
 [mysql]

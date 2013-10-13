@@ -14,8 +14,32 @@ nova_identity_password: "{{ lookup('password', inventory_dir + '/credentials/key
 
 metadata_proxy_shared_secret: "{{ lookup('password', inventory_dir + '/credentials/metadata-proxy-shared-secret') }}"
 
-quantum_mysql_password: "{{ lookup('password', inventory_dir + '/credentials/mysql-quantum')}}"
-quantum_identity_password: "{{ lookup('password', inventory_dir + '/credentials/keystone-quantum')}}"
-quantum_ovs_mysql_password: "{{ lookup('password', inventory_dir + '/credentials/mysql-quantum_ovs')}}"
+quantum_mysql_password: "{{ lookup('password', inventory_dir + '/credentials/mysql-quantum') }}"
+quantum_identity_password: "{{ lookup('password', inventory_dir + '/credentials/keystone-quantum') }}"
+quantum_ovs_mysql_password: "{{ lookup('password', inventory_dir + '/credentials/mysql-quantum_ovs') }}"
 
-admin_password: "{{ lookup('password', inventory_dir + '/credentials/admin')}}"
+admin_password: "{{ lookup('password', inventory_dir + '/credentials/admin') }}"
+
+mysql_host: "{{ hostvars[groups['mysql'][0]]['ansible_all_ipv4_addresses']|ipmatch(management_network) }}"
+rabbit_host: "{{ hostvars[groups['rabbitmq'][0]]['ansible_all_ipv4_addresses']|ipmatch(management_network) }}"
+ntp_host: "{{ hostvars[groups['ntpserver'][0]]['ansible_all_ipv4_addresses']|ipmatch(management_network) }}"
+
+keystone_endpoint_host: "{{ hostvars[groups['keystone'][0]]['ansible_all_ipv4_addresses']|ipmatch(api_network) }}"
+keystone_public_url: http://{{ keystone_endpoint_host }}:5000/v2.0/
+keystone_internal_url: "{{ keystone_public_url }}"
+keystone_admin_url: http://{{ keystone_endpoint_host }}:35357/v2.0/
+
+glance_endpoint_host: "{{ hostvars[groups['glance'][0]]['ansible_all_ipv4_addresses']|ipmatch(api_network) }}"
+glance_public_url: http://{{ glance_endpoint_host }}:9292
+glance_internal_url: "{{ glance_public_url }}"
+glance_admin_url: "{{ glance_public_url }}"
+
+nova_endpoint_host: "{{ hostvars[groups['nova'][0]]['ansible_all_ipv4_addresses']|ipmatch(api_network) }}"
+nova_public_url: http://{{ nova_endpoint_host }}:8774/v2/%(tenant_id)s
+nova_internal_url: "{{ nova_public_url }}"
+nova_admin_url: "{{ nova_public_url }}"
+
+quantum_endpoint_host: "{{ hostvars[groups['quantum-api'][0]]['ansible_all_ipv4_addresses']|ipmatch(api_network) }}"
+quantum_public_url: http://{{ quantum_endpoint_host }}:9696
+quantum_internal_url: "{{ quantum_public_url }}"
+quantum_admin_url: "{{ quantum_public_url }}"
