@@ -12,7 +12,7 @@
       sysctl: name=net.ipv4.conf.all.forwarding value=1 state=present
 
     - name: ensure openvswitch packages are installed
-      apt: pkg="{{ item }}" update_cache=yes cache_valid_time=600
+      apt: pkg="{{ item }}" state=latest update_cache=yes cache_valid_time=600
       with_items:
         - openvswitch-common
         - openvswitch-switch
@@ -48,7 +48,7 @@
       register: modprobe_result
 
     - name: ensure packages to build openvswitch module are installed
-      apt: pkg="{{ item }}" update_cache=yes cache_valid_time=600
+      apt: pkg="{{ item }}" state=latest update_cache=yes cache_valid_time=600
       with_items:
         - build-essential
         - dkms

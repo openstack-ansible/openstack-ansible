@@ -6,7 +6,8 @@
   tasks:
 
     - name: ensure nova-compute packages are installed
-      apt: pkg={{ nova_compute_package }} state=latest
+      apt: pkg={{ nova_compute_package }} state=latest 
+           update_cache=yes cache_valid_time=600
       
     - name: ensure services are stopped
       service: name=nova-compute state=stopped

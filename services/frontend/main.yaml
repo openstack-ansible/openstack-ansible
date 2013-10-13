@@ -1,0 +1,18 @@
+---
+- name: configure frontend system
+  hosts: frontend
+  sudo: True
+  gather_facts: True
+  tasks:
+
+    - name: ensure clients are installed
+      apt: pkg="{{ item }}" state=latest update_cache=yes cache_valid_time=600
+      with_items:
+        - python-keystoneclient
+        - python-swiftclient
+        - python-glanceclient
+        - python-quantumclient
+        - python-cinderclient
+        - python-novaclient
+
+    # FIXME: copy up templates...

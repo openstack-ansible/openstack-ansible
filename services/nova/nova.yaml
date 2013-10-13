@@ -5,11 +5,8 @@
   gather_facts: True
   tasks:
 
-    - name: FIXME
-      apt: pkg=nova-common state=latest
-
     - name: ensure nova packages are installed
-      apt: pkg="{{ item }}" state=latest
+      apt: pkg="{{ item }}" state=latest update_cache=yes cache_valid_time=600
       with_items:
         - nova-api
         - nova-cert
@@ -59,38 +56,38 @@
         - nova-novncproxy
 
     - name: create nova user in keystone
-      keystone_user: endpoint="http://{{ keystone_endpoint_host }}:35357/v2.0"
+      keystone_user: endpoint="{{ keystone_admin_url }}"
                      token="{{ keystone_admin_token }}" 
                      tenant=service 
                      user=nova 
                      password="{{ nova_identity_password }}"
 
     - name: add nova user to the service tenant with the admin role
-      keystone_user: endpoint="http://{{ keystone_endpoint_host }}:35357/v2.0"
+      keystone_user: endpoint="{{ keystone_admin_url }}"
                      token="{{ keystone_admin_token }}" 
                      tenant=service 
                      user=nova 
                      role=admin
 
     - name: add nova endpoint
-      keystone_service: endpoint="http://{{ keystone_endpoint_host }}:35357/v2.0"
+      keystone_service: endpoint="{{ keystone_admin_url }}"
                         token="{{ keystone_admin_token }}"
                         region="{{ keystone_default_region }}"
                         name=nova
                         type=compute
                         description="Compute Service"
-                        public_url="http://{{ nova_endpoint_host }}:8774/v2/%(tenant_id)s"
-                        internal_url="http://{{ nova_endpoint_host }}:8774/v2/%(tenant_id)s"
-                        admin_url="http://{{ nova_endpoint_host }}:8774/v2/%(tenant_id)s"
+                        public_url="{{ nova_public_url }}"
+                        internal_url="{{ nova_internal_url }}"
+                        admin_url="{{ nova_admin_url }}"
 
     - name: add ec2 compatibility layer endpoint
-      keystone_service: endpoint="http://{{ keystone_endpoint_host }}:35357/v2.0"
+      keystone_service: endpoint="{{ keystone_admin_url }}"
                         token="{{ keystone_admin_token }}"
                         region="{{ keystone_default_region }}"
                         name=ec2
                         type=ec2
                         description="EC2 Compatibility Layer"
-                        public_url="http://{{ nova_endpoint_host }}:8773/services/Cloud"
-                        internal_url="http://{{ nova_endpoint_host }}:8773/services/Cloud"
-                        admin_url="http://{{ nova_endpoint_host }}:8773/services/Admin"
+                        public_url="{{ ec2_public_url }}"
+                        internal_url="{{ ec2_internal_url }}"
+                        admin_url="{{ ec2_admin_url }}"
 
