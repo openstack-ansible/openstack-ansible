@@ -26,7 +26,8 @@ def find_netdev(*a, **kw):
         'ipv4' in facts['ansible_br_ex']):
 
         for netdev in facts['ansible_interfaces']:
-            if 'ipv4' not in facts['ansible_' + netdev.replace('-', '_')]:
+            if (netdev[:3] != 'br-' and 
+                'ipv4' not in facts['ansible_' + netdev.replace('-', '_')]):
                 return netdev
     else:
 
