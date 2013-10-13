@@ -1,0 +1,4 @@
+---
+- include: mysql.yaml
+- include: nova.yaml
+- include: compute.yaml

@@ -1,0 +1,4 @@
+---
+- include: all.yaml
+- include: mysql.yaml
+- include: rabbitmq.yaml

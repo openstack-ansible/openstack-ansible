@@ -1,0 +1,62 @@
+---
+- name: Setup steps that are not specific to a particular OpenStack project
+  hosts: all
+  sudo: True
+  gather_facts: True
+  tasks:
+
+    - name: ensure required base packages are present
+      apt: pkg="{{ item }}" state=latest update_cache=yes cache_valid_time=600
+      with_items:
+        - python-mysqldb
+        - python-software-properties
+        - ubuntu-cloud-keyring
+        - ntp
+
+    - name: ensure needed repositories are present
+      apt_repository: repo="{{ item }}" state=present
+      with_items:
+        - deb http://ubuntu-cloud.archive.canonical.com/ubuntu precise-updates/grizzly main
+        - deb http://archive.gplhost.com/debian grizzly main
+        - deb http://archive.gplhost.com/debian grizzly-backports main
+        - deb http://archive.gplhost.com/debian precise-grizzly-backports main
+
+    - name: update apt cache again
+      apt: update_cache=yes force=yes
+
+    - name: ensure gplhost-archive-keyring is present
+      apt: pkg=gplhost-archive-keyring state=latest force=yes
+
+    - name: upgrade software packages to latest version
+      apt: upgrade=dist update_cache=yes
+
+    - name: autoremove unneeded packages
+      command: apt-get -y autoremove
+
+    - name: register running kernel version
+      command: uname -r
+      register: running_kernel
+
+    # FIXME: a more reliable command?
+    - name: register installed kernel version
+      shell: dpkg -l | grep "linux-image-[0-9]" | sort | tail -1 | perl -ane 'print substr($F[1], 12), "\n"'
+      register: installed_kernel
+
+    - include: reboot.yaml
+      when: installed_kernel.stdout != running_kernel.stdout
+      
+    - name: ensure ntp server is stopped
+      service: name=ntp state=stopped
+
+    - name: install ntp.conf 
+      template: src=templates/etc/ntp.conf dest=/etc/ntp.conf owner=root group=root mode=0644
+
+    # sometimes it takes a while for the internal ntp server to become available...
+    - name: set clocks to public ntp server
+      command: ntpdate {{ external_ntp_host }}
+
+    - name: save system clock to hardware
+      command: hwclock --systohc
+
+    - name: make sure ntp is started and enabled
+      service: name=ntp state=started enabled=yes

@@ -1,0 +1,3 @@
+export OS_SERVICE_TOKEN={{ keystone_admin_token }}
+export OS_SERVICE_ENDPOINT={{ keystone_admin_url }}
+

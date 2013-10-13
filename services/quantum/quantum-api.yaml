@@ -1,0 +1,59 @@
+---
+- name: Install quantum-api server
+  hosts: quantum-api
+  sudo: True
+  gather_facts: True
+  tasks:
+
+    - name: ensure quantum-api packages are installed
+      apt: pkg=quantum-server state=latest update_cache=yes cache_valid_time=600
+
+    - name: ensure services are stopped
+      service: name=quantum-server state=stopped
+
+    - name: ensure quantum sqlite is deleted
+      file: dest=/var/lib/quantum/quantum.sqlite state=absent
+
+    - name: update quantum.conf from template
+      template: src=templates/etc/quantum/quantum.conf 
+                dest=/etc/quantum/quantum.conf 
+                owner=quantum group=quantum mode=0600
+
+    - name: update ovs_quantum_plugin.ini from template
+      template: src=templates/etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini 
+                dest=/etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini 
+                owner=quantum group=quantum mode=0600
+
+    - name: make sure symlink to ovs_quantum_plugin.ini exists
+      file: src=/etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini 
+            dest=/etc/quantum/plugin.ini 
+            state=link
+
+    - name: ensure quantum-api services are started and enabled
+      service: name=quantum-server state=started enabled=yes
+
+    - name: create quantum service user
+      keystone_user: endpoint="{{ keystone_admin_url }}"
+                     token="{{ keystone_admin_token }}" 
+                     tenant=service 
+                     user=quantum 
+                     password="{{ quantum_identity_password }}"
+
+    - name: add quantum service user to the service tenant with the admin role
+      keystone_user: endpoint="{{ keystone_admin_url }}"
+                     token="{{ keystone_admin_token }}" 
+                     tenant=service 
+                     user=quantum 
+                     role=admin
+
+    - name: add quantum endpoint to keystone
+      keystone_service: endpoint="{{ keystone_admin_url }}"
+                        token="{{ keystone_admin_token }}" 
+                        region="{{ default_region }}"
+                        name=quantum
+                        type=network
+                        description="Networking Service"
+                        public_url="{{ quantum_public_url }}"
+                        internal_url="{{ quantum_internal_url }}"
+                        admin_url="{{ quantum_admin_url }}"
+
