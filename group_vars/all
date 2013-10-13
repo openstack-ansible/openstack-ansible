@@ -1,9 +1,9 @@
 ---
-external_ntp_host = uk.pool.ntp.org
-nova_compute_package = nova-compute-qemu
+external_ntp_host: uk.pool.ntp.org
+nova_compute_package: nova-compute-qemu
 
-default_region = RegionOne
-default_tenant = default
+default_region: RegionOne
+default_tenant: default
 
 mysql_host: "{{ hostvars[groups['mysql'][0]]['ansible_all_ipv4_addresses']|ipmatch(management_network) }}"
 mysql_root_password: "{{ lookup('password', inventory_dir + '/credentials/mysql-root')}}"
@@ -33,6 +33,10 @@ nova_internal_url: "{{ nova_public_url }}"
 nova_admin_url: "{{ nova_public_url }}"
 nova_mysql_password: "{{ lookup('password', inventory_dir + '/credentials/mysql-nova') }}"
 nova_identity_password: "{{ lookup('password', inventory_dir + '/credentials/keystone-nova') }}"
+
+ec2_public_url: http://{{ nova_endpoint_host }}:8773/services/Cloud
+ec2_internal_url: "{{ ec2_public_url }}"
+ec2_admin_url: http://{{ nova_endpoint_host }}:8773/services/Admin
 
 quantum_endpoint_host: "{{ hostvars[groups['quantum-api'][0]]['ansible_all_ipv4_addresses']|ipmatch(api_network) }}"
 quantum_public_url: http://{{ quantum_endpoint_host }}:9696

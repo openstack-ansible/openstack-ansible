@@ -72,7 +72,7 @@
     - name: add nova endpoint
       keystone_service: endpoint="{{ keystone_admin_url }}"
                         token="{{ keystone_admin_token }}"
-                        region="{{ keystone_default_region }}"
+                        region="{{ default_region }}"
                         name=nova
                         type=compute
                         description="Compute Service"
@@ -83,7 +83,7 @@
     - name: add ec2 compatibility layer endpoint
       keystone_service: endpoint="{{ keystone_admin_url }}"
                         token="{{ keystone_admin_token }}"
-                        region="{{ keystone_default_region }}"
+                        region="{{ default_region }}"
                         name=ec2
                         type=ec2
                         description="EC2 Compatibility Layer"

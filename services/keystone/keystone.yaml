@@ -44,7 +44,7 @@
     - name: add keystone endpoint information
       keystone_service: endpoint="{{ keystone_admin_url }}"
                         token="{{ keystone_admin_token }}" 
-                        region="{{ keystone_default_region }}"
+                        region="{{ default_region }}"
                         name=keystone
                         type=identity
                         description="Identity Service"

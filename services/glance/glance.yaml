@@ -54,7 +54,7 @@
     - name: add glance endpoint
       keystone_service: endpoint="{{ keystone_admin_url }}"
                         token="{{ keystone_admin_token }}"
-                        region="{{ keystone_default_region }}"
+                        region="{{ default_region }}"
                         name=glance
                         type=image
                         description="Image Service"

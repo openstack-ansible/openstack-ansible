@@ -5,3 +5,5 @@
 - include: services/quantum/main.yaml
 #- include: services/cinder/main.yaml
 - include: services/nova/main.yaml
+- include: services/horizon/main.yaml
+- include: services/frontend/main.yaml
