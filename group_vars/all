@@ -1,10 +1,12 @@
 ---
-external_ntp_host: uk.pool.ntp.org
+# some useful default values
+external_ntp_host: pool.ntp.org
 nova_compute_package: nova-compute-qemu
 
 default_region: RegionOne
 default_tenant: default
 
+# derived values
 mysql_host: "{{ hostvars[groups['mysql'][0]]|find_ip(management_network) }}"
 mysql_root_password: "{{ lookup('password', inventory_dir + '/credentials/mysql-root')}}"
 
