@@ -1,0 +1,28 @@
+---
+- name: configure frontend system
+  hosts: frontend
+  gather_facts: True
+  tasks:
+
+    - name: ensure clients are installed
+      apt: pkg="{{ item }}" state=latest update_cache=yes cache_valid_time=600
+      sudo: True
+      with_items:
+        - python-keystoneclient
+        - python-swiftclient
+        - python-glanceclient
+        - python-quantumclient
+        - python-cinderclient
+        - python-novaclient
+
+    - name: update openrc template
+      sudo: False
+      template: src=templates/openrc 
+                dest={{ ansible_env['HOME'] }}/openrc 
+                mode=0600
+
+    - name: update admin.openrc template
+      sudo: False
+      template: src=templates/admin.openrc 
+                dest={{ ansible_env['HOME'] }}/admin.openrc 
+                mode=0600

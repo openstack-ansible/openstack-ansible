@@ -1,16 +1,2 @@
 ---
-- name: Install horizon
-  hosts: horizon
-  sudo: True
-  gather_facts: True
-  tasks:
-
-    - name: ensure packages are installed
-      apt: pkg="{{ item }}" state=latest update_cache=yes cache_valid_time=600
-      with_items: 
-        - openstack-dashboard 
-        - memcached 
-        - python-memcache
-
-    - name: ensure ubuntu theme is removed
-      apt: pkg=openstack-dashboard-ubuntu-theme state=absent purge=yes
+- include: horizon.yaml

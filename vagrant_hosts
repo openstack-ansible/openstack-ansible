@@ -6,7 +6,6 @@ external_network = 10.0.0.0/24
 
 external_ntp_host = uk.pool.ntp.org
 
-quantum_data_nic = eth2
 quantum_external_nic = eth1
 
 [mysql]

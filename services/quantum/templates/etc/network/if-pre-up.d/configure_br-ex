@@ -1,8 +1,11 @@
 #!/bin/sh
-# FIXME: get net mask...
-{% set external_ipnet = ansible_all_ipv4_addresses|ipmatch(external_network) + "/24" %}
-ip addr del {{ external_ipnet }} dev {{ quantum_external_nic }}
-ip link set {{ quantum_external_nic }} up
-ip link set {{ quantum_external_nic }} promisc on
+{% set external_ipnet = ansible_all_ipv4_addresses|ipnetmatch(external_network) %}
+# FIXME: hmmm, can't base external netdev purely on ip presence, need cache
+# file?
+{# set external_netdev = hostvars[ansible_hostname]|ipnetmatch(external_network) #}
+{% set external_netdev = quantum_external_nic %}
+ip addr del {{ external_ipnet }} dev {{ external_netdev }}
+ip link set {{ external_netdev }} up
+ip link set {{ external_netdev }} promisc on
 ip addr add {{ external_ipnet }} dev br-ex
 ip link set br-ex up

@@ -26,7 +26,7 @@
     - name: ensure ovs bridge for gateway br-ex present
       command: /usr/bin/ovs-vsctl -- --may-exist add-br br-ex
 
-    - name: ensure br-ex has externat nic enslaved
+    - name: ensure br-ex has external nic enslaved
       command: /usr/bin/ovs-vsctl -- --may-exist add-port br-ex {{ quantum_external_nic }}
 
     - name: ensure configure script is run at least once
