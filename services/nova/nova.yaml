@@ -5,6 +5,9 @@
   gather_facts: True
   tasks:
 
+    - name: FIXME
+      apt: pkg=nova-common state=latest
+
     - name: ensure nova packages are installed
       apt: pkg="{{ item }}" state=latest
       with_items:

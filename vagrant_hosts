@@ -15,6 +15,7 @@ quantum_endpoint_host = 10.0.0.10
 external_ntp_host = uk.pool.ntp.org
 keystone_default_region = RegionOne
 nova_compute_package = nova-compute-qemu
+
 quantum_internal_nic = eth2
 quantum_external_nic = eth1
 
