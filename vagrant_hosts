@@ -6,8 +6,6 @@ external_network = 10.0.0.0/24
 
 external_ntp_host = uk.pool.ntp.org
 
-quantum_external_nic = eth1
-
 [mysql]
 controller ansible_ssh_host=10.10.10.10
 
