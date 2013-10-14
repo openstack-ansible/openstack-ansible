@@ -33,5 +33,8 @@ network ansible_ssh_host=10.10.10.9
 [compute]
 compute-001 ansible_ssh_host=10.10.10.11
 
+[horizon]
+controller ansible_ssh_host=10.10.10.10
+
 [frontend]
 controller ansible_ssh_host=10.10.10.10

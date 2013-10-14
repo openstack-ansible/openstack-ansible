@@ -20,27 +20,6 @@
     external_network_subnet_allocation_pool_end: 10.0.0.250
   tasks:
 
-    # keystone
-    - name: create tenant
-      keystone_user: endpoint="http://{{ keystone_endpoint_host }}:35357/v2.0/"
-                     token="{{ keystone_admin_token }}" 
-                     tenant="{{ tenant }}" 
-                     tenant_description="{{ tenant }}"
-
-    - name: create admin user
-      keystone_user: endpoint="http://{{ keystone_endpoint_host }}:35357/v2.0/"
-                     token="{{ keystone_admin_token }}" 
-                     tenant="{{ tenant }}" 
-                     user=admin 
-                     password="{{ admin_password }}"
-
-    - name: create admin role and associate it with admin user
-      keystone_user: endpoint="http://{{ keystone_endpoint_host }}:35357/v2.0/"
-                     token="{{ keystone_admin_token }}" 
-                     tenant="{{ tenant }}" 
-                     user=admin 
-                     role=admin
-
     # glance
     - name: ensure temporary image directory exists
       file: dest=/tmp/images state=directory
