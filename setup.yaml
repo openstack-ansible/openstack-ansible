@@ -4,8 +4,6 @@
   vars:
     imgfile: cirros-0.3.1-x86_64-disk.img
     cirros_url: http://download.cirros-cloud.net/0.3.1/$imgfile
-    admin_password: admin
-    tenant: demo
     internal_network_name: demo
     internal_network_subnet_name: demo-subnet
     internal_network_subnet_cidr: 10.5.5.0/24

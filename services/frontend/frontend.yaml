@@ -17,20 +17,20 @@
         - python-novaclient
 
     - name: create tenant
-      keystone_user: endpoint="http://{{ keystone_endpoint_host }}:35357/v2.0/"
+      keystone_user: endpoint="{{ keystone_admin_url }}"
                      token="{{ keystone_admin_token }}" 
                      tenant="{{ default_tenant }}" 
                      tenant_description="{{ default_tenant }}"
 
     - name: create admin user
-      keystone_user: endpoint="http://{{ keystone_endpoint_host }}:35357/v2.0/"
+      keystone_user: endpoint="{{ keystone_admin_url }}"
                      token="{{ keystone_admin_token }}" 
                      tenant="{{ default_tenant }}" 
                      user=admin 
                      password="{{ admin_password }}"
 
     - name: create admin role and associate it with admin user
-      keystone_user: endpoint="http://{{ keystone_endpoint_host }}:35357/v2.0/"
+      keystone_user: endpoint="{{ keystone_admin_url }}"
                      token="{{ keystone_admin_token }}" 
                      tenant="{{ default_tenant }}" 
                      user=admin 
