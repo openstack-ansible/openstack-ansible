@@ -1,4 +1,7 @@
 ---
+- name: gather facts needed for templates
+  hosts: mysql:rabbitmq:keystone
+
 - name: Install and configure openvswitch and quantum agent
   hosts: quantum:compute
   sudo: True
