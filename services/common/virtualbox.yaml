@@ -18,7 +18,7 @@
 - name: vagrant needs to be stopped and restarted to remount shared directory
   sudo: False
   delegate_to: localhost
-  shell: cd {{ inventory_dir }}/vms; flock -x .lock -c "vagrant halt {{ inventory_hostname }}"
+  shell: cd {{ inventory_dir }}/vms; flock -x . -c "vagrant halt {{ inventory_hostname }}"
   ignore_errors: True
   when: modprobe_result|failed
 
@@ -26,5 +26,5 @@
   sudo: False
   delegate_to: localhost
   register: vagrantup_result
-  shell: cd {{ inventory_dir }}/vms; flock -x .lock -c "vagrant up {{ inventory_hostname }}"
+  shell: cd {{ inventory_dir }}/vms; flock -x . -c "vagrant up {{ inventory_hostname }}"
   when: modprobe_result|failed
