@@ -1,4 +1,8 @@
 ---
+- name: get keystone facts
+  hosts: keystone
+  gather_facts: True
+
 - name: configure frontend system
   hosts: frontend
   sudo: False

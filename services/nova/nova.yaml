@@ -1,4 +1,7 @@
 ---
+- name: gather required facts
+  hosts: mysql:rabbitmq:keystone:glance:quantum-api
+
 - name: Install nova
   hosts: nova
   sudo: True
