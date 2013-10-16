@@ -1,4 +1,7 @@
 ---
+- name: gather needed facts for template
+  hosts: mysql:rabbitmq:keystone:glance:quantum-api:nova
+
 - name: Install nova compute on nodes
   hosts: compute
   sudo: True

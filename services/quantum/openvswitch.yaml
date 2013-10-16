@@ -1,4 +1,7 @@
 ---
+- name: gather facts needed for templates
+  hosts: mysql:rabbitmq:keystone
+
 - name: Install and configure openvswitch and quantum agent
   hosts: quantum:compute
   sudo: True
@@ -43,7 +46,7 @@
             state=link
 
     - name: ensure OVS kernel module is loaded
-      action: command /sbin/modprobe openvswitch_mod
+      action: command /sbin/modprobe openvswitch
       ignore_errors: True
       register: modprobe_result
 
@@ -60,8 +63,9 @@
       action: command /usr/bin/module-assistant -i auto-install openvswitch-datapath
       when: modprobe_result|failed
 
+    # apparently this needs a restart when the module is built...
     - name: ensure openvswitch-switch is started and enabled
-      service: name=openvswitch-switch state=started enabled=yes
+      service: name=openvswitch-switch state=restarted enabled=yes
 
     - name: ensure ovs internal bridge is present
       command: /usr/bin/ovs-vsctl -- --may-exist add-br br-int

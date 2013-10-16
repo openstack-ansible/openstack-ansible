@@ -1,4 +1,7 @@
 ---
+- name: get keystone facts
+  hosts: keystone
+
 - name: Install quantum-api server
   hosts: quantum-api
   sudo: True

@@ -5,27 +5,20 @@
   gather_facts: True
   tasks:
 
+    - name: update apt cache
+      apt: update_cache=yes
+
     - name: ensure required base packages are present
       apt: pkg="{{ item }}" state=latest update_cache=yes cache_valid_time=600
       with_items:
+        - ntp
         - python-mysqldb
         - python-software-properties
         - ubuntu-cloud-keyring
-        - ntp
 
     - name: ensure needed repositories are present
-      apt_repository: repo="{{ item }}" state=present
-      with_items:
-        - deb http://ubuntu-cloud.archive.canonical.com/ubuntu precise-updates/grizzly main
-        - deb http://archive.gplhost.com/debian grizzly main
-        - deb http://archive.gplhost.com/debian grizzly-backports main
-        - deb http://archive.gplhost.com/debian precise-grizzly-backports main
-
-    - name: update apt cache again
-      apt: update_cache=yes force=yes
-
-    - name: ensure gplhost-archive-keyring is present
-      apt: pkg=gplhost-archive-keyring state=latest force=yes
+      apt_repository: repo="deb http://ubuntu-cloud.archive.canonical.com/ubuntu precise-updates/grizzly main"
+                      state=present
 
     - name: upgrade software packages to latest version
       apt: upgrade=dist update_cache=yes
@@ -44,6 +37,9 @@
 
     - include: reboot.yaml
       when: installed_kernel.stdout != running_kernel.stdout
+
+    - include: virtualbox.yaml
+      when: ansible_virtualization_type == "virtualbox"
       
     - name: ensure ntp server is stopped
       service: name=ntp state=stopped
@@ -60,3 +56,4 @@
 
     - name: make sure ntp is started and enabled
       service: name=ntp state=started enabled=yes
+
