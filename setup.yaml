@@ -128,14 +128,14 @@
     - name: create ssh keypair
       shell: if [ ! -f ~/.ssh/id_rsa.pub ]; then ssh-keygen -f ~/.ssh/id_rsa -P ""; fi
 
-    #- name: add ssh keypair to nova
-    #  nova_keypair: auth_url="http://{{ keystone_endpoint_host }}:5000/v2.0"
-    #                login_tenant_name="{{ tenant }}" 
-    #                login_username=admin 
-    #                login_password="{{ admin_password }}" 
-    #                name=default
-    #                public_key=~/.ssh/id_rsa.pub
-    #                state=present
+    - name: add ssh keypair to nova
+      nova_keypair: auth_url="http://{{ keystone_endpoint_host }}:5000/v2.0"
+                    login_tenant_name="{{ tenant }}" 
+                    login_username=admin 
+                    login_password="{{ admin_password }}" 
+                    name=default
+                    public_key=~/.ssh/id_rsa.pub
+                    state=present
 
     #- name: create a new virtual machine instance
     #  nova_compute: auth_url="http://{{ keystone_endpoint_host }}:5000/v2.0"
