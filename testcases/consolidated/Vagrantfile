@@ -1,0 +1,24 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  config.vm.box = "precise64"
+  
+  config.vm.define "controller" do |machine|
+    machine.vm.network :private_network, ip: "10.0.0.10"
+    machine.vm.hostname = "controller"
+  end
+
+  config.vm.define "compute-001" do |machine|
+    machine.vm.network :private_network, ip: "10.0.0.11" 
+    machine.vm.hostname = "compute-001"
+    machine.vm.provider :virtualbox do |v| 
+      v.customize ["modifyvm", :id, "--memory", 1024]
+      v.customize ["modifyvm", :id, "--nicpromisc3", "allow-all"]
+    end
+  end
+
+end
