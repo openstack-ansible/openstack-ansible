@@ -21,96 +21,100 @@
     external_network_subnet_allocation_pool_end: 10.0.0.250
   tasks:
 
-    # glance
     - name: ensure cirros image is registered
-      glance_image: auth_url="{{ keystone_public_url }}"
-                    login_tenant_name="{{ tenant }}" 
-                    login_username=admin 
-                    login_password="{{ admin_password }}"
-                    name=cirros-0.3.1-x86_64 
-                    disk_format=qcow2
-                    copy_from={{ cirros_url }}
-                    is_public=true 
-                    state=present
+      glance_image: 
+        auth_url: "{{ keystone_public_url }}"
+        login_tenant_name: "{{ tenant }}" 
+        login_username: admin 
+        login_password: "{{ admin_password }}"
+        name: cirros-0.3.1-x86_64 
+        disk_format: qcow2
+        copy_from: {{ cirros_url }}
+        is_public: True 
+        state: present
       register: cirros_image
 
-    # quantum
-    - name: create the internal network
-      quantum_network: auth_url="{{ keystone_public_url }}"
-                       login_tenant_name="{{ tenant }}" 
-                       login_username=admin 
-                       login_password="{{ admin_password }}" 
-                       name="{{ internal_network_name }}" 
-                       router_external=False
-                       provider_network_type=gre
-                       provider_segmentation_id=5
-                       state=present
+    - name: ensure internal network is registered
+      quantum_network: 
+        auth_url: "{{ keystone_public_url }}"
+        login_tenant_name: "{{ tenant }}" 
+        login_username: admin 
+        login_password: "{{ admin_password }}" 
+        name: "{{ internal_network_name }}" 
+        router_external: False
+        provider_network_type: gre
+        provider_segmentation_id: 5
+        state: present
       register: internal_network
 
-    - name: create the subnet for internal network
-      quantum_subnet: auth_url="{{ keystone_public_url }}"
-                      login_tenant_name="{{ tenant }}" 
-                      login_username=admin 
-                      login_password="{{ admin_password }}" 
-                      name="{{ internal_network_subnet_name }}"
-                      network_name="{{ internal_network_name }}"
-                      cidr="{{ internal_network_subnet_cidr }}"
-                      enable_dhcp=true
-                      gateway_ip="{{ internal_network_subnet_gateway_ip }}"
-                      state=present
+    - name: ensure subnet internal network is registered
+      quantum_subnet: 
+        auth_url: "{{ keystone_public_url }}"
+        login_tenant_name: "{{ tenant }}" 
+        login_username: admin 
+        login_password: "{{ admin_password }}" 
+        name: "{{ internal_network_subnet_name }}"
+        network_name: "{{ internal_network_name }}"
+        cidr: "{{ internal_network_subnet_cidr }}"
+        enable_dhcp: True
+        gateway_ip: "{{ internal_network_subnet_gateway_ip }}"
+        state: present
 
-    - name: create the external network
-      quantum_network: auth_url="{{ keystone_public_url }}"
-                       login_tenant_name="{{ tenant }}" 
-                       login_username=admin 
-                       login_password="{{ admin_password }}" 
-                       name="{{ external_network_name }}" 
-                       router_external=True
-                       provider_network_type=gre
-                       provider_segmentation_id=6
-                       state=present
+    - name: ensure external network is registered
+      quantum_network: 
+        auth_url: "{{ keystone_public_url }}"
+        login_tenant_name: "{{ tenant }}" 
+        login_username: admin 
+        login_password: "{{ admin_password }}" 
+        name: "{{ external_network_name }}" 
+        router_external: True
+        provider_network_type: gre
+        provider_segmentation_id: 6
+        state: present
 
-    - name: create the subnet for external network
-      quantum_subnet: auth_url="{{ keystone_public_url }}"
-                      name="{{ internal_network_name }}" 
-                      login_tenant_name="{{ tenant }}" 
-                      login_username=admin 
-                      login_password="{{ admin_password }}" 
-                      name="{{ external_network_subnet_name }}" 
-                      network_name="{{ external_network_name }}"
-                      cidr="{{ external_network_subnet_cidr }}"
-                      enable_dhcp=false
-                      gateway_ip="{{ external_network_subnet_gateway_ip }}"
-                      allocation_pool_start="{{ external_network_subnet_allocation_pool_start }}"
-                      allocation_pool_end="{{ external_network_subnet_allocation_pool_end }}"
-                      state=present
+    - name: ensure subnet for external network is registered
+      quantum_subnet: 
+        auth_url: "{{ keystone_public_url }}"
+        login_tenant_name: "{{ tenant }}" 
+        login_username: admin 
+        login_password: "{{ admin_password }}" 
+        name: "{{ external_network_subnet_name }}" 
+        network_name: "{{ external_network_name }}"
+        cidr: "{{ external_network_subnet_cidr }}"
+        enable_dhcp: False
+        gateway_ip: "{{ external_network_subnet_gateway_ip }}"
+        allocation_pool_start: "{{ external_network_subnet_allocation_pool_start }}"
+        allocation_pool_end: "{{ external_network_subnet_allocation_pool_end }}"
+        state: present
 
-    - name: create router
-      quantum_router: auth_url="{{ keystone_public_url }}"
-                      login_tenant_name="{{ tenant }}" 
-                      login_username=admin 
-                      login_password="{{ admin_password }}" 
-                      name="{{ router_name }}"
-                      state=present 
+    - name: ensure router exists
+      quantum_router: 
+        auth_url: "{{ keystone_public_url }}"
+        login_tenant_name: "{{ tenant }}" 
+        login_username: admin 
+        login_password: "{{ admin_password }}" 
+        name: "{{ router_name }}"
+        state: present 
 
+    - name: ensure router has interface connected to internal network
+      quantum_router_interface: 
+        auth_url: "{{ keystone_public_url }}"
+        login_tenant_name: "{{ tenant }}" 
+        login_username: admin 
+        login_password: "{{ admin_password }}" 
+        router_name: "{{ router_name }}"
+        subnet_name: "{{ internal_network_subnet_name }}"
+        state: present 
 
-    - name: create internal interface for router
-      quantum_router_interface: auth_url="{{ keystone_public_url }}"
-                                login_tenant_name="{{ tenant }}" 
-                                login_username=admin 
-                                login_password="{{ admin_password }}" 
-                                router_name="{{ router_name }}"
-                                subnet_name="{{ internal_network_subnet_name }}"
-                                state=present 
-
-    - name: create external gateway for router
-      quantum_router_gateway: auth_url="{{ keystone_public_url }}"
-                              login_tenant_name="{{ tenant }}" 
-                              login_username=admin 
-                              login_password="{{ admin_password }}" 
-                              router_name="{{ router_name }}"
-                              network_name="{{ external_network_name }}"
-                              state=present
+    - name: ensure router has external network gateway
+      quantum_router_gateway: 
+        auth_url: "{{ keystone_public_url }}"
+        login_tenant_name: "{{ tenant }}" 
+        login_username: admin 
+        login_password: "{{ admin_password }}" 
+        router_name: "{{ router_name }}"
+        network_name: "{{ external_network_name }}"
+        state: present
 
     - name: add rule to allow ping to default security group
       command: quantum --os-auth-url "{{ keystone_public_url }}" --os-tenant-name "{{ tenant }}" --os-username admin --os-password "{{ admin_password }}"  security-group-rule-create default --direction ingress --protocol icmp
@@ -125,13 +129,14 @@
       register: pubkey
 
     - name: add ssh keypair to nova
-      nova_keypair: auth_url="{{ keystone_public_url }}"
-                    login_tenant_name="{{ tenant }}" 
-                    login_username=admin 
-                    login_password="{{ admin_password }}" 
-                    name=default
-                    public_key="{{ pubkey.stdout }}"
-                    state=present
+      nova_keypair: 
+        auth_url: "{{ keystone_public_url }}"
+        login_tenant_name: "{{ tenant }}" 
+        login_username: admin 
+        login_password: "{{ admin_password }}" 
+        name: default
+        public_key: "{{ pubkey.stdout }}"
+        state: present
 
 
     - name: create a new virtual machine instance
@@ -153,11 +158,12 @@
       ignore_errors: yes
 
     - name: associate a floating ip with the instance
-      quantum_floating_ip: auth_url="{{ keystone_public_url }}"
-                           login_tenant_name="{{ tenant }}" 
-                           login_username=admin 
-                           login_password="{{ admin_password }}" 
-                           instance_name=cirros
-                           network_name="{{ external_network_name }}"
-                           state=present
+      quantum_floating_ip: 
+        auth_url: "{{ keystone_public_url }}"
+        login_tenant_name: "{{ tenant }}" 
+        login_username: admin 
+        login_password: "{{ admin_password }}" 
+        instance_name: cirros
+        network_name: "{{ external_network_name }}"
+        state: present
       when: createvm|success
