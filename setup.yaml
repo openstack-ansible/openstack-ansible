@@ -24,12 +24,12 @@
     - name: ensure cirros image is registered
       glance_image: 
         auth_url: "{{ keystone_public_url }}"
-        login_tenant_name: "{{ tenant }}" 
+        login_tenant_name: "{{ tenant_name }}" 
         login_username: admin 
         login_password: "{{ admin_password }}"
         name: cirros-0.3.1-x86_64 
         disk_format: qcow2
-        copy_from: {{ cirros_url }}
+        copy_from: "{{ cirros_url }}"
         is_public: True 
         state: present
       register: cirros_image
@@ -37,7 +37,7 @@
     - name: ensure internal network is registered
       quantum_network: 
         auth_url: "{{ keystone_public_url }}"
-        login_tenant_name: "{{ tenant }}" 
+        login_tenant_name: "{{ tenant_name }}" 
         login_username: admin 
         login_password: "{{ admin_password }}" 
         name: "{{ internal_network_name }}" 
@@ -50,7 +50,7 @@
     - name: ensure subnet internal network is registered
       quantum_subnet: 
         auth_url: "{{ keystone_public_url }}"
-        login_tenant_name: "{{ tenant }}" 
+        login_tenant_name: "{{ tenant_name }}" 
         login_username: admin 
         login_password: "{{ admin_password }}" 
         name: "{{ internal_network_subnet_name }}"
@@ -63,7 +63,7 @@
     - name: ensure external network is registered
       quantum_network: 
         auth_url: "{{ keystone_public_url }}"
-        login_tenant_name: "{{ tenant }}" 
+        login_tenant_name: "{{ tenant_name }}" 
         login_username: admin 
         login_password: "{{ admin_password }}" 
         name: "{{ external_network_name }}" 
@@ -75,7 +75,7 @@
     - name: ensure subnet for external network is registered
       quantum_subnet: 
         auth_url: "{{ keystone_public_url }}"
-        login_tenant_name: "{{ tenant }}" 
+        login_tenant_name: "{{ tenant_name }}" 
         login_username: admin 
         login_password: "{{ admin_password }}" 
         name: "{{ external_network_subnet_name }}" 
@@ -90,7 +90,7 @@
     - name: ensure router exists
       quantum_router: 
         auth_url: "{{ keystone_public_url }}"
-        login_tenant_name: "{{ tenant }}" 
+        login_tenant_name: "{{ tenant_name }}" 
         login_username: admin 
         login_password: "{{ admin_password }}" 
         name: "{{ router_name }}"
@@ -99,7 +99,7 @@
     - name: ensure router has interface connected to internal network
       quantum_router_interface: 
         auth_url: "{{ keystone_public_url }}"
-        login_tenant_name: "{{ tenant }}" 
+        login_tenant_name: "{{ tenant_name }}" 
         login_username: admin 
         login_password: "{{ admin_password }}" 
         router_name: "{{ router_name }}"
@@ -109,7 +109,7 @@
     - name: ensure router has external network gateway
       quantum_router_gateway: 
         auth_url: "{{ keystone_public_url }}"
-        login_tenant_name: "{{ tenant }}" 
+        login_tenant_name: "{{ tenant_name }}" 
         login_username: admin 
         login_password: "{{ admin_password }}" 
         router_name: "{{ router_name }}"
@@ -117,11 +117,11 @@
         state: present
 
     - name: add rule to allow ping to default security group
-      command: quantum --os-auth-url "{{ keystone_public_url }}" --os-tenant-name "{{ tenant }}" --os-username admin --os-password "{{ admin_password }}"  security-group-rule-create default --direction ingress --protocol icmp
+      command: quantum --os-auth-url "{{ keystone_public_url }}" --os-tenant-name "{{ tenant_name }}" --os-username admin --os-password "{{ admin_password }}"  security-group-rule-create default --direction ingress --protocol icmp
       ignore_errors: yes
 
     - name: add rule to allow ssh to default security group
-      command: quantum --os-auth-url "{{ keystone_public_url }}" --os-tenant-name "{{ tenant }}" --os-username admin --os-password "{{ admin_password }}"  security-group-rule-create default --direction ingress --protocol tcp --port-range-min 22 --port-range-max 22
+      command: quantum --os-auth-url "{{ keystone_public_url }}" --os-tenant-name "{{ tenant_name }}" --os-username admin --os-password "{{ admin_password }}"  security-group-rule-create default --direction ingress --protocol tcp --port-range-min 22 --port-range-max 22
       ignore_errors: yes
 
     - name: create ssh keypair
@@ -131,7 +131,7 @@
     - name: add ssh keypair to nova
       nova_keypair: 
         auth_url: "{{ keystone_public_url }}"
-        login_tenant_name: "{{ tenant }}" 
+        login_tenant_name: "{{ tenant_name }}" 
         login_username: admin 
         login_password: "{{ admin_password }}" 
         name: default
@@ -142,7 +142,7 @@
     - name: create a new virtual machine instance
       nova_compute: 
         auth_url: "{{ keystone_public_url }}"
-        login_tenant_name: "{{ tenant }}" 
+        login_tenant_name: "{{ tenant_name }}" 
         login_username: admin 
         login_password: "{{ admin_password }}" 
         name: cirros
@@ -160,7 +160,7 @@
     - name: associate a floating ip with the instance
       quantum_floating_ip: 
         auth_url: "{{ keystone_public_url }}"
-        login_tenant_name: "{{ tenant }}" 
+        login_tenant_name: "{{ tenant_name }}" 
         login_username: admin 
         login_password: "{{ admin_password }}" 
         instance_name: cirros
