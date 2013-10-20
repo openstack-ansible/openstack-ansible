@@ -1,6 +1,5 @@
 ANSIBLE=ansible-playbook 
 
-
 .PHONY: standard standard-vms openstack destroy setup
 
 standard: openstack-ansible-modules standard-vms openstack setup
