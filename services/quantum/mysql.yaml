@@ -1,0 +1,30 @@
+---
+- name: Install or verify Quantum database
+  hosts: mysql
+  sudo: True
+  gather_facts: False
+  tasks:
+
+    - name: ensure quantum database is present
+      mysql_db: name=quantum
+
+    - name: ensure quantum database user is present
+      mysql_user: name=quantum 
+                  host="{{ item }}" 
+                  password="{{ quantum_mysql_password }}" 
+                  priv=quantum.*:ALL
+      with_items:
+        - "%"
+        - localhost
+
+    - name: ensure quantum_ovs database is present
+      mysql_db: name=quantum_ovs
+
+    - name: ensure quantum database user is present
+      mysql_user: name=quantum_ovs 
+                  host="{{ item }}" 
+                  password="{{ quantum_ovs_mysql_password }}" 
+                  priv=quantum_ovs.*:ALL
+      with_items:
+        - "%"
+        - localhost

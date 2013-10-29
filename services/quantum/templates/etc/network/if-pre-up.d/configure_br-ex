@@ -1,0 +1,8 @@
+#!/bin/sh
+{% set external_ipnet = hostvars[ansible_hostname]|find_ipnet(external_network) %}
+{% set external_netdev = hostvars[ansible_hostname]|find_netdev(external_network) %}
+ip addr del {{ external_ipnet }} dev {{ external_netdev }}
+ip link set {{ external_netdev }} up
+ip link set {{ external_netdev }} promisc on
+ip addr add {{ external_ipnet }} dev br-ex
+ip link set br-ex up

@@ -1,0 +1,12 @@
+---
+- name: Basic setup for networking
+  hosts: all
+  sudo: True
+  gather_facts: False
+  tasks:
+
+    - name: disable net.ipv4.conf.all.rp_filter in sysctl
+      sysctl: name=net.ipv4.conf.all.rp_filter value=0 state=present
+
+    - name: disable net.ipv4.conf.default.rp_filter in sysctl
+      sysctl: name=net.ipv4.conf.default.rp_filter value=0 state=present

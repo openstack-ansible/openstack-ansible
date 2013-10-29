@@ -1,24 +1,25 @@
-#TAGS=-t keystone
-#CHECK=--check
+ANSIBLE=ansible-playbook 
 
-ANSIBLE=ansible-playbook -v $(TAGS) $(CHECK)
+.PHONY: standard openstack-ansible-modules vagrant-private-key-perms standard-vms openstack setup destroy
 
-.PHONY: all vms openstack controller keystone glance nova-controller vms compute destroy run
+standard: openstack setup
 
-openstack: openstack-ansible-modules
-	$(ANSIBLE) openstack.yaml
+openstack: openstack-ansible-modules vagrant-private-key-perms standard-vms
+	$(ANSIBLE) -i testcases/standard/vagrant_hosts openstack.yaml
 
 openstack-ansible-modules:
 	git submodule init
 	git submodule update
 
-all: openstack-ansible-modules vms openstack run
+vagrant-private-key-perms:
+	chmod 600 vagrant_private_key
 
-vms:
-	cd vms; vagrant up
+standard-vms:
+	cd testcases/standard; vagrant up
+
+setup: openstack-ansible-modules vagrant-private-key-perms standard-vms openstack
+	$(ANSIBLE) -i testcases/standard/vagrant_hosts setup.yaml
+
 destroy:
-	cd vms; vagrant destroy --force
-
-run:
-	./boot-cirros.sh
+	cd testcases/standard; vagrant destroy --force
 

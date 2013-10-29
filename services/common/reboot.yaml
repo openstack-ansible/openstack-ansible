@@ -1,0 +1,10 @@
+---
+- name: reboot when there has been a kernel upgrade
+  command: /sbin/reboot
+
+- name: wait for reboot
+  sudo: False
+  delegate_to: localhost
+  wait_for: host="{{ ansible_ssh_host }}" 
+            port="{{ ansible_ssh_port|default(22) }}"
+            delay=30 timeout=600

@@ -1,0 +1,40 @@
+[all:vars]
+management_network = 10.10.10.0/24
+data_network = 10.10.10.0/24
+api_network = 10.0.0.0/24
+external_network = 10.0.0.0/24
+
+external_ntp_host = uk.pool.ntp.org
+
+[mysql]
+controller ansible_ssh_host=10.10.10.10
+
+[rabbitmq]
+controller ansible_ssh_host=10.10.10.10
+
+[ntpserver]
+controller ansible_ssh_host=10.10.10.10
+
+[keystone]
+controller ansible_ssh_host=10.10.10.10
+
+[glance]
+controller ansible_ssh_host=10.10.10.10
+
+[nova]
+controller ansible_ssh_host=10.10.10.10
+
+[quantum-api]
+controller ansible_ssh_host=10.10.10.10
+
+[quantum]
+network ansible_ssh_host=10.10.10.9
+
+[compute]
+compute-001 ansible_ssh_host=10.10.10.11
+
+[horizon]
+controller ansible_ssh_host=10.10.10.10
+
+[frontend]
+controller ansible_ssh_host=10.10.10.10

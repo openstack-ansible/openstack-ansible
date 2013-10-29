@@ -1,0 +1,53 @@
+---
+# some useful default values
+external_ntp_host: pool.ntp.org
+nova_compute_package: nova-compute-qemu
+
+default_region: RegionOne
+default_tenant: default
+
+# derived values
+mysql_host: "{{ hostvars[groups['mysql'][0]]|find_ip(management_network) }}"
+mysql_root_password: "{{ lookup('password', inventory_dir + '/credentials/mysql-root')}}"
+
+rabbit_host: "{{ hostvars[groups['rabbitmq'][0]]|find_ip(management_network) }}"
+rabbit_password: "{{ lookup('password', inventory_dir + '/credentials/rabbitmq') }}"
+
+ntp_host: "{{ hostvars[groups['ntpserver'][0]]|find_ip(management_network) }}"
+
+keystone_endpoint_host: "{{ hostvars[groups['keystone'][0]]|find_ip(api_network) }}"
+keystone_public_url: http://{{ keystone_endpoint_host }}:5000/v2.0/
+keystone_internal_url: "{{ keystone_public_url }}"
+keystone_admin_url: http://{{ keystone_endpoint_host }}:35357/v2.0/
+keystone_mysql_password: "{{ lookup('password', inventory_dir + '/credentials/mysql-keystone') }}"
+keystone_admin_token: "{{ lookup('password', inventory_dir + '/credentials/keystone-admin-token') }}"
+
+glance_endpoint_host: "{{ hostvars[groups['glance'][0]]|find_ip(api_network) }}"
+glance_public_url: http://{{ glance_endpoint_host }}:9292
+glance_internal_url: "{{ glance_public_url }}"
+glance_admin_url: "{{ glance_public_url }}"
+glance_mysql_password: "{{ lookup('password', inventory_dir + '/credentials/mysql-glance')}}"
+glance_identity_password: "{{ lookup('password', inventory_dir + '/credentials/keystone-glance') }}"
+
+nova_endpoint_host: "{{ hostvars[groups['nova'][0]]|find_ip(api_network) }}"
+nova_public_url: http://{{ nova_endpoint_host }}:8774/v2/%(tenant_id)s
+nova_internal_url: "{{ nova_public_url }}"
+nova_admin_url: "{{ nova_public_url }}"
+nova_mysql_password: "{{ lookup('password', inventory_dir + '/credentials/mysql-nova') }}"
+nova_identity_password: "{{ lookup('password', inventory_dir + '/credentials/keystone-nova') }}"
+
+ec2_public_url: http://{{ nova_endpoint_host }}:8773/services/Cloud
+ec2_internal_url: "{{ ec2_public_url }}"
+ec2_admin_url: http://{{ nova_endpoint_host }}:8773/services/Admin
+
+quantum_endpoint_host: "{{ hostvars[groups['quantum-api'][0]]|find_ip(api_network) }}"
+quantum_public_url: http://{{ quantum_endpoint_host }}:9696
+quantum_internal_url: "{{ quantum_public_url }}"
+quantum_admin_url: "{{ quantum_public_url }}"
+quantum_mysql_password: "{{ lookup('password', inventory_dir + '/credentials/mysql-quantum') }}"
+quantum_identity_password: "{{ lookup('password', inventory_dir + '/credentials/keystone-quantum') }}"
+quantum_ovs_mysql_password: "{{ lookup('password', inventory_dir + '/credentials/mysql-quantum_ovs') }}"
+
+metadata_proxy_shared_secret: "{{ lookup('password', inventory_dir + '/credentials/metadata-proxy-shared-secret') }}"
+
+admin_password: "{{ lookup('password', inventory_dir + '/credentials/admin') }}"

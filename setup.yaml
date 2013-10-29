@@ -1,0 +1,169 @@
+---
+- hosts: keystone
+  gather_facts: True
+
+- hosts: frontend
+  gather_facts: False
+  vars:
+    tenant_name: default
+    cirros_url: http://download.cirros-cloud.net/0.3.1/cirros-0.3.1-x86_64-disk.img
+    internal_network_name: private
+    internal_network_subnet_name: private-subnet
+    internal_network_subnet_cidr: 10.5.5.0/24
+    internal_network_subnet_dns_nameservers: 8.8.8.8
+    internal_network_subnet_gateway_ip: 10.5.5.1
+    router_name: default-router
+    external_network_name: public
+    external_network_subnet_name: public-subnet
+    external_network_subnet_cidr: 10.0.0.0/24
+    external_network_subnet_gateway_ip: 10.0.0.1
+    external_network_subnet_allocation_pool_start: 10.0.0.200
+    external_network_subnet_allocation_pool_end: 10.0.0.250
+  tasks:
+
+    - name: ensure cirros image is registered
+      glance_image: 
+        auth_url: "{{ keystone_public_url }}"
+        login_tenant_name: "{{ tenant_name }}" 
+        login_username: admin 
+        login_password: "{{ admin_password }}"
+        name: cirros-0.3.1-x86_64 
+        disk_format: qcow2
+        copy_from: "{{ cirros_url }}"
+        is_public: True 
+        state: present
+      register: cirros_image
+
+    - name: ensure internal network is registered
+      quantum_network: 
+        auth_url: "{{ keystone_public_url }}"
+        login_tenant_name: "{{ tenant_name }}" 
+        login_username: admin 
+        login_password: "{{ admin_password }}" 
+        name: "{{ internal_network_name }}" 
+        router_external: False
+        provider_network_type: gre
+        provider_segmentation_id: 5
+        state: present
+      register: internal_network
+
+    - name: ensure subnet internal network is registered
+      quantum_subnet: 
+        auth_url: "{{ keystone_public_url }}"
+        login_tenant_name: "{{ tenant_name }}" 
+        login_username: admin 
+        login_password: "{{ admin_password }}" 
+        name: "{{ internal_network_subnet_name }}"
+        network_name: "{{ internal_network_name }}"
+        cidr: "{{ internal_network_subnet_cidr }}"
+        enable_dhcp: True
+        gateway_ip: "{{ internal_network_subnet_gateway_ip }}"
+        state: present
+
+    - name: ensure external network is registered
+      quantum_network: 
+        auth_url: "{{ keystone_public_url }}"
+        login_tenant_name: "{{ tenant_name }}" 
+        login_username: admin 
+        login_password: "{{ admin_password }}" 
+        name: "{{ external_network_name }}" 
+        router_external: True
+        provider_network_type: gre
+        provider_segmentation_id: 6
+        state: present
+
+    - name: ensure subnet for external network is registered
+      quantum_subnet: 
+        auth_url: "{{ keystone_public_url }}"
+        login_tenant_name: "{{ tenant_name }}" 
+        login_username: admin 
+        login_password: "{{ admin_password }}" 
+        name: "{{ external_network_subnet_name }}" 
+        network_name: "{{ external_network_name }}"
+        cidr: "{{ external_network_subnet_cidr }}"
+        enable_dhcp: False
+        gateway_ip: "{{ external_network_subnet_gateway_ip }}"
+        allocation_pool_start: "{{ external_network_subnet_allocation_pool_start }}"
+        allocation_pool_end: "{{ external_network_subnet_allocation_pool_end }}"
+        state: present
+
+    - name: ensure router exists
+      quantum_router: 
+        auth_url: "{{ keystone_public_url }}"
+        login_tenant_name: "{{ tenant_name }}" 
+        login_username: admin 
+        login_password: "{{ admin_password }}" 
+        name: "{{ router_name }}"
+        state: present 
+
+    - name: ensure router has interface connected to internal network
+      quantum_router_interface: 
+        auth_url: "{{ keystone_public_url }}"
+        login_tenant_name: "{{ tenant_name }}" 
+        login_username: admin 
+        login_password: "{{ admin_password }}" 
+        router_name: "{{ router_name }}"
+        subnet_name: "{{ internal_network_subnet_name }}"
+        state: present 
+
+    - name: ensure router has external network gateway
+      quantum_router_gateway: 
+        auth_url: "{{ keystone_public_url }}"
+        login_tenant_name: "{{ tenant_name }}" 
+        login_username: admin 
+        login_password: "{{ admin_password }}" 
+        router_name: "{{ router_name }}"
+        network_name: "{{ external_network_name }}"
+        state: present
+
+    - name: add rule to allow ping to default security group
+      command: quantum --os-auth-url "{{ keystone_public_url }}" --os-tenant-name "{{ tenant_name }}" --os-username admin --os-password "{{ admin_password }}"  security-group-rule-create default --direction ingress --protocol icmp
+      ignore_errors: yes
+
+    - name: add rule to allow ssh to default security group
+      command: quantum --os-auth-url "{{ keystone_public_url }}" --os-tenant-name "{{ tenant_name }}" --os-username admin --os-password "{{ admin_password }}"  security-group-rule-create default --direction ingress --protocol tcp --port-range-min 22 --port-range-max 22
+      ignore_errors: yes
+
+    - name: create ssh keypair
+      shell: if [ ! -f ~/.ssh/id_rsa.pub ]; then ssh-keygen -f ~/.ssh/id_rsa -P ""; fi; cat ~/.ssh/id_rsa.pub
+      register: pubkey
+
+    - name: add ssh keypair to nova
+      nova_keypair: 
+        auth_url: "{{ keystone_public_url }}"
+        login_tenant_name: "{{ tenant_name }}" 
+        login_username: admin 
+        login_password: "{{ admin_password }}" 
+        name: default
+        public_key: "{{ pubkey.stdout }}"
+        state: present
+
+
+    - name: create a new virtual machine instance
+      nova_compute: 
+        auth_url: "{{ keystone_public_url }}"
+        login_tenant_name: "{{ tenant_name }}" 
+        login_username: admin 
+        login_password: "{{ admin_password }}" 
+        name: cirros
+        flavor_id: 1
+        image_id: "{{ cirros_image.id }}"
+        nics: 
+          - net-id: "{{ internal_network.id }}"
+        security_groups: default
+        key_name: default
+        wait: "yes"
+        state: present
+      register: createvm
+      ignore_errors: yes
+
+    - name: associate a floating ip with the instance
+      quantum_floating_ip: 
+        auth_url: "{{ keystone_public_url }}"
+        login_tenant_name: "{{ tenant_name }}" 
+        login_username: admin 
+        login_password: "{{ admin_password }}" 
+        instance_name: cirros
+        network_name: "{{ external_network_name }}"
+        state: present
+      when: createvm|success

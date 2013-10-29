@@ -1,0 +1,54 @@
+---
+- name: Install keystone
+  hosts: keystone
+  sudo: True
+  gather_facts: False
+  tasks:
+
+    - name: ensure keystone packages are installed
+      apt: pkg="{{ item }}" state=latest update_cache=yes cache_valid_time=600
+      with_items:
+        - keystone
+        - python-keystone
+        - python-keystoneclient
+
+    - name: ensure keystone is stopped
+      service: name=keystone state=stopped
+
+    - name: ensure sqlite keystone database is deleted
+      file: dest=/var/lib/keystone/keystone.db state=absent
+
+    - name: ensure keystone config script is present
+      template: src=templates/etc/keystone/keystone.conf
+                dest=/etc/keystone/keystone.conf
+                owner=keystone
+                group=keystone
+                mode=0600
+
+    - name: initialize keystone database
+      keystone_manage: action=db_sync
+
+    - name: ensure keystone is started
+      service: name=keystone state=started enabled=yes
+
+    # keystone seems to take a while...
+    - name: wait for keystone to come back up
+      wait_for: host="{{ keystone_endpoint_host }}" port=35357
+
+    - name: create service tenant
+      keystone_user: endpoint="{{ keystone_admin_url }}"
+                     token="{{ keystone_admin_token }}" 
+                     tenant=service 
+                     tenant_description="Service Tenant"
+
+    - name: add keystone endpoint information
+      keystone_service: endpoint="{{ keystone_admin_url }}"
+                        token="{{ keystone_admin_token }}" 
+                        region="{{ default_region }}"
+                        name=keystone
+                        type=identity
+                        description="Identity Service"
+                        public_url="{{ keystone_public_url }}"
+                        internal_url="{{ keystone_internal_url }}"
+                        admin_url="{{ keystone_admin_url }}"
+
