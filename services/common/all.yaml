@@ -38,9 +38,6 @@
     - include: reboot.yaml
       when: installed_kernel.stdout != running_kernel.stdout
 
-    - include: virtualbox.yaml
-      when: ansible_virtualization_type == "virtualbox"
-      
     - name: ensure ntp server is stopped
       service: name=ntp state=stopped
 
@@ -57,3 +54,5 @@
     - name: make sure ntp is started and enabled
       service: name=ntp state=started enabled=yes
 
+- include: virtualbox.yaml
+  when: ansible_virtualization_type|defined and ansible_virtualization_type == "virtualbox"
