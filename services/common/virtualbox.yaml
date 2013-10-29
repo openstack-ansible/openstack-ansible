@@ -1,38 +1,45 @@
 ---
-- name: attempt to load vboxguest module
-  command: /sbin/modprobe vboxguest
-  register: modprobe_result
-  ignore_errors: True
+- name: steps that are virtualbox specific
+  hosts: all
+  sudo: True
+  gather_facts: True
+  serial: 1
+  tasks:
 
-- name: make sure packages needed to rebuild virtualbox modules are installed
-  apt: pkg="{{ item }}" state=latest update_cache=yes cache_valid_time=600
-  with_items:
-    - build-essential
-    - dkms
-  when: modprobe_result|failed
+    - name: attempt to load vboxguest module
+      command: /sbin/modprobe vboxguest
+      register: modprobe_result
+      ignore_errors: True
 
-- name: build virtualbox modules
-  command: /etc/init.d/vboxadd setup
-  when: modprobe_result|failed
+    - name: make sure packages needed to rebuild virtualbox modules are installed
+      apt: pkg="{{ item }}" state=latest update_cache=yes cache_valid_time=600
+      with_items:
+        - build-essential
+        - dkms
+      when: modprobe_result|failed
 
-- name: vagrant needs to be stopped and restarted to remount shared directory
-  sudo: False
-  delegate_to: localhost
-  shell: cd {{ inventory_dir }}; flock -x .lock -c "vagrant halt {{ inventory_hostname }}"
-  ignore_errors: True
-  register: vagrant_halt_result
-  when: modprobe_result|failed
+    - name: build virtualbox modules
+      command: /etc/init.d/vboxadd setup
+      when: modprobe_result|failed
 
-- name: force down any VMs that had problems shutting down 
-  sudo: False
-  delegate_to: localhost
-  shell: cd {{ inventory_dir }}; flock -x .lock -c "vagrant halt --force {{ inventory_hostname }}"
-  ignore_errors: True
-  when: vagrant_halt_result|failed
+    - name: vagrant needs to be stopped and restarted to remount shared directory
+      delegate_to: localhost
+      sudo: False
+      shell: cd {{ inventory_dir }}; vagrant halt {{ inventory_hostname }}
+      ignore_errors: True
+      register: vagrant_halt_result
+      when: modprobe_result|failed
 
-- name: vagrant up
-  sudo: False
-  delegate_to: localhost
-  register: vagrantup_result
-  shell: cd {{ inventory_dir }}; flock -x .lock -c "vagrant up {{ inventory_hostname }}"
-  when: modprobe_result|failed
+    - name: force down any VMs that had problems shutting down 
+      delegate_to: localhost
+      sudo: False
+      shell: cd {{ inventory_dir }}; vagrant halt --force {{ inventory_hostname }}
+      ignore_errors: True
+      when: vagrant_halt_result|failed
+
+    - name: vagrant up
+      delegate_to: localhost
+      sudo: False
+      register: vagrantup_result
+      shell: cd {{ inventory_dir }}; vagrant up {{ inventory_hostname }}
+      when: modprobe_result|failed
