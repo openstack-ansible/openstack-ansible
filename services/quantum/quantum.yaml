@@ -66,7 +66,7 @@
                 owner=quantum group=quantum mode=0600
 
     - name: ensure services are started
-      service: name=$item state=started enabled=yes
+      service: name="{{ item }}" state=started enabled=yes
       with_items: 
         - quantum-plugin-openvswitch-agent
         - quantum-dhcp-agent
