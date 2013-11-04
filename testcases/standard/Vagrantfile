@@ -8,7 +8,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "precise64"
   
   config.vm.define "controller" do |machine|
-    machine.vm.network :private_network, ip: "10.0.0.10", 
+    machine.vm.network :private_network, ip: "10.13.0.10", 
                        :netmask => "255.255.0.0"
     machine.vm.network :private_network, ip: "10.10.10.10",
                        :netmask => "255.255.0.0"
@@ -19,7 +19,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
   config.vm.define "network" do |machine|
-    machine.vm.network :private_network, ip: "10.0.0.9",
+    machine.vm.network :private_network, ip: "10.13.0.9",
                        :netmask => "255.255.0.0"
     machine.vm.network :private_network, ip: "10.10.10.9",
                        :netmask => "255.255.0.0"
