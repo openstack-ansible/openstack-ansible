@@ -9,9 +9,9 @@
       mysql_db: name=swift
 
     - name: ensure swift database user is present
-      mysql_user: name=swift 
-                  host="{{ item }}" 
-                  password="{{ swift_mysql_password }}" 
+      mysql_user: name=swift
+                  host="{{ item }}"
+                  password="{{ swift_mysql_password }}"
                   priv=swift.*:ALL
       with_items:
         - "%"
