@@ -65,15 +65,12 @@
                 dest=/etc/quantum/metadata_agent.ini 
                 owner=quantum group=quantum mode=0600
 
-    - name: add service to clean up ovs from template
-      template: src=templates/etc/init/quantum-ovs-cleanup.conf 
-                dest=/etc/init/quantum-ovs-cleanup.conf
-                owner=root group=root mode=0644
+    - name: run ovs cleanup...
+      command: /usr/bin/quantum-ovs-cleanup
 
     - name: ensure services are started
       service: name="{{ item }}" state=started enabled=yes
       with_items: 
-        - quantum-ovs-cleanup
         - quantum-plugin-openvswitch-agent
         - quantum-dhcp-agent
         - quantum-metadata-agent
