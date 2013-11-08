@@ -41,12 +41,20 @@
     - name: ensure ntp server is stopped
       service: name=ntp state=stopped
 
+    - name: make sure ntp is down...
+      command: killall -9 ntpd
+      ignore_errors: True
+
     - name: install ntp.conf 
       template: src=templates/etc/ntp.conf dest=/etc/ntp.conf owner=root group=root mode=0644
 
     # sometimes it takes a while for the internal ntp server to become available...
     - name: set clocks to public ntp server
       command: ntpdate {{ external_ntp_host }}
+      register: ntpdate_result
+      until: ntpdate_result|success
+      retries: 5
+      delay: 5
 
     - name: save system clock to hardware
       command: hwclock --systohc
