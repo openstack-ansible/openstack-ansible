@@ -1,5 +1,4 @@
 *.pyc
 credentials
 vms
-
-
+testcases/standard/.vagrant
