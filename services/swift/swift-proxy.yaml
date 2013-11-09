@@ -1,0 +1,7 @@
+---
+- name: Install Swift Proxy Server
+  hosts: swift-proxy
+  sudo: True
+  gather_facts: True
+  tasks:
+

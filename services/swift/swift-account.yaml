@@ -1,0 +1,7 @@
+---
+- name: Install Swift Account Server
+  hosts: swift-account
+  sudo: True
+  gather_facts: True
+  tasks:
+
