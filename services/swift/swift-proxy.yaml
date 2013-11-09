@@ -5,3 +5,34 @@
   gather_facts: True
   tasks:
 
+    - name: ensure required base packages are present
+      apt: pkg="{{ item }}" state=latest update_cache=yes cache_valid_time=600
+      with_items:
+        - swift-proxy
+        - memcached
+        - python-keystoneclient
+        - python-swiftclient
+        - python-webob
+
+    - name: create proxy self-signed certificate
+      command: openssl req -new -x509 -nodes -out /etc/swift/cert.crt -keyout /etc/swift/cert.key
+
+    - name: ensure services are stopped
+      service: name="{{ item }}" state=stopped
+      with_items:
+        - proxy-server
+
+    - name: update memcached.conf from template
+      template: src=templates/etc/memcached.conf 
+                dest=/etc/memcached.conf 
+                owner=root group=root mode=0644
+
+    - name: update proxy-server.conf from template
+      template: src=templates/etc/swift/proxy-server.conf 
+                dest=/etc/swift/proxy-server.conf 
+                owner=swift group=swift mode=0600
+
+    - name: ensure services are started
+      service: name="{{ item }}" state=started enabled=yes
+      with_items:
+        - proxy-server

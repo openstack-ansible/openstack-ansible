@@ -1,7 +1,0 @@
----
-- name: Install Swift Object Server
-  hosts: swift-object
-  sudo: True
-  gather_facts: True
-  tasks:
-

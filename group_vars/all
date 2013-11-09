@@ -48,6 +48,8 @@ quantum_mysql_password: "{{ lookup('password', inventory_dir + '/credentials/mys
 quantum_identity_password: "{{ lookup('password', inventory_dir + '/credentials/keystone-quantum') }}"
 quantum_ovs_mysql_password: "{{ lookup('password', inventory_dir + '/credentials/mysql-quantum_ovs') }}"
 
+swift_hash_path_suffix: "{{ lookup('password', inventory_dir + '/credentials/swift-hash-path-suffix') }}"
+
 metadata_proxy_shared_secret: "{{ lookup('password', inventory_dir + '/credentials/metadata-proxy-shared-secret') }}"
 
 admin_password: "{{ lookup('password', inventory_dir + '/credentials/admin') }}"

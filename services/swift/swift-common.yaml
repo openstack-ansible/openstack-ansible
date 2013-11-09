@@ -1,0 +1,22 @@
+---
+- name: Setup steps that are not specific to a particular Swift role
+  hosts: swift-object, swift-account, swift-proxy
+  sudo: True
+  gather_facts: True
+  tasks:
+
+    - name: ensure required base packages are present
+      apt: pkg="{{ item }}" state=latest update_cache=yes cache_valid_time=600
+      with_items:
+        - swift
+        - rsync
+        - memcached
+        - python-netifaces
+        - python-xattr
+        - python-memcache
+
+    - name: update swift.conf from template
+      template: src=templates/etc/swift/swift.conf 
+                dest=/etc/swift/swift.conf 
+                owner=swift group=swift mode=0600
+

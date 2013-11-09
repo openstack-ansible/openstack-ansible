@@ -1,6 +1,8 @@
 [all:vars]
 management_network = 10.10.0.0/16
 data_network = 10.10.0.0/16
+storage_network = 10.10.0.0/16
+replication_network = 10.10.0.0/16
 api_network = 10.13.0.0/16
 external_network = 10.13.0.0/16
 
