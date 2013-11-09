@@ -48,6 +48,11 @@ quantum_mysql_password: "{{ lookup('password', inventory_dir + '/credentials/mys
 quantum_identity_password: "{{ lookup('password', inventory_dir + '/credentials/keystone-quantum') }}"
 quantum_ovs_mysql_password: "{{ lookup('password', inventory_dir + '/credentials/mysql-quantum_ovs') }}"
 
+swift_endpoint_host: ""
+swift_public_url: http://{{ swift_endpoint_host }}:8888/v1/AUTH_%(tenant_id)s
+swift_internal_url: "{{ swift_public_url }}"
+swift_admin_url: http://{{ swift_endpoint_host }}:8888/v1
+swift_mysql_password: "{{ lookup('password', inventory_dir + '/credentials/mysql-swift') }}"
 swift_hash_path_suffix: "{{ lookup('password', inventory_dir + '/credentials/swift-hash-path-suffix') }}"
 
 metadata_proxy_shared_secret: "{{ lookup('password', inventory_dir + '/credentials/metadata-proxy-shared-secret') }}"
