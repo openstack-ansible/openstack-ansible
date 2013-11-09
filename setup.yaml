@@ -125,7 +125,7 @@
       ignore_errors: yes
 
     - name: create ssh keypair
-      shell: if [ ! -f ~/.ssh/id_rsa.pub ]; then ssh-keygen -f ~/.ssh/id_rsa -P "" 2>&1 >/dev/null; fi; cat ~/.ssh/id_rsa.pub
+      shell: if [ ! -f ~/.ssh/id_rsa.pub ]; then ssh-keygen -q -f ~/.ssh/id_rsa -P ""; fi; cat ~/.ssh/id_rsa.pub
       register: pubkey
 
     - name: add ssh keypair to nova
