@@ -12,15 +12,30 @@
         update_cache: yes 
         cache_valid_time: 600
       with_items:
-        - python-memcache
-        - python-netifaces
-        - python-xattr
         - rsync
         - swift
         - swift-account
         - swift-container
         - swift-object
         - xfsprogs
+
+    - name: ensure services are stopped
+      service: 
+        name: "{{ item }}" 
+        state: stopped
+      with_items:
+        - rsync
+        - swift-account-replicator
+        - swift-account-reaper
+        - swift-account-auditor
+        - swift-container
+        - swift-container-replicator
+        - swift-container-updater
+        - swift-container-auditor
+        - swift-object
+        - swift-object-replicator
+        - swift-object-updater
+        - swift-object-auditor
 
     - name: create /etc/swift directory if not already there
       file:
@@ -38,45 +53,86 @@
         group: swift 
         mode: 0600
 
-    - name: ensure services are stopped
-      service: name="{{ item }}" state=stopped
+    - name: update account-server.conf from template
+      template: 
+        src: templates/etc/swift/account-server.conf 
+        dest: /etc/swift/account-server.conf 
+        owner: swift 
+        group: swift 
+        mode: 0600
+
+    - name: update container-server.conf from template
+      template: 
+        src: templates/etc/swift/container-server.conf 
+        dest: /etc/swift/container-server.conf 
+        owner: swift 
+        group: swift 
+        mode: 0600
+
+    - name: update object-server.conf from template
+      template: 
+        src: templates/etc/swift/object-server.conf 
+        dest: /etc/swift/object-server.conf 
+        owner: swift 
+        group: swift 
+        mode: 0600
+
+    - name: create filesystems on devices
+      command: mkfs.xfs -i size=1024 /dev/{{ item }}
+      ignore_errors: yes
+      with_items: swift_storage_devices
+
+    - name: create device directories
+      file:
+        path: /srv/node/{{ item }}
+        owner: swift
+        group: swift
+        mode: 0750
+        state: directory
+      with_items: swift_storage_devices
+
+    - name: mount device directories
+      mount: 
+        name: /srv/node/{{ item }} 
+        src: /dev/{{ item }} 
+        fstype: xfs 
+        opts: noatime,nodiratime,nobarrier,logbufs=8
+        state: mounted
+      with_items: swift_storage_devices
+
+    - name: update rsyncd.conf from template
+      template: 
+        src: templates/etc/rsyncd.conf 
+        dest: /etc/rsyncd.conf 
+        owner: root 
+        group: root 
+        mode: 0644
+
+    - name: create /var/swift/recon directory if not already there
+      file:
+        path: /var/swift/recon
+        owner: swift
+        group: swift
+        mode: 0750
+        state: directory
+
+    - name: ensure services are started
+      service: 
+        name: "{{ item }}" 
+        state: started 
+        enabled: yes
       with_items:
         - rsync
         - swift-account
         - swift-account-replicator
-        - swift-account-updater
+        - swift-account-reaper
         - swift-account-auditor
         - swift-container
         - swift-container-replicator
-        - swift-container-reaper
+        - swift-container-updater
         - swift-container-auditor
         - swift-object
         - swift-object-replicator
         - swift-object-updater
         - swift-object-auditor
 
-    - name: create filesystems on devices
-      command: mkfs.xfs -i size=1024 /dev/{{ item }}
-      with_items: "{{ swift_storage_devices }}"
-
-    - name: create device directories
-      command: mkdir -p /srv/node/{{ item }}
-      with_items: "{{ swift_storage_devices }}"
-
-    - name: mount device directories
-      mount: name=/srv/node/{{ item }} 
-             src=/dev/{{ item }} 
-             fstype=xfs 
-             opts=noatime,nodiratime,nobarrier,logbufs=8
-             state=mounted
-      with_items: "{{ swift_storage_devices }}"
-
-   - name: update rsyncd.conf from template
-      template: src=templates/etc/rsyncd.conf 
-                dest=/etc/rsyncd.conf 
-                owner=root group=root mode=0644
-
-    - name: ensure services are started
-      service: name="{{ item }}" state=started enabled=yes
-      with_items:
-        - rsync
