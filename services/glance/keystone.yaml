@@ -1,5 +1,10 @@
 ---
-- name: get keystone facts
+- name: gather glance host facts
+  hosts: glance
+  gather_facts: True
+  sudo: False
+
+- name: make sure glance is in keystore
   hosts: keystone 
   sudo: False
   gather_facts: True

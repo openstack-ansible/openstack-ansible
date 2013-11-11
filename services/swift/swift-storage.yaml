@@ -1,22 +1,59 @@
 ---
-- name: Install Swift Account Server
-  hosts: swift-node
+- name: Configure Swift Storage Node
+  hosts: swift-storage
   sudo: True
   gather_facts: True
   tasks:
 
     - name: ensure required base packages are present
-      apt: pkg="{{ item }}" state=latest update_cache=yes cache_valid_time=600
+      apt: 
+        pkg: "{{ item }}" 
+        state: latest 
+        update_cache: yes 
+        cache_valid_time: 600
       with_items:
+        - python-memcache
+        - python-netifaces
+        - python-xattr
+        - rsync
+        - swift
         - swift-account
         - swift-container
         - swift-object
         - xfsprogs
 
+    - name: create /etc/swift directory if not already there
+      file:
+        path: /etc/swift
+        owner: swift
+        group: swift
+        mode: 0750
+        state: directory
+
+    - name: update swift.conf from template
+      template: 
+        src: templates/etc/swift/swift.conf 
+        dest: /etc/swift/swift.conf 
+        owner: swift 
+        group: swift 
+        mode: 0600
+
     - name: ensure services are stopped
       service: name="{{ item }}" state=stopped
       with_items:
         - rsync
+        - swift-account
+        - swift-account-replicator
+        - swift-account-updater
+        - swift-account-auditor
+        - swift-container
+        - swift-container-replicator
+        - swift-container-reaper
+        - swift-container-auditor
+        - swift-object
+        - swift-object-replicator
+        - swift-object-updater
+        - swift-object-auditor
 
     - name: create filesystems on devices
       command: mkfs.xfs -i size=1024 /dev/{{ item }}
@@ -33,7 +70,6 @@
              opts=noatime,nodiratime,nobarrier,logbufs=8
              state=mounted
       with_items: "{{ swift_storage_devices }}"
-
 
    - name: update rsyncd.conf from template
       template: src=templates/etc/rsyncd.conf 
