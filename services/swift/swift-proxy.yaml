@@ -1,5 +1,5 @@
 ---
-- name: get keystone host info
+- name: gather keystone host facts
   hosts: keystone
   gather_facts: True
 
@@ -56,6 +56,10 @@
     #- name: create proxy self-signed certificate
     #  command: openssl req -new -x509 -nodes -out /etc/swift/cert.crt -keyout /etc/swift/cert.key
 
+    #- name: create builders
+    
+    #- name: create rings
+
     - name: update memcached.conf from template
       template:
         src: templates/etc/memcached.conf
@@ -64,9 +68,17 @@
         group: root
         mode: 0644
 
-    - name: create /var/swift/keystone-signing directory if not already there
+    - name: create /var/lib/swift directory if not already there
       file:
-        path: /var/swift/keystone-signing
+        path: /var/lib/swift
+        owner: swift
+        group: swift
+        mode: 0750
+        state: directory
+
+    - name: create /var/lib/swift/keystone-signing directory if not already there
+      file:
+        path: /var/lib/swift/keystone-signing
         owner: swift
         group: swift
         mode: 0750

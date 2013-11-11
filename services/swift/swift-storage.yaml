@@ -108,9 +108,17 @@
         group: root 
         mode: 0644
 
-    - name: create /var/swift/recon directory if not already there
+    - name: create /var/lib/swift directory if not already there
       file:
-        path: /var/swift/recon
+        path: /var/lib/swift
+        owner: swift
+        group: swift
+        mode: 0750
+        state: directory
+
+    - name: create /var/lib/swift/recon directory if not already there
+      file:
+        path: /var/lib/swift/recon
         owner: swift
         group: swift
         mode: 0750
