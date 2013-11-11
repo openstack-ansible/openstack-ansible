@@ -1,5 +1,5 @@
 ---
-- name: get keystone facts
+- name: gather keystone facts
   hosts: keystone
   gather_facts: True
 
@@ -10,7 +10,11 @@
   tasks:
 
     - name: ensure clients are installed
-      apt: pkg="{{ item }}" state=latest update_cache=yes cache_valid_time=600
+      apt: 
+        pkg: "{{ item }}" 
+        state: latest 
+        update_cache: yes 
+        cache_valid_time: 600
       sudo: True
       with_items:
         - python-keystoneclient

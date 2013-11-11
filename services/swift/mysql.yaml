@@ -1,18 +1,20 @@
 ---
 - name: Install or verify Swift database
   hosts: mysql
-  sudo: True
   gather_facts: False
+  sudo: True
   tasks:
 
     - name: ensure swift database is present
-      mysql_db: name=swift
+      mysql_db: 
+        name: swift
 
     - name: ensure swift database user is present
-      mysql_user: name=swift 
-                  host="{{ item }}" 
-                  password="{{ swift_mysql_password }}" 
-                  priv=swift.*:ALL
+      mysql_user: 
+        name: swift 
+        host: "{{ item }}" 
+        password: "{{ swift_mysql_password }}" 
+        priv: swift.*:ALL
       with_items:
         - "%"
         - localhost

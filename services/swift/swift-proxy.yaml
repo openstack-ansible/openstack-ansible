@@ -5,8 +5,8 @@
 
 - name: Configure Swift Proxy Node
   hosts: swift-proxy
-  sudo: True
   gather_facts: True
+  sudo: True
   tasks:
 
     - name: ensure required base packages are present
