@@ -18,6 +18,28 @@
       with_items:
         - rsync
 
+    - name: create filesystems on devices
+      command: mkfs.xfs -i size=1024 /dev/{{ item }}
+      with_items: "{{ swift_storage_devices }}"
+
+    - name: create device directories
+      command: mkdir -p /srv/node/{{ item }}
+      with_items: "{{ swift_storage_devices }}"
+
+    - name: mount device directories
+      mount: name=/srv/node/{{ item }} 
+             src=/dev/{{ item }} 
+             fstype=xfs 
+             opts=noatime,nodiratime,nobarrier,logbufs=8
+             state=mounted
+      with_items: "{{ swift_storage_devices }}"
+
+
+   - name: update rsyncd.conf from template
+      template: src=templates/etc/rsyncd.conf 
+                dest=/etc/rsyncd.conf 
+                owner=root group=root mode=0644
+
     - name: ensure services are started
       service: name="{{ item }}" state=started enabled=yes
       with_items:

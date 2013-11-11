@@ -1,3 +1,4 @@
 ---
 - include: mysql.yaml
 - include: glance.yaml
+- include: keystone.yaml
