@@ -30,25 +30,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
   end
 
-  config.vm.define "swift-proxy" do |machine|
-    machine.vm.network :private_network, ip: "10.13.0.8",
-                       :netmask => "255.255.0.0"
-    machine.vm.network :private_network, ip: "10.10.10.8",
-                       :netmask => "255.255.0.0"
-    machine.vm.hostname = "swift-proxy"
-    machine.vm.provider :virtualbox do |v| 
-      v.customize ["modifyvm", :id, "--memory", 512]
-    end
-  end
-
-  config.vm.define "swift-storage" do |machine|
+  config.vm.define "storage" do |machine|
     machine.vm.network :private_network, ip: "10.13.0.7",
                        :netmask => "255.255.0.0"
     machine.vm.network :private_network, ip: "10.10.10.7",
                        :netmask => "255.255.0.0"
-    machine.vm.hostname = "swift-storage"
-    file_to_disk = 'swift-storage-extradisk.vdi'
+    machine.vm.hostname = "storage"
     machine.vm.provider :virtualbox do |v| 
+      file_to_disk = 'swift-storage-extradisk.vdi'
       v.customize ["modifyvm", :id, "--memory", 512]
       v.customize ["createhd", "--filename", file_to_disk, "--size", 1024]
       v.customize ["storageattach", :id, "--storagectl", "SATA Controller", 

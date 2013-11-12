@@ -1,7 +1,11 @@
 ---
+- name: gather swift info
+  hosts: swift
+  gather_facts: True
+
 - name: Configure Swift Service in Keystone
   hosts: keystone
-  gather_facts: False
+  gather_facts: True
   sudo: True
   tasks:
 

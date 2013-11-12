@@ -41,9 +41,6 @@ controller ansible_ssh_host=10.10.10.10
 [frontend]
 controller ansible_ssh_host=10.10.10.10
 
-[swift-proxy]
-swift-proxy ansible_ssh_host=10.10.10.8
-
-[swift-storage]
-swift-storage ansible_ssh_host=10.10.10.7
+[swift]
+storage ansible_ssh_host=10.10.10.7
 
