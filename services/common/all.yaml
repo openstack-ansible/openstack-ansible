@@ -6,10 +6,15 @@
   tasks:
 
     - name: update apt cache
-      apt: update_cache=yes
+      apt: 
+        update_cache: yes
 
     - name: ensure required base packages are present
-      apt: pkg="{{ item }}" state=latest update_cache=yes cache_valid_time=600
+      apt: 
+        pkg: "{{ item }}" 
+        state: latest 
+        update_cache: yes 
+        cache_valid_time: 600
       with_items:
         - ntp
         - python-mysqldb
@@ -17,11 +22,14 @@
         - ubuntu-cloud-keyring
 
     - name: ensure needed repositories are present
-      apt_repository: repo="deb http://ubuntu-cloud.archive.canonical.com/ubuntu precise-updates/grizzly main"
-                      state=present
+      apt_repository: 
+        repo: deb http://ubuntu-cloud.archive.canonical.com/ubuntu precise-updates/grizzly main
+        state: present
 
     - name: upgrade software packages to latest version
-      apt: upgrade=dist update_cache=yes
+      apt: 
+        upgrade: dist 
+        update_cache: yes
 
     - name: autoremove unneeded packages
       command: apt-get -y autoremove
@@ -30,7 +38,6 @@
       command: uname -r
       register: running_kernel
 
-    # FIXME: a more reliable command?
     - name: register installed kernel version
       shell: dpkg -l | grep "linux-image-[0-9]" | sort | tail -1 | perl -ane 'print substr($F[1], 12), "\n"'
       register: installed_kernel
@@ -39,14 +46,21 @@
       when: installed_kernel.stdout != running_kernel.stdout
 
     - name: ensure ntp server is stopped
-      service: name=ntp state=stopped
+      service: 
+        name: ntp 
+        state: stopped
 
     - name: make sure ntp is down...
       command: killall -9 ntpd
       ignore_errors: True
 
     - name: install ntp.conf 
-      template: src=templates/etc/ntp.conf dest=/etc/ntp.conf owner=root group=root mode=0644
+      template: 
+        src: templates/etc/ntp.conf 
+        dest: /etc/ntp.conf 
+        owner: root 
+        group: root 
+        mode: 0644
 
     # sometimes it takes a while for the internal ntp server to become available...
     - name: set clocks to public ntp server
@@ -60,7 +74,10 @@
       command: hwclock --systohc
 
     - name: make sure ntp is started and enabled
-      service: name=ntp state=started enabled=yes
+      service: 
+        name: ntp 
+        state: started 
+        enabled: yes
 
 - include: virtualbox.yaml
   when: ansible_virtualization_type|defined and ansible_virtualization_type == "virtualbox"
