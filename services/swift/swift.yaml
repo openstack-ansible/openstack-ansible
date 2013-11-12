@@ -127,14 +127,6 @@
         mode: 0750
         state: directory
 
-    - name: create /var/lib/swift/recon directory if not already there
-      file:
-        path: /var/lib/swift/recon
-        owner: swift
-        group: swift
-        mode: 0750
-        state: directory
-
     - name: create filesystems on devices
       command: mkfs.xfs -i size=1024 /dev/{{ item }}
       ignore_errors: yes
@@ -158,12 +150,16 @@
         state: mounted
       with_items: swift_storage_devices
 
-    #- name: create proxy self-signed certificate
-    #  command: openssl req -new -x509 -nodes -out /etc/swift/cert.crt -keyout /etc/swift/cert.key
+    - name: create proxy self-signed certificate
+      command: 
+        free_form: openssl req -new nodes -x509 -subj "/CN=swift-internal" -days 3650 -out /etc/swift/cert.crt -keyout /etc/swift/cert.key
+        creates: /etc/swift/cert.crt
 
     #- name: create builders
     
     #- name: create rings
+    
+    #- name: fix /etc/swift permissions and ownership?
 
     - name: ensure services are started
       service: 
