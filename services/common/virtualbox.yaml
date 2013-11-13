@@ -1,4 +1,5 @@
 ---
+# FIXME: would like to serialize restart, but not module building
 - name: steps that are virtualbox specific
   hosts: all
   sudo: True
@@ -12,7 +13,11 @@
       ignore_errors: True
 
     - name: make sure packages needed to rebuild virtualbox modules are installed
-      apt: pkg="{{ item }}" state=latest update_cache=yes cache_valid_time=600
+      apt: 
+        pkg: "{{ item }}" 
+        state: latest 
+        update_cache: yes 
+        cache_valid_time: 600
       with_items:
         - build-essential
         - dkms

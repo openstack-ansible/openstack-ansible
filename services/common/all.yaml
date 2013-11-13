@@ -1,5 +1,5 @@
 ---
-- name: Setup steps that are not specific to a particular OpenStack project
+- name: setup steps that are not specific to a particular role or project
   hosts: all
   sudo: True
   gather_facts: True
@@ -42,7 +42,8 @@
       shell: dpkg -l | grep "linux-image-[0-9]" | sort | tail -1 | perl -ane 'print substr($F[1], 12), "\n"'
       register: installed_kernel
 
-    - include: reboot.yaml
+    - name: reboot if kernel version has changed
+      include: reboot.yaml
       when: installed_kernel.stdout != running_kernel.stdout
 
     - name: ensure ntp server is stopped

@@ -18,6 +18,15 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
   end
 
+  config.vm.define "compute" do |machine|
+    machine.vm.network :private_network, ip: "10.10.10.11",
+                       :netmask => "255.255.0.0"
+    machine.vm.hostname = "compute"
+    machine.vm.provider :virtualbox do |v| 
+      v.customize ["modifyvm", :id, "--memory", 1024]
+    end
+  end
+
   config.vm.define "network" do |machine|
     machine.vm.network :private_network, ip: "10.13.0.9",
                        :netmask => "255.255.0.0"
@@ -31,28 +40,18 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
   config.vm.define "storage" do |machine|
-    machine.vm.network :private_network, ip: "10.13.0.7",
+    machine.vm.network :private_network, ip: "10.13.0.8",
                        :netmask => "255.255.0.0"
-    machine.vm.network :private_network, ip: "10.10.10.7",
+    machine.vm.network :private_network, ip: "10.10.10.8",
                        :netmask => "255.255.0.0"
     machine.vm.hostname = "storage"
     machine.vm.provider :virtualbox do |v| 
-      file_to_disk = 'swift-storage-extradisk.vdi'
+      file_to_disk = '.vagrant/swift-storage-extradisk.vdi'
       v.customize ["modifyvm", :id, "--memory", 512]
       v.customize ["createhd", "--filename", file_to_disk, "--size", 1024]
       v.customize ["storageattach", :id, "--storagectl", "SATA Controller", 
                    "--port", 1, "--device", 0, "--type", "hdd", 
                    "--medium", file_to_disk]
-    end
-  end
-
-
-  config.vm.define "compute-001" do |machine|
-    machine.vm.network :private_network, ip: "10.10.10.11",
-                       :netmask => "255.255.0.0"
-    machine.vm.hostname = "compute-001"
-    machine.vm.provider :virtualbox do |v| 
-      v.customize ["modifyvm", :id, "--memory", 1024]
     end
   end
 

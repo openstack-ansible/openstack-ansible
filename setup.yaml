@@ -125,7 +125,12 @@
       ignore_errors: yes
 
     - name: create ssh keypair
-      shell: if [ ! -f ~/.ssh/id_rsa.pub ]; then ssh-keygen -q -f ~/.ssh/id_rsa -P ""; fi; cat ~/.ssh/id_rsa.pub
+      command: 
+        free_form: ssh-keygen -q -f ~/.ssh/id_rsa -P ""
+        creates: ~/.ssh/id_rsa
+
+    - name: capture public key in variable
+      command: cat ~/.ssh/id_rsa.pub
       register: pubkey
 
     - name: add ssh keypair to nova

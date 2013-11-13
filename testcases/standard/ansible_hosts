@@ -23,24 +23,27 @@ controller ansible_ssh_host=10.10.10.10
 [glance]
 controller ansible_ssh_host=10.10.10.10
 
-[nova]
+[nova-controller]
 controller ansible_ssh_host=10.10.10.10
+
+[nova-compute]
+compute ansible_ssh_host=10.10.10.11
 
 [quantum-api]
 controller ansible_ssh_host=10.10.10.10
 
-[quantum]
+[quantum-network]
 network ansible_ssh_host=10.10.10.9
 
-[compute]
-compute-001 ansible_ssh_host=10.10.10.11
+[swift-proxy]
+controller ansible_ssh_host=10.10.10.10
+
+[swift-storage]
+storage ansible_ssh_host=10.10.10.7
 
 [horizon]
 controller ansible_ssh_host=10.10.10.10
 
 [frontend]
 controller ansible_ssh_host=10.10.10.10
-
-[swift]
-storage ansible_ssh_host=10.10.10.7
 

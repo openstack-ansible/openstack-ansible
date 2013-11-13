@@ -1,37 +1,56 @@
 ---
-- name: Install glance
+- name: Configure glance server
   hosts: glance
   sudo: True
   gather_facts: False
   tasks:
 
     - name: ensure glance is installed
-      apt: pkg=glance state=latest update_cache=yes cache_valid_time=600
+      apt: 
+        pkg: glance 
+        state: latest 
+        update_cache: yes 
+        cache_valid_time: 600
 
     - name: ensure glance service are stopped
-      service: name="{{ item }}" state=stopped
+      service: 
+        name: "{{ item }}" 
+        state: stopped
       with_items:
         - glance-api
         - glance-registry
 
     - name: ensure glance sqlite is deleted
-      file: dest=/var/lib/glance/glance.sqlite state=absent
+      file: 
+        dest: /var/lib/glance/glance.sqlite 
+        state: absent
 
     - name: update glance-api.conf file from template
-      template: src=templates/etc/glance/glance-api.conf 
-                dest=/etc/glance/glance-api.conf 
-                owner=glance group=glance mode=0600
+      template: 
+        src: templates/etc/glance/glance-api.conf 
+        dest: /etc/glance/glance-api.conf 
+        owner: glance 
+        group: glance 
+        mode: 0600
 
     - name: update glance-registry.conf file from template
-      template: src=templates/etc/glance/glance-registry.conf 
-                dest=/etc/glance/glance-registry.conf 
-                owner=glance group=glance mode=0600
+      template: 
+        src: templates/etc/glance/glance-registry.conf 
+        dest: /etc/glance/glance-registry.conf 
+        owner: glance 
+        group: glance 
+        mode: 0600
 
     - name: ensure database is synced
-      glance_manage: action=dbsync
+      glance_manage: 
+        action: dbsync
 
     - name: ensure services are started
-      service: name="{{ item }}" state=started enabled=yes
+      service: 
+        name: "{{ item }}" 
+        state: started 
+        enabled: yes
       with_items:
         - glance-api
         - glance-registry
+
