@@ -53,12 +53,16 @@
         group: swift
         mode: 0600
 
-    #- name: create proxy self-signed certificate
-    #  command: openssl req -new -x509 -nodes -out /etc/swift/cert.crt -keyout /etc/swift/cert.key
+    - name: create proxy self-signed certificate
+      command: 
+        free_form: openssl req -new nodes -x509 -subj "/CN=swift-internal" -days 3650 -out /etc/swift/cert.crt -keyout /etc/swift/cert.key
+        creates: /etc/swift/cert.crt
 
     #- name: create builders
     
     #- name: create rings
+    
+    #- name: distribute rings with rsync
 
     - name: update memcached.conf from template
       template:

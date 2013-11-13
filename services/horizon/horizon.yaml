@@ -6,11 +6,18 @@
   tasks:
 
     - name: ensure packages are installed
-      apt: pkg="{{ item }}" state=latest update_cache=yes cache_valid_time=600
+      apt: 
+        pkg: "{{ item }}" 
+        state: latest 
+        update_cache: yes 
+        cache_valid_time: 600
       with_items: 
         - openstack-dashboard 
         - memcached 
         - python-memcache
 
     - name: ensure ubuntu theme is removed
-      apt: pkg=openstack-dashboard-ubuntu-theme state=absent purge=yes
+      apt: 
+        pkg: openstack-dashboard-ubuntu-theme 
+        state: absent 
+        purge: yes

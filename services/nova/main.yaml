@@ -2,3 +2,4 @@
 - include: mysql.yaml
 - include: nova-controller.yaml
 - include: nova-compute.yaml
+- include: keystone.yaml
