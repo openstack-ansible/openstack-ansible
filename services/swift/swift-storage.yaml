@@ -45,7 +45,8 @@
         group: root 
         mode: 0644
 
-    # FIXME: edit /etc/default/rsync.conf to enable
+    - name: enable rsync in /etc/default
+      command: sed -i '/^RSYNC_ENABLE=/s/false/true/' /etc/default/rsync
 
     - name: create /etc/swift directory if not already there
       file:

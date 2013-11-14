@@ -2,7 +2,7 @@
 - name: Configure keystone server
   hosts: keystone
   sudo: True
-  gather_facts: False
+  gather_facts: True
   tasks:
 
     - name: ensure keystone packages are installed

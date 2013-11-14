@@ -1,12 +1,16 @@
 [all:vars]
 management_network = 10.10.0.0/16
-data_network = 10.10.0.0/16
-storage_network = 10.10.0.0/16
-replication_network = 10.10.0.0/16
 api_network = 10.13.0.0/16
 external_network = 10.13.0.0/16
 
 external_ntp_host = uk.pool.ntp.org
+
+[quantum:vars]
+data_network = 10.10.0.0/16
+
+[swift:vars]
+storage_network = 10.10.0.0/16
+replication_network = 10.10.0.0/16
 
 [mysql]
 controller ansible_ssh_host=10.10.10.10
@@ -23,11 +27,19 @@ controller ansible_ssh_host=10.10.10.10
 [glance]
 controller ansible_ssh_host=10.10.10.10
 
+[nova:children]
+nova-controller
+nova-compute
+
 [nova-controller]
 controller ansible_ssh_host=10.10.10.10
 
 [nova-compute]
 compute ansible_ssh_host=10.10.10.11
+
+[quantum:children]
+quantum-api
+quantum-network
 
 [quantum-api]
 controller ansible_ssh_host=10.10.10.10
@@ -35,11 +47,15 @@ controller ansible_ssh_host=10.10.10.10
 [quantum-network]
 network ansible_ssh_host=10.10.10.9
 
+[swift:children]
+swift-proxy
+swift-storage
+
 [swift-proxy]
 controller ansible_ssh_host=10.10.10.10
 
 [swift-storage]
-storage ansible_ssh_host=10.10.10.7
+storage ansible_ssh_host=10.10.10.8
 
 [horizon]
 controller ansible_ssh_host=10.10.10.10

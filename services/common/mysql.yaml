@@ -52,7 +52,7 @@
         name: root 
         host: "{{ item }}" 
         password: "{{ mysql_root_password }}" 
-        priv: *.*:ALL,GRANT
+        priv: "*.*:ALL,GRANT"
       with_items:
         - "{{ ansible_hostname }}"
         - 127.0.0.1
@@ -61,7 +61,7 @@
     - name: ensure anonymous users are not in the database
       mysql_user: 
         name: "" 
-        host: {{ item }} 
+        host: "{{ item }}"
         state: absent
       with_items:
         - "{{ ansible_hostname }}"

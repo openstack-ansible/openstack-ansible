@@ -28,12 +28,12 @@
     - name: update openrc template
       template: 
         src: templates/openrc 
-        dest: {{ ansible_env['HOME'] }}/openrc 
+        dest: "{{ ansible_env['HOME'] }}/openrc"
         mode: 0600
 
     - name: update admin.openrc template
       template: 
         src: templates/admin.openrc 
-        dest: {{ ansible_env['HOME'] }}/admin.openrc 
+        dest: "{{ ansible_env['HOME'] }}/admin.openrc"
         mode: 0600
 

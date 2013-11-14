@@ -1,10 +1,8 @@
 ---
-# FIXME: would like to serialize restart, but not module building
 - name: steps that are virtualbox specific
   hosts: all
   sudo: True
-  gather_facts: True
-  serial: 1
+  gather_facts: False
   tasks:
 
     - name: attempt to load vboxguest module
@@ -26,6 +24,13 @@
     - name: build virtualbox modules
       command: /etc/init.d/vboxadd setup
       when: modprobe_result|failed
+
+- name: steps that are vagrant specific
+  hosts: all
+  sudo: False
+  gather_facts: False
+  serial: 1
+  tasks:
 
     - name: vagrant needs to be stopped and restarted to remount shared directory
       delegate_to: localhost

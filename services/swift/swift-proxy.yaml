@@ -1,6 +1,6 @@
 ---
-- name: gather keystone host facts
-  hosts: keystone
+- name: gather needed facts
+  hosts: keystone:swift-storage
   gather_facts: True
 
 - name: Configure Swift Proxy Node
@@ -54,54 +54,57 @@
         mode: 0660
 
     - name: create proxy self-signed certificate
-      command: 
-        free_form: sudo -u swift openssl req -new nodes -x509 -subj "/CN=swift-internal" -days 3650 -out /etc/swift/cert.crt -keyout /etc/swift/cert.key
-        creates: /etc/swift/cert.crt
+      command: sudo -u swift openssl req -new -nodes -x509 -subj "/CN=swift-internal" -days 3650 -out /etc/swift/cert.crt -keyout /etc/swift/cert.key
+               creates=/etc/swift/cert.crt
 
     - name: create account builder
-      swift:
-        free_form: cd /etc/swift && sudo -u swift swift-ring-builder account.builder create 18 3 1
-        creates: /etc/swift/account.builder
+      command: sudo -u swift swift-ring-builder account.builder create 18 3 1
+               chdir=/etc/swift
+               creates=/etc/swift/account.builder
 
     - name: create container builder
-      swift:
-        free_form: cd /etc/swift && sudo -u swift swift-ring-builder container.builder create 18 3 1
-        creates: /etc/swift/container.builder
+      command: sudo -u swift swift-ring-builder container.builder create 18 3 1
+               chdir=/etc/swift
+               creates=/etc/swift/container.builder
 
     - name: create object builder
-      swift:
-        free_form: cd /etc/swift && sudo -u swift swift-ring-builder object.builder create 18 3 1
-        creates: /etc/swift/object.builder
+      command: sudo -u swift swift-ring-builder object.builder create 18 3 1
+               chdir=/etc/swift
+               creates=/etc/swift/object.builder
     
+    # idempotency?
     - name: create account ring
-      swift:
-        free_form: cd /etc/swift && sudo -u swift account.builder add r1z1-10.10.10.7:6002/sdb 100
-        creates: /etc/swift/account.ring.gz
+      command: sudo -u swift swift-ring-builder account.builder add r1z1-10.10.10.8:6002/sdb 100
+               chdir=/etc/swift
+      ignore_errors: yes
 
     - name: create container ring
-      swift:
-        free_form: cd /etc/swift && sudo -u swift swift-ring-builder container.builder add r1z1-10.10.10.7:6002/sdb 100
-        creates: /etc/swift/container.ring.gz
+      command: sudo -u swift swift-ring-builder container.builder add r1z1-10.10.10.8:6002/sdb 100
+               chdir=/etc/swift
+      ignore_errors: yes
 
     - name: create object ring
-      swift:
-        free_form: cd /etc/swift && sudo -u swift swift-ring-builder object.builder add r1z1-10.10.10.7:6002/sdb 100
-        creates: /etc/swift/object.ring.gz
+      command: sudo -u swift swift-ring-builder object.builder add r1z1-10.10.10.8:6002/sdb 100
+               chdir=/etc/swift
+      ignore_errors: yes
 
     - name: rebalance account builder
-      swift:
-        free_form: cd /etc/swift && sudo -u swift swift-ring-builder account.builder rebalance
+      command: sudo -u swift swift-ring-builder account.builder rebalance
+               chdir=/etc/swift
+               creates=/etc/swift/account.ring.gz
 
     - name: rebalance container builder
-      swift:
-        free_form: cd /etc/swift && sudo -u swift swift-ring-builder container.builder rebalance
+      command: sudo -u swift swift-ring-builder container.builder rebalance
+               chdir=/etc/swift
+               creates=/etc/swift/container.ring.gz
 
     - name: rebalance object builder
-      swift:
-        free_form: cd /etc/swift && sudo -u swift swift-ring-builder object.builder rebalance
+      command: sudo -u swift swift-ring-builder object.builder rebalance
+               chdir=/etc/swift
+               creates=/etc/swift/object.ring.gz
     
     - name: distribute rings with rsync
-      command: rsync -av /etc/swift {{ hostvars[item]|find_ip(storage_network) }}::config
+      command: rsync -av /etc/swift/. {{ hostvars[item]|find_ip(storage_network) }}::config
       with_items: groups['swift-storage']
 
     - name: update memcached.conf from template
