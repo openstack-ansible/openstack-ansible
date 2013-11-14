@@ -1,5 +1,7 @@
 ---
 swift_storage_devices: [ 'sdb' ]
+swift_region_number: 1
+swift_zone_number: 1
 
 swift_mysql_password: "{{ lookup('password', inventory_dir + '/credentials/swift-mysql-password') }}"
 swift_identity_password: "{{ lookup('password', inventory_dir + '/credentials/swift-identity-password') }}"

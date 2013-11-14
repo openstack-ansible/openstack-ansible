@@ -43,7 +43,7 @@
         dest: /etc/swift/swift.conf
         owner: swift
         group: swift
-        mode: 0600
+        mode: 0660
 
     - name: update proxy-server.conf from template
       template:
@@ -51,18 +51,58 @@
         dest: /etc/swift/proxy-server.conf
         owner: swift
         group: swift
-        mode: 0600
+        mode: 0660
 
     - name: create proxy self-signed certificate
       command: 
-        free_form: openssl req -new nodes -x509 -subj "/CN=swift-internal" -days 3650 -out /etc/swift/cert.crt -keyout /etc/swift/cert.key
+        free_form: sudo -u swift openssl req -new nodes -x509 -subj "/CN=swift-internal" -days 3650 -out /etc/swift/cert.crt -keyout /etc/swift/cert.key
         creates: /etc/swift/cert.crt
 
-    #- name: create builders
+    - name: create account builder
+      swift:
+        free_form: cd /etc/swift && sudo -u swift swift-ring-builder account.builder create 18 3 1
+        creates: /etc/swift/account.builder
+
+    - name: create container builder
+      swift:
+        free_form: cd /etc/swift && sudo -u swift swift-ring-builder container.builder create 18 3 1
+        creates: /etc/swift/container.builder
+
+    - name: create object builder
+      swift:
+        free_form: cd /etc/swift && sudo -u swift swift-ring-builder object.builder create 18 3 1
+        creates: /etc/swift/object.builder
     
-    #- name: create rings
+    - name: create account ring
+      swift:
+        free_form: cd /etc/swift && sudo -u swift account.builder add r1z1-10.10.10.7:6002/sdb 100
+        creates: /etc/swift/account.ring.gz
+
+    - name: create container ring
+      swift:
+        free_form: cd /etc/swift && sudo -u swift swift-ring-builder container.builder add r1z1-10.10.10.7:6002/sdb 100
+        creates: /etc/swift/container.ring.gz
+
+    - name: create object ring
+      swift:
+        free_form: cd /etc/swift && sudo -u swift swift-ring-builder object.builder add r1z1-10.10.10.7:6002/sdb 100
+        creates: /etc/swift/object.ring.gz
+
+    - name: rebalance account builder
+      swift:
+        free_form: cd /etc/swift && sudo -u swift swift-ring-builder account.builder rebalance
+
+    - name: rebalance container builder
+      swift:
+        free_form: cd /etc/swift && sudo -u swift swift-ring-builder container.builder rebalance
+
+    - name: rebalance object builder
+      swift:
+        free_form: cd /etc/swift && sudo -u swift swift-ring-builder object.builder rebalance
     
-    #- name: distribute rings with rsync
+    - name: distribute rings with rsync
+      command: rsync -av /etc/swift {{ hostvars[item]|find_ip(storage_network) }}::config
+      with_items: groups['swift-storage']
 
     - name: update memcached.conf from template
       template:

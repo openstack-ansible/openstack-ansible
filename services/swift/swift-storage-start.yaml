@@ -1,0 +1,25 @@
+---
+- name: Start Services on Swift Storage Node
+  hosts: swift-storage
+  sudo: True
+  gather_facts: True
+  tasks:
+
+    - name: ensure services are started
+      service: 
+        name: "{{ item }}" 
+        state: started 
+        enabled: yes
+      with_items:
+        - swift-account
+        - swift-account-auditor
+        - swift-account-reaper
+        - swift-account-replicator
+        - swift-container
+        - swift-container-auditor
+        - swift-container-replicator
+        - swift-container-updater
+        - swift-object
+        - swift-object-auditor
+        - swift-object-replicator
+        - swift-object-updater

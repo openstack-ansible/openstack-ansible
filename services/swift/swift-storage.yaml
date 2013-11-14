@@ -12,6 +12,7 @@
         update_cache: yes 
         cache_valid_time: 600
       with_items:
+        - rsync
         - swift
         - swift-account
         - swift-container
@@ -23,6 +24,7 @@
         name: "{{ item }}" 
         state: stopped
       with_items:
+        - rsync
         - swift-account-auditor
         - swift-account-reaper
         - swift-account-replicator
@@ -34,6 +36,16 @@
         - swift-object-auditor
         - swift-object-replicator
         - swift-object-updater
+
+    - name: update rsyncd.conf from template
+      template: 
+        src: templates/etc/rsyncd.conf 
+        dest: /etc/rsyncd.conf 
+        owner: root 
+        group: root 
+        mode: 0644
+
+    # FIXME: edit /etc/default/rsync.conf to enable
 
     - name: create /etc/swift directory if not already there
       file:
@@ -107,21 +119,9 @@
         mode: 0750
         state: directory
 
-    - name: ensure services are started
+    - name: ensure rsync service is started
       service: 
-        name: "{{ item }}" 
+        name: rsync
         state: started 
         enabled: yes
-      with_items:
-        - swift-account
-        - swift-account-auditor
-        - swift-account-reaper
-        - swift-account-replicator
-        - swift-container
-        - swift-container-auditor
-        - swift-container-replicator
-        - swift-container-updater
-        - swift-object
-        - swift-object-auditor
-        - swift-object-replicator
-        - swift-object-updater
+

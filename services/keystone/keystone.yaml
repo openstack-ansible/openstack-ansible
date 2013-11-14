@@ -26,7 +26,7 @@
         dest: /var/lib/keystone/keystone.db 
         state: absent
 
-    - name: ensure keystone config script is present
+    - name: ensure keystone.conf is present
       template: 
         src: templates/etc/keystone/keystone.conf
         dest: /etc/keystone/keystone.conf
