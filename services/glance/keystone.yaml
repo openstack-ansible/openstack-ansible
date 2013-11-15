@@ -10,6 +10,9 @@
   sudo: False
   tasks:
 
+    - name: create glance container in swift
+      command: swift --os-tenant-name="{{ default_tenant }}" --os-username=admin --os-password="{{ admin_password }}" --os-auth-url="{{ keystone_internal_url }}" post glance
+
     - name: create glance user in keystone
       keystone_user: 
         endpoint: "{{ keystone_admin_url }}"

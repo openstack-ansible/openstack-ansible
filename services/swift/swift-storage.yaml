@@ -12,6 +12,7 @@
         update_cache: yes 
         cache_valid_time: 600
       with_items:
+        - python-xattr
         - rsync
         - swift
         - swift-account
@@ -25,6 +26,7 @@
         state: stopped
       with_items:
         - rsync
+        - swift-account
         - swift-account-auditor
         - swift-account-reaper
         - swift-account-replicator
@@ -62,7 +64,7 @@
         dest: /etc/swift/swift.conf 
         owner: swift 
         group: swift 
-        mode: 0600
+        mode: 0660
 
     - name: update account-server.conf from template
       template: 
@@ -70,7 +72,7 @@
         dest: /etc/swift/account-server.conf 
         owner: swift 
         group: swift 
-        mode: 0600
+        mode: 0660
 
     - name: update container-server.conf from template
       template: 
@@ -78,7 +80,7 @@
         dest: /etc/swift/container-server.conf 
         owner: swift 
         group: swift 
-        mode: 0600
+        mode: 0660
 
     - name: update object-server.conf from template
       template: 
@@ -86,12 +88,20 @@
         dest: /etc/swift/object-server.conf 
         owner: swift 
         group: swift 
-        mode: 0600
+        mode: 0660
 
     - name: create filesystems on devices
       command: mkfs.xfs -i size=1024 /dev/{{ item }}
       ignore_errors: yes
       with_items: swift_storage_devices
+
+    - name: create node directory
+      file:
+        path: /srv/node
+        owner: swift
+        group: swift
+        mode: 0750
+        state: directory
 
     - name: create device directories
       file:
@@ -111,10 +121,20 @@
         state: mounted
       with_items: swift_storage_devices
 
-    # FIXME: needed? what about signing dir?
+    - name: ensure /srv/node is owned by swift
+      command: chown -R swift:swift /srv/node
+
     - name: create /var/lib/swift directory if not already there
       file:
         path: /var/lib/swift
+        owner: swift
+        group: swift
+        mode: 0750
+        state: directory
+
+    - name: create /var/cache/swift directory if not already there
+      file:
+        path: /var/cache/swift
         owner: swift
         group: swift
         mode: 0750

@@ -5,6 +5,9 @@ external_network = 10.13.0.0/16
 
 external_ntp_host = uk.pool.ntp.org
 
+global_log_verbose = True
+global_log_debug = True
+
 [quantum:vars]
 data_network = 10.10.0.0/16
 
