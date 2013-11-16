@@ -118,21 +118,21 @@
       shell: rsync -av /etc/swift/*.ring.gz {{ hostvars[item]|find_ip(storage_network) }}::config
       with_items: groups['swift-storage']
 
-    #- name: create /var/lib/swift directory if not already there
-    #  file:
-    #    path: /var/lib/swift
-    #    owner: swift
-    #    group: swift
-    #    mode: 0750
-    #    state: directory
+    - name: create /var/lib/swift directory if not already there
+      file:
+        path: /var/lib/swift
+        owner: swift
+        group: swift
+        mode: 0750
+        state: directory
 
-    #- name: create /var/lib/swift/keystone-signing directory if not already there
-    #  file:
-    #    path: /var/lib/swift/keystone-signing
-    #    owner: swift
-    #    group: swift
-    #    mode: 0750
-    #    state: directory
+    - name: create /var/lib/swift/keystone-signing directory if not already there
+      file:
+        path: /var/lib/swift/keystone-signing
+        owner: swift
+        group: swift
+        mode: 0750
+        state: directory
 
     - name: ensure services are started
       service: 

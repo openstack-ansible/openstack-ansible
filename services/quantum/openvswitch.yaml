@@ -11,25 +11,25 @@
     - name: enable net.ipv4.ip_forward in sysctl
       sysctl: 
         name: net.ipv4.ip_forward 
-        value: 1 
+        value: "1"
         state: present
 
     - name: enable net.ipv4.conf.all.forwarding in sysctl
       sysctl: 
         name: net.ipv4.conf.all.forwarding 
-        value: 1 
+        value: "1"
         state: present
 
     - name: disable net.ipv4.conf.all.rp_filter in sysctl
       sysctl: 
         name: net.ipv4.conf.all.rp_filter 
-        value: 0 
+        value: "0"
         state: present
 
     - name: disable net.ipv4.conf.default.rp_filter in sysctl
       sysctl: 
         name: net.ipv4.conf.default.rp_filter 
-        value: 0 
+        value: "0"
         state: present
 
     - name: ensure openvswitch packages are installed

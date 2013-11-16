@@ -1,6 +1,6 @@
 ---
 - name: Install quantum server agents
-  hosts: quantum
+  hosts: quantum-network
   sudo: True
   gather_facts: True
   tasks:

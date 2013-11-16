@@ -3,7 +3,7 @@
   hosts: mysql:rabbitmq:keystone:glance:quantum-api
 
 - name: Configure nova-controller
-  hosts: nova
+  hosts: nova-controller
   sudo: True
   gather_facts: True
   tasks:

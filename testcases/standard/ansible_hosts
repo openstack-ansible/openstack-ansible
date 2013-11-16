@@ -43,6 +43,7 @@ compute ansible_ssh_host=10.10.10.11
 [quantum:children]
 quantum-api
 quantum-network
+nova-compute
 
 [quantum-api]
 controller ansible_ssh_host=10.10.10.10
