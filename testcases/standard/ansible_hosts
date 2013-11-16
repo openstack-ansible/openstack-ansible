@@ -13,29 +13,29 @@ storage_network = 10.4.0.0/16
 storage_devices = [ sdb ]
 
 [mysql]
-controller ansible_ssh_host=10.10.10.10
+controller ansible_ssh_host=10.0.0.2
 
 [rabbitmq]
-controller ansible_ssh_host=10.10.10.10
+controller ansible_ssh_host=10.0.0.2
 
 [ntpserver]
-controller ansible_ssh_host=10.10.10.10
+controller ansible_ssh_host=10.0.0.2
 
 [keystone]
-controller ansible_ssh_host=10.10.10.10
+controller ansible_ssh_host=10.0.0.2
 
 [glance]
-controller ansible_ssh_host=10.10.10.10
+controller ansible_ssh_host=10.0.0.2
 
 [nova:children]
 nova-controller
 nova-compute
 
 [nova-controller]
-controller ansible_ssh_host=10.10.10.10
+controller ansible_ssh_host=10.0.0.2
 
 [nova-compute]
-compute ansible_ssh_host=10.10.10.11
+compute ansible_ssh_host=10.0.0.3
 
 [quantum:children]
 quantum-api
@@ -43,24 +43,24 @@ quantum-network
 nova-compute
 
 [quantum-api]
-controller ansible_ssh_host=10.10.10.10
+controller ansible_ssh_host=10.0.0.2
 
 [quantum-network]
-network ansible_ssh_host=10.10.10.9
+network ansible_ssh_host=10.0.0.4
 
 [swift:children]
 swift-proxy
 swift-storage
 
 [swift-proxy]
-controller ansible_ssh_host=10.10.10.10
+controller ansible_ssh_host=10.0.0.2
 
 [swift-storage]
-storage ansible_ssh_host=10.10.10.8
+storage ansible_ssh_host=10.0.0.5
 
 [horizon]
-controller ansible_ssh_host=10.10.10.10
+controller ansible_ssh_host=10.0.0.2
 
 [frontend]
-controller ansible_ssh_host=10.10.10.10
+controller ansible_ssh_host=10.0.0.2
 

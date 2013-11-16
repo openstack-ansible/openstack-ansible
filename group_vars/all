@@ -4,8 +4,8 @@ external_ntp_host: pool.ntp.org
 default_region: RegionOne
 default_tenant: default
 
-global_log_verbose = False
-global_log_debug = False
+global_log_verbose: False
+global_log_debug: False
 
 mysql_host: "{{ hostvars[groups['mysql'][0]]|find_ip(management_network) }}"
 mysql_root_password: "{{ lookup('password', inventory_dir + '/credentials/mysql-root-password') }}"
