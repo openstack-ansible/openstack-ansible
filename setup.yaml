@@ -15,10 +15,10 @@
     router_name: default-router
     external_network_name: public
     external_network_subnet_name: public-subnet
-    external_network_subnet_cidr: 10.13.0.0/16
-    external_network_subnet_gateway_ip: 10.13.0.1
-    external_network_subnet_allocation_pool_start: 10.13.0.200
-    external_network_subnet_allocation_pool_end: 10.13.0.250
+    external_network_subnet_cidr: 10.3.0.0/16
+    external_network_subnet_gateway_ip: 10.3.0.1
+    external_network_subnet_allocation_pool_start: 10.3.0.200
+    external_network_subnet_allocation_pool_end: 10.3.0.250
   tasks:
 
     - name: ensure cirros image is registered
@@ -125,12 +125,11 @@
       ignore_errors: yes
 
     - name: create ssh keypair
-      command: 
-        free_form: ssh-keygen -q -f ~/.ssh/id_rsa -P ""
-        creates: ~/.ssh/id_rsa
+      command: ssh-keygen -q -f {{ ansible_env['HOME'] }}/.ssh/id_rsa -P ""
+               creates={{ ansible_env['HOME'] }}/.ssh/id_rsa
 
     - name: capture public key in variable
-      command: cat ~/.ssh/id_rsa.pub
+      command: cat {{ ansible_env['HOME'] }}/.ssh/id_rsa.pub
       register: pubkey
 
     - name: add ssh keypair to nova

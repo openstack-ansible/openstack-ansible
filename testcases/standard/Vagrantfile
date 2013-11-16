@@ -8,9 +8,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "precise64"
   
   config.vm.define "controller" do |machine|
-    machine.vm.network :private_network, ip: "10.13.0.10", 
+    machine.vm.network :private_network, ip: "10.0.0.1",
                        :netmask => "255.255.0.0"
-    machine.vm.network :private_network, ip: "10.10.10.10",
+    machine.vm.network :private_network, ip: "10.1.0.1",
+                       :netmask => "255.255.0.0"
+    machine.vm.network :private_network, ip: "10.3.0.1",
+                       :netmask => "255.255.0.0"
+    machine.vm.network :private_network, ip: "10.4.0.1",
                        :netmask => "255.255.0.0"
     machine.vm.hostname = "controller"
     machine.vm.provider :virtualbox do |v| 
@@ -19,7 +23,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
   config.vm.define "compute" do |machine|
-    machine.vm.network :private_network, ip: "10.10.10.11",
+    machine.vm.network :private_network, ip: "10.0.0.2",
+                       :netmask => "255.255.0.0"
+    machine.vm.network :private_network, ip: "10.2.0.2",
                        :netmask => "255.255.0.0"
     machine.vm.hostname = "compute"
     machine.vm.provider :virtualbox do |v| 
@@ -28,9 +34,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
   config.vm.define "network" do |machine|
-    machine.vm.network :private_network, ip: "10.13.0.9",
+    machine.vm.network :private_network, ip: "10.0.0.3",
                        :netmask => "255.255.0.0"
-    machine.vm.network :private_network, ip: "10.10.10.9",
+    machine.vm.network :private_network, ip: "10.2.0.3",
+                       :netmask => "255.255.0.0"
+    machine.vm.network :private_network, ip: "10.3.0.3",
                        :netmask => "255.255.0.0"
     machine.vm.hostname = "network"
     machine.vm.provider :virtualbox do |v| 
@@ -40,9 +48,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
   config.vm.define "storage" do |machine|
-    machine.vm.network :private_network, ip: "10.13.0.8",
+    machine.vm.network :private_network, ip: "10.0.0.4",
                        :netmask => "255.255.0.0"
-    machine.vm.network :private_network, ip: "10.10.10.8",
+    machine.vm.network :private_network, ip: "10.4.0.4",
                        :netmask => "255.255.0.0"
     machine.vm.hostname = "storage"
     machine.vm.provider :virtualbox do |v| 

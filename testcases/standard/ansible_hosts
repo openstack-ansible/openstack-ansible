@@ -1,19 +1,16 @@
 [all:vars]
-management_network = 10.10.0.0/16
-api_network = 10.13.0.0/16
-external_network = 10.13.0.0/16
+management_network = 10.0.0.0/16
+api_network = 10.1.0.0/16
 
 external_ntp_host = uk.pool.ntp.org
 
-global_log_verbose = True
-global_log_debug = True
-
 [quantum:vars]
-data_network = 10.10.0.0/16
+data_network = 10.2.0.0/16
+external_network = 10.3.0.0/16
 
 [swift:vars]
-storage_network = 10.10.0.0/16
-replication_network = 10.10.0.0/16
+storage_network = 10.4.0.0/16
+storage_devices = [ sdb ]
 
 [mysql]
 controller ansible_ssh_host=10.10.10.10
