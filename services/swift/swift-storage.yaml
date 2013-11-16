@@ -93,7 +93,7 @@
     - name: create filesystems on devices
       command: mkfs.xfs -i size=1024 /dev/{{ item }}
       ignore_errors: yes
-      with_items: swift_storage_devices
+      with_items: storage_devices
 
     - name: create node directory
       file:
@@ -110,7 +110,7 @@
         group: swift
         mode: 0750
         state: directory
-      with_items: swift_storage_devices
+      with_items: storage_devices
 
     - name: mount device directories
       mount: 
@@ -119,7 +119,7 @@
         fstype: xfs 
         opts: noatime,nodiratime,nobarrier,logbufs=8
         state: mounted
-      with_items: swift_storage_devices
+      with_items: storage_devices
 
     - name: ensure /srv/node is owned by swift
       command: chown -R swift:swift /srv/node

@@ -10,7 +10,6 @@ external_network = 10.3.0.0/16
 
 [swift:vars]
 storage_network = 10.4.0.0/16
-storage_devices = [ sdb ]
 
 [mysql]
 controller ansible_ssh_host=10.0.0.2
