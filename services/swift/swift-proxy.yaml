@@ -85,17 +85,17 @@
     
     # idempotency?
     - name: create account ring
-      command: sudo -u swift swift-ring-builder account.builder add r1z1-10.4.0.5:6002/sdb 100
+      command: sudo -u swift swift-ring-builder account.builder add r1z1-10.5.0.5:6002/sdb 100
                chdir=/etc/swift
       ignore_errors: yes
 
     - name: create container ring
-      command: sudo -u swift swift-ring-builder container.builder add r1z1-10.4.0.5:6001/sdb 100
+      command: sudo -u swift swift-ring-builder container.builder add r1z1-10.5.0.5:6001/sdb 100
                chdir=/etc/swift
       ignore_errors: yes
 
     - name: create object ring
-      command: sudo -u swift swift-ring-builder object.builder add r1z1-10.4.0.5:6000/sdb 100
+      command: sudo -u swift swift-ring-builder object.builder add r1z1-10.5.0.5:6000/sdb 100
                chdir=/etc/swift
       ignore_errors: yes
 

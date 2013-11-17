@@ -15,10 +15,10 @@
     router_name: default-router
     external_network_name: public
     external_network_subnet_name: public-subnet
-    external_network_subnet_cidr: 10.3.0.0/16
-    external_network_subnet_gateway_ip: 10.3.0.1
-    external_network_subnet_allocation_pool_start: 10.3.0.200
-    external_network_subnet_allocation_pool_end: 10.3.0.250
+    external_network_subnet_cidr: 10.4.0.0/16
+    external_network_subnet_gateway_ip: 10.4.0.1
+    external_network_subnet_allocation_pool_start: 10.4.0.200
+    external_network_subnet_allocation_pool_end: 10.4.0.250
   tasks:
 
     - name: ensure cirros image is registered
