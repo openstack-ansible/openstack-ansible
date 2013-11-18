@@ -14,6 +14,7 @@
       with_items: 
         - openstack-dashboard 
         - memcached 
+        - node-less
         - python-memcache
 
     - name: ensure ubuntu theme is removed
@@ -21,3 +22,19 @@
         pkg: openstack-dashboard-ubuntu-theme 
         state: absent 
         purge: yes
+
+    - name: update memcached.conf from template
+      template:
+        src: templates/etc/memcached.conf
+        dest: /etc/memcached.conf
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: update local_settings.py from template
+      template:
+        src: templates/etc/openstack-dashboard/local_settings.py
+        dest: /etc/openstack-dashboard/local_settings.py
+        owner: root
+        group: root
+        mode: 0644
