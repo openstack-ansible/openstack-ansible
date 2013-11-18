@@ -64,15 +64,17 @@ though the cirros instance has booted and is pingable.
 
 The hosts for the standard configuration are:
 
- * 10.0.0.10 (our cloud controller)
- * 10.0.0.9 (the quantum network host)
- * 10.0.0.11 (compute host #1)
+ * 10.10.10.10 (our cloud controller)
+ * 10.10.10.9 (the quantum network host)
+ * 10.10.10.11 (compute host #1)
 
 You should be able to ssh to these VMs (username: `vagrant`, password:
 `vagrant`). You can also authenticate  with the vagrant private key, which is
 included here as the file `vagrant_private_key` (NOTE: git does not manage file
 permissions, these must be set to using "chmod 0600 vagrant_private_key" or ssh
 and ansible will fail with an error).
+
+The hosts are 
 
 ## Interacting with your cloud
 
