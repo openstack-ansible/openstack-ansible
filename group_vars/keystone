@@ -1,0 +1,2 @@
+---
+keystone_mysql_password: "{{ lookup('password', inventory_dir + '/credentials/keystone-mysql-password') }}"

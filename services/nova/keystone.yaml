@@ -1,0 +1,52 @@
+---
+- name: gather nova-controller host facts
+  hosts: nova-controller
+  gather_facts: True
+  sudo: False
+
+- name: make sure glance is in keystone
+  hosts: keystone 
+  gather_facts: True
+  sudo: False
+  tasks:
+
+    - name: create nova user in keystone
+      keystone_user: 
+        endpoint: "{{ keystone_admin_url }}"
+        token: "{{ keystone_admin_token }}" 
+        tenant: service 
+        user: nova 
+        password: "{{ nova_identity_password }}"
+
+    - name: add nova user to the service tenant with the admin role
+      keystone_user: 
+        endpoint: "{{ keystone_admin_url }}"
+        token: "{{ keystone_admin_token }}" 
+        tenant: service 
+        user: nova 
+        role: admin
+
+    - name: add nova endpoint
+      keystone_service: 
+        endpoint: "{{ keystone_admin_url }}"
+        token: "{{ keystone_admin_token }}"
+        region: "{{ default_region }}"
+        name: nova
+        type: compute
+        description: Compute Service
+        public_url: "{{ nova_public_url }}"
+        internal_url: "{{ nova_internal_url }}"
+        admin_url: "{{ nova_admin_url }}"
+
+    - name: add ec2 compatibility layer endpoint
+      keystone_service: 
+        endpoint: "{{ keystone_admin_url }}"
+        token: "{{ keystone_admin_token }}"
+        region: "{{ default_region }}"
+        name: ec2
+        type: ec2
+        description: "EC2 Compatibility Layer"
+        public_url: "{{ ec2_public_url }}"
+        internal_url: "{{ ec2_internal_url }}"
+        admin_url: "{{ ec2_admin_url }}"
+

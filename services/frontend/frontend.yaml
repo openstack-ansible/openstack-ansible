@@ -1,6 +1,7 @@
 ---
-- name: get keystone facts
+- name: gather keystone facts
   hosts: keystone
+  sudo: False
   gather_facts: True
 
 - name: configure frontend system
@@ -10,7 +11,11 @@
   tasks:
 
     - name: ensure clients are installed
-      apt: pkg="{{ item }}" state=latest update_cache=yes cache_valid_time=600
+      apt: 
+        pkg: "{{ item }}" 
+        state: latest 
+        update_cache: yes 
+        cache_valid_time: 600
       sudo: True
       with_items:
         - python-keystoneclient
@@ -20,32 +25,15 @@
         - python-cinderclient
         - python-novaclient
 
-    - name: create tenant
-      keystone_user: endpoint="{{ keystone_admin_url }}"
-                     token="{{ keystone_admin_token }}" 
-                     tenant="{{ default_tenant }}" 
-                     tenant_description="{{ default_tenant }}"
-
-    - name: create admin user
-      keystone_user: endpoint="{{ keystone_admin_url }}"
-                     token="{{ keystone_admin_token }}" 
-                     tenant="{{ default_tenant }}" 
-                     user=admin 
-                     password="{{ admin_password }}"
-
-    - name: create admin role and associate it with admin user
-      keystone_user: endpoint="{{ keystone_admin_url }}"
-                     token="{{ keystone_admin_token }}" 
-                     tenant="{{ default_tenant }}" 
-                     user=admin 
-                     role=admin
-
     - name: update openrc template
-      template: src=templates/openrc 
-                dest={{ ansible_env['HOME'] }}/openrc 
-                mode=0600
+      template: 
+        src: templates/openrc 
+        dest: "{{ ansible_env['HOME'] }}/openrc"
+        mode: 0600
 
     - name: update admin.openrc template
-      template: src=templates/admin.openrc 
-                dest={{ ansible_env['HOME'] }}/admin.openrc 
-                mode=0600
+      template: 
+        src: templates/admin.openrc 
+        dest: "{{ ansible_env['HOME'] }}/admin.openrc"
+        mode: 0600
+

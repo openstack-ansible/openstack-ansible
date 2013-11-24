@@ -1,0 +1,43 @@
+---
+- name: gather glance host facts
+  hosts: glance
+  gather_facts: True
+  sudo: False
+
+- name: make sure glance is in keystone
+  hosts: keystone 
+  gather_facts: True
+  sudo: False
+  tasks:
+
+    - name: create glance user in keystone
+      keystone_user: 
+        endpoint: "{{ keystone_admin_url }}"
+        token: "{{ keystone_admin_token }}" 
+        tenant: service 
+        user: glance 
+        password: "{{ glance_identity_password }}"
+
+    - name: add glance user to the service tenant with the admin role
+      keystone_user: 
+        endpoint: "{{ keystone_admin_url }}"
+        token: "{{ keystone_admin_token }}" 
+        tenant: service 
+        user: glance 
+        role: admin
+
+    - name: add glance endpoint
+      keystone_service: 
+        endpoint: "{{ keystone_admin_url }}"
+        token: "{{ keystone_admin_token }}"
+        region: "{{ default_region }}"
+        name: glance
+        type: image
+        description: "Image Service"
+        public_url: "{{ glance_public_url }}"
+        internal_url: "{{ glance_internal_url }}"
+        admin_url: "{{ glance_admin_url }}"
+
+    - name: create glance container in swift
+      command: swift --os-tenant-name=service --os-username=glance --os-password="{{ glance_identity_password }}" --os-auth-url="{{ keystone_internal_url }}" post images
+

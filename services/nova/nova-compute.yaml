@@ -1,0 +1,44 @@
+---
+- name: gather needed facts for template
+  hosts: mysql:rabbitmq:keystone:glance:quantum-api:nova-controller
+
+- name: Install nova compute on nodes
+  hosts: nova-compute
+  sudo: True
+  gather_facts: True
+  tasks:
+
+    - name: ensure nova-compute packages are installed
+      apt: 
+        pkg: "{{ nova_compute_package }}"
+        state: latest 
+        update_cache: yes 
+        cache_valid_time: 600
+      
+    - name: ensure services are stopped
+      service: 
+        name: nova-compute 
+        state: stopped
+
+    - name: ensure nova.conf file is present
+      template: 
+        src: templates/etc/nova/nova.conf 
+        dest: /etc/nova/nova.conf 
+        owner: nova 
+        group: nova 
+        mode: 0600
+
+    - name: update api-paste.ini from template
+      template: 
+        src: templates/etc/nova/api-paste.ini 
+        dest: /etc/nova/api-paste.ini 
+        owner: nova 
+        group: nova 
+        mode: 0600
+
+    - name: ensure compute service is started and enabled
+      service: 
+        name: nova-compute 
+        state: started 
+        enabled: yes
+

@@ -1,67 +1,56 @@
 ---
-- name: get keystone facts
-  hosts: keystone 
-
-- name: Install glance
+- name: Configure glance server
   hosts: glance
   sudo: True
   gather_facts: False
   tasks:
 
     - name: ensure glance is installed
-      apt: pkg=glance state=latest update_cache=yes cache_valid_time=600
+      apt: 
+        pkg: glance 
+        state: latest 
+        update_cache: yes 
+        cache_valid_time: 600
 
     - name: ensure glance service are stopped
-      service: name="{{ item }}" state=stopped
+      service: 
+        name: "{{ item }}" 
+        state: stopped
       with_items:
         - glance-api
         - glance-registry
 
     - name: ensure glance sqlite is deleted
-      file: dest=/var/lib/glance/glance.sqlite state=absent
+      file: 
+        dest: /var/lib/glance/glance.sqlite 
+        state: absent
 
     - name: update glance-api.conf file from template
-      template: src=templates/etc/glance/glance-api.conf 
-                dest=/etc/glance/glance-api.conf 
-                owner=glance group=glance mode=0600
+      template: 
+        src: templates/etc/glance/glance-api.conf 
+        dest: /etc/glance/glance-api.conf 
+        owner: glance 
+        group: glance 
+        mode: 0600
 
     - name: update glance-registry.conf file from template
-      template: src=templates/etc/glance/glance-registry.conf 
-                dest=/etc/glance/glance-registry.conf 
-                owner=glance group=glance mode=0600
+      template: 
+        src: templates/etc/glance/glance-registry.conf 
+        dest: /etc/glance/glance-registry.conf 
+        owner: glance 
+        group: glance 
+        mode: 0600
 
     - name: ensure database is synced
-      glance_manage: action=dbsync
+      glance_manage: 
+        action: dbsync
 
     - name: ensure services are started
-      service: name="{{ item }}" state=started enabled=yes
+      service: 
+        name: "{{ item }}" 
+        state: started 
+        enabled: yes
       with_items:
         - glance-api
         - glance-registry
-
-    - name: create glance user in keystone
-      keystone_user: endpoint="{{ keystone_admin_url }}"
-                     token="{{ keystone_admin_token }}" 
-                     tenant=service 
-                     user=glance 
-                     password="{{ glance_identity_password }}"
-
-    - name: add glance user to the service tenant with the admin role
-      keystone_user: 
-                     endpoint="{{ keystone_admin_url }}"
-                     token="{{ keystone_admin_token }}" 
-                     tenant=service 
-                     user=glance 
-                     role=admin
-
-    - name: add glance endpoint
-      keystone_service: endpoint="{{ keystone_admin_url }}"
-                        token="{{ keystone_admin_token }}"
-                        region="{{ default_region }}"
-                        name=glance
-                        type=image
-                        description="Image Service"
-                        public_url="{{ glance_public_url }}"
-                        internal_url="{{ glance_internal_url }}"
-                        admin_url="{{ glance_admin_url }}"
 

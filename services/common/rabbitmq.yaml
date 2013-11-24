@@ -1,29 +1,40 @@
 ---
-- name: RabbitMQ setup
+- name: Configure RabbitMQ server
   hosts: rabbitmq
   sudo: True
   gather_facts: False
   tasks:
 
     - name: ensure rabbitmq server is installed
-      apt: pkg=rabbitmq-server state=latest 
-           update_cache=yes cache_valid_time=600
+      apt: 
+        pkg: rabbitmq-server 
+        state: latest 
+        update_cache: yes 
+        cache_valid_time: 600
 
     - name: ensure reabbitmq server is started and enabled
-      service: name=rabbitmq-server state=started enabled=yes
+      service: 
+        name: rabbitmq-server 
+        state: started 
+        enabled: yes
 
     - name: ensure anonymous guest user is absent
-      rabbitmq_user: user=guest state=absent
+      rabbitmq_user: 
+        user: guest 
+        state: absent
 
     - name: ensure openstack vhost is present
-      rabbitmq_vhost: name=/openstack state=present
+      rabbitmq_vhost: 
+        name: /openstack 
+        state: present
 
     - name: ensure openstack user is present
-      rabbitmq_user: user=openstack 
-                     password="{{ rabbit_password }}" 
-                     vhost=/openstack 
-                     configure_priv=.*
-                     read_priv=.*
-                     write_priv=.*
-                     state=present
-                     force=yes
+      rabbitmq_user: 
+        user: openstack 
+        password: "{{ rabbit_password }}" 
+        vhost: /openstack 
+        configure_priv: .*
+        read_priv: .*
+        write_priv: .*
+        state: present
+        force: yes

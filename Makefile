@@ -5,7 +5,7 @@ ANSIBLE=ansible-playbook
 standard: openstack setup
 
 openstack: openstack-ansible-modules vagrant-private-key-perms standard-vms
-	$(ANSIBLE) -i testcases/standard/vagrant_hosts openstack.yaml
+	$(ANSIBLE) -i testcases/standard/ansible_hosts openstack.yaml
 
 openstack-ansible-modules:
 	git submodule init
@@ -18,7 +18,7 @@ standard-vms:
 	cd testcases/standard; vagrant up
 
 setup: openstack-ansible-modules vagrant-private-key-perms standard-vms openstack
-	$(ANSIBLE) -i testcases/standard/vagrant_hosts setup.yaml
+	$(ANSIBLE) -i testcases/standard/ansible_hosts setup.yaml
 
 destroy:
 	cd testcases/standard; vagrant destroy --force

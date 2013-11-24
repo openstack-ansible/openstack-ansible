@@ -1,0 +1,5 @@
+---
+nova_compute_package: nova-compute-qemu
+
+nova_mysql_password: "{{ lookup('password', inventory_dir + '/credentials/nova-mysql-password') }}"
+nova_identity_password: "{{ lookup('password', inventory_dir + '/credentials/nova-identity-password') }}"

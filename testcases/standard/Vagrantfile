@@ -8,9 +8,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "precise64"
   
   config.vm.define "controller" do |machine|
-    machine.vm.network :private_network, ip: "10.13.0.10", 
+    machine.vm.network :private_network, ip: "10.1.0.2",
                        :netmask => "255.255.0.0"
-    machine.vm.network :private_network, ip: "10.10.10.10",
+    machine.vm.network :private_network, ip: "10.2.0.2",
+                       :netmask => "255.255.0.0"
+    machine.vm.network :private_network, ip: "10.4.0.2",
+                       :netmask => "255.255.0.0"
+    machine.vm.network :private_network, ip: "10.5.0.2",
                        :netmask => "255.255.0.0"
     machine.vm.hostname = "controller"
     machine.vm.provider :virtualbox do |v| 
@@ -18,24 +22,44 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
   end
 
-  config.vm.define "network" do |machine|
-    machine.vm.network :private_network, ip: "10.13.0.9",
+  config.vm.define "compute" do |machine|
+    machine.vm.network :private_network, ip: "10.1.0.3",
                        :netmask => "255.255.0.0"
-    machine.vm.network :private_network, ip: "10.10.10.9",
+    machine.vm.network :private_network, ip: "10.3.0.3",
+                       :netmask => "255.255.0.0"
+    machine.vm.hostname = "compute"
+    machine.vm.provider :virtualbox do |v| 
+      v.customize ["modifyvm", :id, "--memory", 1024]
+    end
+  end
+
+  config.vm.define "network" do |machine|
+    machine.vm.network :private_network, ip: "10.1.0.4",
+                       :netmask => "255.255.0.0"
+    machine.vm.network :private_network, ip: "10.3.0.4",
+                       :netmask => "255.255.0.0"
+    machine.vm.network :private_network, ip: "10.4.0.4",
                        :netmask => "255.255.0.0"
     machine.vm.hostname = "network"
     machine.vm.provider :virtualbox do |v| 
       v.customize ["modifyvm", :id, "--memory", 512]
-      v.customize ["modifyvm", :id, "--nicpromisc2", "allow-vms"]
+      v.customize ["modifyvm", :id, "--nicpromisc4", "allow-vms"]
     end
   end
 
-  config.vm.define "compute-001" do |machine|
-    machine.vm.network :private_network, ip: "10.10.10.11",
+  config.vm.define "storage" do |machine|
+    machine.vm.network :private_network, ip: "10.1.0.5",
                        :netmask => "255.255.0.0"
-    machine.vm.hostname = "compute-001"
+    machine.vm.network :private_network, ip: "10.5.0.5",
+                       :netmask => "255.255.0.0"
+    machine.vm.hostname = "storage"
     machine.vm.provider :virtualbox do |v| 
-      v.customize ["modifyvm", :id, "--memory", 1024]
+      file_to_disk = '.vagrant/swift-storage-extradisk.vdi'
+      v.customize ["modifyvm", :id, "--memory", 512]
+      v.customize ["createhd", "--filename", file_to_disk, "--size", 1024]
+      v.customize ["storageattach", :id, "--storagectl", "SATA Controller", 
+                   "--port", 1, "--device", 0, "--type", "hdd", 
+                   "--medium", file_to_disk]
     end
   end
 

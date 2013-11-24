@@ -1,0 +1,39 @@
+---
+- name: gather swift info
+  hosts: swift
+  gather_facts: True
+
+- name: Configure Swift Service in Keystone
+  hosts: keystone
+  gather_facts: True
+  sudo: True
+  tasks:
+
+    - name: create swift service user
+      keystone_user: 
+        endpoint: "{{ keystone_admin_url }}"
+        token: "{{ keystone_admin_token }}" 
+        tenant: service 
+        user: swift 
+        password: "{{ swift_identity_password }}"
+
+    - name: add swift service user to the service tenant with the admin role
+      keystone_user: 
+        endpoint: "{{ keystone_admin_url }}"
+        token: "{{ keystone_admin_token }}" 
+        tenant: service 
+        user: swift 
+        role: admin
+
+    - name: add swift endpoint to keystone
+      keystone_service: 
+        endpoint: "{{ keystone_admin_url }}"
+        token: "{{ keystone_admin_token }}" 
+        region: "{{ default_region }}"
+        name: swift
+        type: object-store
+        description: "Object Storage Service"
+        public_url: "{{ swift_public_url }}"
+        internal_url: "{{ swift_internal_url }}"
+        admin_url: "{{ swift_admin_url }}"
+

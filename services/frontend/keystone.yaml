@@ -1,0 +1,34 @@
+---
+- name: gather frontend facts
+  hosts: frontend
+  sudo: False
+  gather_facts: True
+
+- name: configure frontend system
+  hosts: keystone
+  sudo: False
+  gather_facts: True
+  tasks:
+
+    - name: create tenant
+      keystone_user: 
+        endpoint: "{{ keystone_admin_url }}"
+        token: "{{ keystone_admin_token }}" 
+        tenant: "{{ default_tenant }}" 
+        tenant_description: "{{ default_tenant }}"
+
+    - name: create admin user
+      keystone_user: 
+        endpoint: "{{ keystone_admin_url }}"
+        token: "{{ keystone_admin_token }}" 
+        tenant: "{{ default_tenant }}" 
+        user: admin 
+        password: "{{ admin_password }}"
+
+    - name: create admin role and associate it with admin user
+      keystone_user: 
+        endpoint: "{{ keystone_admin_url }}"
+        token: "{{ keystone_admin_token }}" 
+        tenant: "{{ default_tenant }}" 
+        user: admin 
+        role: admin
