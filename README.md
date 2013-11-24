@@ -50,7 +50,7 @@ OpenStack, so there's an extra command required after cloning the repo:
 This will boot three VMs (controller, network, and a compute node), install
 OpenStack, and attempt to boot a test VM inside of OpenStack.
 
-If everything works, you should be able to ssh to the instance from the 
+If everything works, you should be able to ssh to the instance from the
 network host:
 
  * username: `cirros`
@@ -64,9 +64,10 @@ though the cirros instance has booted and is pingable.
 
 The hosts for the standard configuration are:
 
- * 10.10.10.10 (our cloud controller)
- * 10.10.10.9 (the quantum network host)
- * 10.10.10.11 (compute host #1)
+ * 10.1.0.2 (our cloud controller)
+ * 10.1.0.3 (compute host #1)
+ * 10.1.0.4 (the quantum network host)
+ * 10.1.0.5 (storage host)
 
 You should be able to ssh to these VMs (username: `vagrant`, password:
 `vagrant`). You can also authenticate  with the vagrant private key, which is
@@ -74,7 +75,7 @@ included here as the file `vagrant_private_key` (NOTE: git does not manage file
 permissions, these must be set to using "chmod 0600 vagrant_private_key" or ssh
 and ansible will fail with an error).
 
-The hosts are 
+
 
 ## Interacting with your cloud
 
