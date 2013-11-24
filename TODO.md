@@ -17,3 +17,4 @@
 * iptables?!
 * admin user in admin network
 * move setup.yaml to using demo (non-admin) user
+    - quantum setup should create public network as shared
