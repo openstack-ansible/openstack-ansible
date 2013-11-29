@@ -16,7 +16,7 @@
         update_cache: yes 
         cache_valid_time: 600
       with_items:
-        - ntp
+        - chrony
         - python-mysqldb
         - python-software-properties
         - ubuntu-cloud-keyring
@@ -46,27 +46,38 @@
       include: reboot.yaml
       when: installed_kernel.stdout != running_kernel.stdout
 
-    - name: ensure ntp server is stopped
+    - name: ensure chrony server is stopped
       service: 
-        name: ntp 
+        name: chrony
         state: stopped
 
-    - name: make sure ntp is down...
-      command: killall -9 ntpd
-      ignore_errors: True
-
-    - name: install ntp.conf 
+    - name: install chrony.conf 
       template: 
-        src: templates/etc/ntp.conf 
-        dest: /etc/ntp.conf 
+        src: templates/etc/chrony/chrony.conf 
+        dest: /etc/chrony/chrony.conf 
         owner: root 
         group: root 
         mode: 0644
 
-    # sometimes it takes a while for the internal ntp server to become available...
-    - name: set clocks to public ntp server
+    - name: set chrony server clock to public ntp server
       command: ntpdate {{ external_ntp_host }}
       register: ntpdate_result
+      when: "'ntpserver' in group_names"
+      until: ntpdate_result|success
+      retries: 5
+      delay: 5
+
+    - name: make sure chrony server is started and enabled
+      service: 
+        name: chrony
+        state: started 
+        enabled: yes
+      when: "'ntpserver' in group_names"
+
+    - name: set clocks to local chrony server
+      command: ntpdate {{ ntp_host }}
+      register: ntpdate_result
+      when: "'ntpserver' not in group_names"
       until: ntpdate_result|success
       retries: 5
       delay: 5
@@ -74,9 +85,9 @@
     - name: save system clock to hardware
       command: hwclock --systohc
 
-    - name: make sure ntp is started and enabled
+    - name: make sure chrony is started and enabled everywhere
       service: 
-        name: ntp 
+        name: chrony
         state: started 
         enabled: yes
 

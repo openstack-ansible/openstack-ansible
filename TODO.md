@@ -1,4 +1,3 @@
-* move from ntpd to chrony
 * separate rabbit queues
 * rabbitmq/mysql listen on management network only...
 * services listen only on api + management network

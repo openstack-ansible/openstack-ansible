@@ -1,0 +1,22 @@
+---
+- name: Configure RabbitMQ server
+  hosts: rabbitmq
+  sudo: True
+  gather_facts: False
+  tasks:
+
+    - name: ensure quantum vhost is present
+      rabbitmq_vhost: 
+        name: /quantum
+        state: present
+
+    - name: ensure quantum user is present
+      rabbitmq_user: 
+        user: quantum
+        password: "{{ quantum_rabbit_password }}" 
+        vhost: /quantum
+        configure_priv: .*
+        read_priv: .*
+        write_priv: .*
+        state: present
+        force: yes

@@ -1,3 +1,4 @@
 ---
 glance_mysql_password: "{{ lookup('password', inventory_dir + '/credentials/glance-mysql-password')}}"
 glance_identity_password: "{{ lookup('password', inventory_dir + '/credentials/glance-identity-password') }}"
+glance_rabbit_password: "{{ lookup('password', inventory_dir + '/credentials/glance-rabbit-password') }}"
