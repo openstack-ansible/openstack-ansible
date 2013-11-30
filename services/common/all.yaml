@@ -23,9 +23,9 @@
 
     - name: ensure needed repositories are present
       apt_repository: 
-        repo: {{ item }}
+        repo: "{{ item }}"
         state: present
-        with_items: openstack_repositories
+      with_items: openstack_repositories
 
     - name: upgrade software packages to latest version
       apt: 

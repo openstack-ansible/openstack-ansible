@@ -1,0 +1,100 @@
+---
+- name: gather needed facts
+  hosts: keystone:swift-storage
+  gather_facts: True
+
+- name: Configure Swift Proxy Node
+  hosts: swift-proxy
+  gather_facts: True
+  sudo: True
+  tasks:
+
+    - name: ensure required base packages are present
+      apt: 
+        pkg: "{{ item }}" 
+        state: latest 
+        update_cache: yes 
+        cache_valid_time: 600
+      with_items:
+        - memcached
+        - python-keystoneclient
+        - python-memcache
+        - python-swiftclient
+        - python-webob
+        - swift
+        - swift-proxy
+
+    - name: ensure services are stopped
+      service: 
+        name: "{{ item }}" 
+        state: stopped
+      with_items:
+        - memcached
+        - swift-proxy
+
+    - name: update memcached.conf from template
+      template:
+        src: templates/etc/memcached.conf
+        dest: /etc/memcached.conf
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: create /etc/swift directory if not already there
+      file:
+        path: /etc/swift
+        owner: swift
+        group: swift
+        mode: 0750
+        state: directory
+
+    - name: update swift.conf from template
+      template:
+        src: templates/etc/swift/swift.conf
+        dest: /etc/swift/swift.conf
+        owner: swift
+        group: swift
+        mode: 0660
+
+    - name: update proxy-server.conf from template
+      template:
+        src: templates/etc/swift/proxy-server.conf
+        dest: /etc/swift/proxy-server.conf
+        owner: swift
+        group: swift
+        mode: 0660
+
+    #- name: create proxy self-signed certificate
+    #  command: sudo -u swift openssl req -new -nodes -x509 -subj "/CN=swift-internal" -days 3650 -out /etc/swift/cert.crt -keyout /etc/swift/cert.key
+    #           creates=/etc/swift/cert.crt
+
+    - name: create account builder
+      command: sudo -u swift swift-ring-builder account.builder create 18 3 1
+               chdir=/etc/swift
+               creates=/etc/swift/account.builder
+
+    - name: create container builder
+      command: sudo -u swift swift-ring-builder container.builder create 18 3 1
+               chdir=/etc/swift
+               creates=/etc/swift/container.builder
+
+    - name: create object builder
+      command: sudo -u swift swift-ring-builder object.builder create 18 3 1
+               chdir=/etc/swift
+               creates=/etc/swift/object.builder
+    
+    - name: create /var/lib/swift directory if not already there
+      file:
+        path: /var/lib/swift
+        owner: swift
+        group: swift
+        mode: 0750
+        state: directory
+
+    - name: create /var/lib/swift/keystone-signing directory if not already there
+      file:
+        path: /var/lib/swift/keystone-signing
+        owner: swift
+        group: swift
+        mode: 0750
+        state: directory

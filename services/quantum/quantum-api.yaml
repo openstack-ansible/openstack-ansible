@@ -50,10 +50,15 @@
         state: started 
         enabled: yes
 
+    - name: wait for quantum to come back up
+      wait_for:
+        host: "{{ quantum_endpoint_host }}"
+        port: 9696
+
     - name: ensure external network is registered
       quantum_network:
-        auth_url: "{{ keystone_public_url }}"
-        login_tenant_name: "{{ tenant_name }}"
+        auth_url: "{{ keystone_internal_url }}"
+        login_tenant_name: admin
         login_username: admin
         login_password: "{{ admin_password }}"
         name: "{{ external_network_name }}"
@@ -64,8 +69,8 @@
 
     - name: ensure subnet for external network is registered
       quantum_subnet:
-        auth_url: "{{ keystone_public_url }}"
-        login_tenant_name: "{{ tenant_name }}"
+        auth_url: "{{ keystone_internal_url }}"
+        login_tenant_name: admin
         login_username: admin
         login_password: "{{ admin_password }}"
         name: "{{ external_network_subnet_name }}"

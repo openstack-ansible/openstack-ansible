@@ -3,8 +3,8 @@
   hosts: swift-storage
   sudo: True
   gather_facts: True
-    vars: 
-      storage_ip: "{{ hostvars[ansible_host]|find_ip(storage_network) }}"
+  vars: 
+    storage_ip: "{{ hostvars[ansible_hostname]|find_ip(storage_network) }}"
   tasks:
 
     - name: ensure required base packages are present

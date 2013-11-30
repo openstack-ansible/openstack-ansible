@@ -6,4 +6,4 @@
   tasks:
 
     - name: create glance container in swift
-      command: swift --os-tenant-name=service --os-username=glance --os-password="{{ glance_identity_password }}" --os-auth-url="{{ keystone_internal_url }}" post image
+      command: swift --os-tenant-name=service --os-username=glance --os-password="{{ glance_identity_password }}" --os-auth-url="{{ keystone_internal_url }}" post images

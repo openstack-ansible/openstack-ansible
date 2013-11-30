@@ -1,11 +1,11 @@
-* loop over storage nodes + devices / do delegation to proxy to add
 * move from grizzly to havana
 * implement cinder, heat, ceilometer, moniker
 
+* get horizon working
 * need to run quantum-ovs-cleanup before dhcp or l3
-* augeas instead of templates?
 * make sure vm and ping out..
 * iptables?!
+* augeas instead of templates?
 * performance issues with keystone/mysql ... mysql performance tuning and/or 
   switch to memcache?
 * allow possibility of separate rabbit/mysqld for each service...

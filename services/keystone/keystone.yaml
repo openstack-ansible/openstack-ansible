@@ -69,3 +69,25 @@
         internal_url: "{{ keystone_internal_url }}"
         admin_url: "{{ keystone_admin_url }}"
 
+    - name: create admin tenant
+      keystone_user: 
+        endpoint: "{{ keystone_admin_url }}"
+        token: "{{ keystone_admin_token }}" 
+        tenant: admin
+        tenant_description: "admin tenant"
+
+    - name: create admin user
+      keystone_user: 
+        endpoint: "{{ keystone_admin_url }}"
+        token: "{{ keystone_admin_token }}" 
+        tenant: admin
+        user: admin 
+        password: "{{ admin_password }}"
+
+    - name: create admin role and associate it with admin user
+      keystone_user: 
+        endpoint: "{{ keystone_admin_url }}"
+        token: "{{ keystone_admin_token }}" 
+        tenant: admin
+        user: admin 
+        role: admin
