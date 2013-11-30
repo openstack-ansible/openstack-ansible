@@ -2,7 +2,7 @@
 - name: Configure RabbitMQ server
   hosts: rabbitmq
   sudo: True
-  gather_facts: False
+  gather_facts: True
   tasks:
 
     - name: ensure rabbitmq server is installed
@@ -12,7 +12,7 @@
         update_cache: yes 
         cache_valid_time: 600
 
-    - name: ensure reabbitmq server is stopped
+    - name: ensure rabbitmq server is stopped
       service: 
         name: rabbitmq-server 
         state: stopped
@@ -20,13 +20,13 @@
 
     - name: install rabbitmq config file that binds to management netowrk interface
       template:
-        src: temptes/etc/rabbitmq/rabbitmq-env.conf
+        src: templates/etc/rabbitmq/rabbitmq-env.conf
         dest: /etc/rabbitmq/rabbitmq-env.conf
         owner: root
         group: root
         mode: 0644
 
-    - name: ensure reabbitmq server is started and enabled
+    - name: ensure rabbitmq server is started and enabled
       service: 
         name: rabbitmq-server 
         state: started 

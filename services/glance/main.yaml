@@ -3,3 +3,4 @@
 - include: rabbitmq.yaml
 - include: glance.yaml
 - include: keystone.yaml
+- include: swift.yaml

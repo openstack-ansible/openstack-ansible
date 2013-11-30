@@ -38,6 +38,3 @@
         internal_url: "{{ glance_internal_url }}"
         admin_url: "{{ glance_admin_url }}"
 
-    - name: create glance container in swift
-      command: swift --os-tenant-name=service --os-username=glance --os-password="{{ glance_identity_password }}" --os-auth-url="{{ keystone_internal_url }}" post images
-
