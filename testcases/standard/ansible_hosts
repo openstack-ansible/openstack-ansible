@@ -1,12 +1,19 @@
 [all:vars]
+external_ntp_host = uk.pool.ntp.org
+
 management_network = 10.1.0.0/16
 api_network = 10.2.0.0/16
 
-external_ntp_host = uk.pool.ntp.org
+external_network_name = public
 
 [quantum:vars]
 data_network = 10.3.0.0/16
 external_network = 10.4.0.0/16
+external_network_subnet_name = public-subnet
+external_network_subnet_cidr = 10.4.0.0/16
+external_network_subnet_gateway_ip = 10.4.0.1
+external_network_subnet_allocation_pool_start = 10.4.0.200
+external_network_subnet_allocation_pool_end = 10.4.0.250
 
 [swift:vars]
 storage_network = 10.5.0.0/16

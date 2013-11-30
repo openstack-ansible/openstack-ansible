@@ -49,3 +49,30 @@
         name: quantum-server 
         state: started 
         enabled: yes
+
+    - name: ensure external network is registered
+      quantum_network:
+        auth_url: "{{ keystone_public_url }}"
+        login_tenant_name: "{{ tenant_name }}"
+        login_username: admin
+        login_password: "{{ admin_password }}"
+        name: "{{ external_network_name }}"
+        router_external: True
+        provider_network_type: gre
+        provider_segmentation_id: 6
+        state: present
+
+    - name: ensure subnet for external network is registered
+      quantum_subnet:
+        auth_url: "{{ keystone_public_url }}"
+        login_tenant_name: "{{ tenant_name }}"
+        login_username: admin
+        login_password: "{{ admin_password }}"
+        name: "{{ external_network_subnet_name }}"
+        network_name: "{{ external_network_name }}"
+        cidr: "{{ external_network_subnet_cidr }}"
+        enable_dhcp: False
+        gateway_ip: "{{ external_network_subnet_gateway_ip }}"
+        allocation_pool_start: "{{ external_network_subnet_allocation_pool_start }}"
+        allocation_pool_end: "{{ external_network_subnet_allocation_pool_end }}"
+        state: present

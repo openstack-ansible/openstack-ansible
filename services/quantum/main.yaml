@@ -1,7 +1,7 @@
 ---
 - include: mysql.yaml
 - include: rabbitmq.yaml
+- include: keystone.yaml
 - include: openvswitch.yaml
 - include: quantum-network.yaml
 - include: quantum-api.yaml
-- include: keystone.yaml
