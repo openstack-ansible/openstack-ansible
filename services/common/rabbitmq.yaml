@@ -12,6 +12,20 @@
         update_cache: yes 
         cache_valid_time: 600
 
+    - name: ensure reabbitmq server is stopped
+      service: 
+        name: rabbitmq-server 
+        state: stopped
+        enabled: yes
+
+    - name: install rabbitmq config file that binds to management netowrk interface
+      template:
+        src: temptes/etc/rabbitmq/rabbitmq-env.conf
+        dest: /etc/rabbitmq/rabbitmq-env.conf
+        owner: root
+        group: root
+        mode: 0644
+
     - name: ensure reabbitmq server is started and enabled
       service: 
         name: rabbitmq-server 

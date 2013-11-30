@@ -1,4 +1,3 @@
-* separate rabbit queues
 * rabbitmq/mysql listen on management network only...
 * services listen only on api + management network
 * allow possibility of separate rabbit/mysqld for each service...
@@ -6,7 +5,7 @@
 * current playbook assumes swift client on keystone...
 * fix verbose/debug in config files...
 * move from grizzly to havana
-* implement cinder
+* implement cinder, heat, ceilometer, moniker
 * need to run quantum-ovs-cleanup before dhcp or l3
 * configuration option for repo to allow use of different mirror
 * script to bring up networking needs to re-add gateway device for real world

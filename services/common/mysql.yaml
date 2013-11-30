@@ -17,7 +17,7 @@
         name: mysql 
         state: stopped
 
-    - name: install mysql config file that binds to all interfaces
+    - name: install mysql config file that binds to management network interface
       template: 
         src: templates/etc/mysql/my.cnf 
         dest: /etc/mysql/my.cnf 
