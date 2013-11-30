@@ -1,11 +1,13 @@
 ---
 external_ntp_host: pool.ntp.org
 
-default_region: RegionOne
-default_tenant: default
+openstack_region: RegionOne
 
 global_log_verbose: False
 global_log_debug: False
+
+openstack_repositories: 
+  - deb http://ubuntu-cloud.archive.canonical.com/ubuntu precise-updates/grizzly main
 
 ntp_host: "{{ hostvars[groups['ntpserver'][0]]|find_ip(management_network) }}"
 

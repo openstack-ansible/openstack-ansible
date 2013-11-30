@@ -61,7 +61,7 @@
       keystone_service: 
         endpoint: "{{ keystone_admin_url }}"
         token: "{{ keystone_admin_token }}" 
-        region: "{{ default_region }}"
+        region: "{{ openstack_region }}"
         name: keystone
         type: identity
         description: "Identity Service"

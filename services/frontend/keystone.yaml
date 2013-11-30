@@ -14,14 +14,14 @@
       keystone_user: 
         endpoint: "{{ keystone_admin_url }}"
         token: "{{ keystone_admin_token }}" 
-        tenant: "{{ default_tenant }}" 
-        tenant_description: "{{ default_tenant }}"
+        tenant: admin
+        tenant_description: "admin tenant"
 
     - name: create admin user
       keystone_user: 
         endpoint: "{{ keystone_admin_url }}"
         token: "{{ keystone_admin_token }}" 
-        tenant: "{{ default_tenant }}" 
+        tenant: admin
         user: admin 
         password: "{{ admin_password }}"
 
@@ -29,6 +29,6 @@
       keystone_user: 
         endpoint: "{{ keystone_admin_url }}"
         token: "{{ keystone_admin_token }}" 
-        tenant: "{{ default_tenant }}" 
+        tenant: admin
         user: admin 
         role: admin

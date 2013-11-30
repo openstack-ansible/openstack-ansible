@@ -23,8 +23,9 @@
 
     - name: ensure needed repositories are present
       apt_repository: 
-        repo: deb http://ubuntu-cloud.archive.canonical.com/ubuntu precise-updates/grizzly main
+        repo: {{ item }}
         state: present
+        with_items: openstack_repositories
 
     - name: upgrade software packages to latest version
       apt: 

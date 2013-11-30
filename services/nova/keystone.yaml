@@ -30,7 +30,7 @@
       keystone_service: 
         endpoint: "{{ keystone_admin_url }}"
         token: "{{ keystone_admin_token }}"
-        region: "{{ default_region }}"
+        region: "{{ openstack_region }}"
         name: nova
         type: compute
         description: Compute Service
@@ -42,7 +42,7 @@
       keystone_service: 
         endpoint: "{{ keystone_admin_url }}"
         token: "{{ keystone_admin_token }}"
-        region: "{{ default_region }}"
+        region: "{{ openstack_region }}"
         name: ec2
         type: ec2
         description: "EC2 Compatibility Layer"
