@@ -1,62 +1,62 @@
 ---
-- name: Configure quantum-api server
-  hosts: quantum-api
+- name: Configure neutron-api server
+  hosts: neutron-api
   sudo: True
   gather_facts: True
   tasks:
 
-    - name: ensure quantum-api packages are installed
+    - name: ensure neutron-api packages are installed
       apt: 
-        pkg: quantum-server 
+        pkg: neutron-server 
         state: latest 
         update_cache: yes 
         cache_valid_time: 600
 
     - name: ensure services are stopped
       service: 
-        name: quantum-server 
+        name: neutron-server 
         state: stopped
 
-    - name: ensure quantum sqlite is deleted
+    - name: ensure neutron sqlite is deleted
       file: 
-        dest: /var/lib/quantum/quantum.sqlite 
+        dest: /var/lib/neutron/neutron.sqlite 
         state: absent
 
-    - name: update quantum.conf from template
+    - name: update neutron.conf from template
       template: 
-        src: templates/etc/quantum/quantum.conf 
-        dest: /etc/quantum/quantum.conf 
-        owner: quantum 
-        group: quantum 
+        src: templates/etc/neutron/neutron.conf 
+        dest: /etc/neutron/neutron.conf 
+        owner: neutron 
+        group: neutron 
         mode: 0600
 
-    - name: update ovs_quantum_plugin.ini from template
+    - name: update ovs_neutron_plugin.ini from template
       template: 
-        src: templates/etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini 
-        dest: /etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini 
-        owner: quantum 
-        group: quantum 
+        src: templates/etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini 
+        dest: /etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini 
+        owner: neutron 
+        group: neutron 
         mode: 0600
 
-    - name: make sure symlink to ovs_quantum_plugin.ini exists
+    - name: make sure symlink to ovs_neutron_plugin.ini exists
       file: 
-        src: /etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini 
-        dest: /etc/quantum/plugin.ini 
+        src: /etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini 
+        dest: /etc/neutron/plugin.ini 
         state: link
 
-    - name: ensure quantum-api services are started and enabled
+    - name: ensure neutron-api services are started and enabled
       service: 
-        name: quantum-server 
+        name: neutron-server 
         state: started 
         enabled: yes
 
-    - name: wait for quantum to come back up
+    - name: wait for neutron to come back up
       wait_for:
-        host: "{{ quantum_endpoint_host }}"
+        host: "{{ neutron_endpoint_host }}"
         port: 9696
 
     - name: ensure external network is registered
-      quantum_network:
+      neutron_network:
         auth_url: "{{ keystone_internal_url }}"
         login_tenant_name: admin
         login_username: admin
@@ -68,7 +68,7 @@
         state: present
 
     - name: ensure subnet for external network is registered
-      quantum_subnet:
+      neutron_subnet:
         auth_url: "{{ keystone_internal_url }}"
         login_tenant_name: admin
         login_username: admin

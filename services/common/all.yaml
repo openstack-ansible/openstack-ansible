@@ -19,18 +19,15 @@
         - chrony
         - python-mysqldb
         - python-software-properties
-        - ubuntu-cloud-keyring
 
     - name: ensure needed repositories are present
-      apt_repository: 
-        repo: "{{ item }}"
-        state: present
+      command: apt-add-repository -y "{{ item }}"
       with_items: openstack_repositories
 
     - name: upgrade software packages to latest version
       apt: 
-        upgrade: dist 
         update_cache: yes
+        upgrade: dist 
 
     - name: autoremove unneeded packages
       command: apt-get -y autoremove

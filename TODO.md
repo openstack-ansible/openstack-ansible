@@ -5,6 +5,9 @@
 * need to run quantum-ovs-cleanup before dhcp or l3
 * make sure vm and ping out..
 * iptables?!
+* switch to role-based organization?
+* chrony-server chrony-clients...
+* mysql_secure_installation...
 * augeas instead of templates?
 * performance issues with keystone/mysql ... mysql performance tuning and/or 
   switch to memcache?

@@ -1,6 +1,6 @@
 ---
-- name: Install quantum server agents
-  hosts: quantum-network
+- name: Install neutron server agents
+  hosts: neutron-network
   sudo: True
   gather_facts: True
   tasks:
@@ -37,63 +37,63 @@
 
     # FIXME: inventory_host?
     - name: ensure br-ex has external nic enslaved
-      command: /usr/bin/ovs-vsctl -- --may-exist add-port br-ex {{ hostvars[groups['quantum-network'][0]]|find_netdev(external_network) }}
+      command: /usr/bin/ovs-vsctl -- --may-exist add-port br-ex {{ hostvars[groups['neutron-network'][0]]|find_netdev(external_network) }}
 
     - name: ensure configure script is run at least once
       command: /etc/network/if-pre-up.d/configure_br-ex
 
-    - name: ensure quantum packages are installed
+    - name: ensure neutron packages are installed
       apt: 
         pkg: "{{ item }}" 
         state: latest 
         update_cache: yes 
         cache_valid_time: 600
       with_items:
-        - quantum-dhcp-agent
-        - quantum-metadata-agent
-        - quantum-l3-agent
+        - neutron-dhcp-agent
+        - neutron-metadata-agent
+        - neutron-l3-agent
 
     - name: ensure services are stopped
       service: 
         name: "{{ item }}" 
         state: stopped
       with_items: 
-        - quantum-plugin-openvswitch-agent
-        - quantum-dhcp-agent
-        - quantum-metadata-agent
-        - quantum-l3-agent
+        - neutron-plugin-openvswitch-agent
+        - neutron-dhcp-agent
+        - neutron-metadata-agent
+        - neutron-l3-agent
 
-    - name: ensure quantum sqlite is deleted
+    - name: ensure neutron sqlite is deleted
       file: 
-        dest: /var/lib/quantum/quantum.sqlite 
+        dest: /var/lib/neutron/neutron.sqlite 
         state: absent
 
-    - name: update quantum.conf from template
+    - name: update neutron.conf from template
       template: 
-        src: templates/etc/quantum/quantum.conf 
-        dest: /etc/quantum/quantum.conf 
-        owner: quantum 
-        group: quantum 
+        src: templates/etc/neutron/neutron.conf 
+        dest: /etc/neutron/neutron.conf 
+        owner: neutron 
+        group: neutron 
         mode: 0600
 
     - name: update dhcp_agent.ini from template
       template: 
-        src: templates/etc/quantum/dhcp_agent.ini 
-        dest: /etc/quantum/dhcp_agent.ini 
-        owner: quantum 
-        group: quantum 
+        src: templates/etc/neutron/dhcp_agent.ini 
+        dest: /etc/neutron/dhcp_agent.ini 
+        owner: neutron 
+        group: neutron 
         mode: 0600
 
     - name: update metadata_agent.ini from template
       template: 
-        src: templates/etc/quantum/metadata_agent.ini 
-        dest: /etc/quantum/metadata_agent.ini 
-        owner: quantum 
-        group: quantum 
+        src: templates/etc/neutron/metadata_agent.ini 
+        dest: /etc/neutron/metadata_agent.ini 
+        owner: neutron 
+        group: neutron 
         mode: 0600
 
     - name: run ovs cleanup
-      command: /usr/bin/quantum-ovs-cleanup
+      command: /usr/bin/neutron-ovs-cleanup
 
     - name: ensure services are started
       service: 
@@ -101,8 +101,8 @@
         state: started 
         enabled: yes
       with_items: 
-        - quantum-plugin-openvswitch-agent
-        - quantum-dhcp-agent
-        - quantum-metadata-agent
-        - quantum-l3-agent
+        - neutron-plugin-openvswitch-agent
+        - neutron-dhcp-agent
+        - neutron-metadata-agent
+        - neutron-l3-agent
 
