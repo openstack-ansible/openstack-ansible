@@ -73,7 +73,7 @@
         endpoint: "{{ keystone_admin_url }}"
         token: "{{ keystone_admin_token }}" 
         tenant: admin
-        tenant_description: "admin tenant"
+        tenant_description: "Admin Tenant"
 
     - name: create admin user
       keystone_user: 

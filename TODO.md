@@ -1,3 +1,4 @@
+* install all packages, get conf files, make sure sqlite deleted if it appears...
 * move from grizzly to havana
 * implement cinder, heat, ceilometer, moniker
 
