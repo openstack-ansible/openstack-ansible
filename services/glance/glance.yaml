@@ -58,8 +58,7 @@
         mode: 0600
 
     - name: ensure database is synced
-      glance_manage: 
-        action: dbsync
+      command: /usr/bin/glance-manage db_sync
 
     - name: ensure services are started
       service: 

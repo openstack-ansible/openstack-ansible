@@ -2,6 +2,9 @@
 * move from grizzly to havana
 * implement cinder, heat, ceilometer, moniker
 
+neutron pwd
+
+* admin password to just 'secret'?
 * add replication network to swift...
 * get horizon working
 * need to run quantum-ovs-cleanup before dhcp or l3
