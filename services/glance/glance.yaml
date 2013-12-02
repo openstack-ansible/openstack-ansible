@@ -49,10 +49,10 @@
         group: glance 
         mode: 0600
 
-    - name: update glance-registry-api.ini file from template
+    - name: update glance-registry-paste.ini file from template
       template: 
-        src: templates/etc/glance/glance-registry-api.ini 
-        dest: /etc/glance/glance-registry-api.ini 
+        src: templates/etc/glance/glance-registry-paste.ini 
+        dest: /etc/glance/glance-registry-paste.ini 
         owner: glance 
         group: glance 
         mode: 0600
