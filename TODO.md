@@ -2,8 +2,7 @@
 * move from grizzly to havana
 * implement cinder, heat, ceilometer, moniker
 
-neutron pwd
-
+* update openstack-ansible-modules
 * admin password to just 'secret'?
 * add replication network to swift...
 * get horizon working
