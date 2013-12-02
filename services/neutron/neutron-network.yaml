@@ -76,6 +76,14 @@
         group: neutron 
         mode: 0600
 
+    - name: update api-paste.ini from template
+      template: 
+        src: templates/etc/neutron/api-paste.ini 
+        dest: /etc/neutron/api-paste.ini 
+        owner: neutron 
+        group: neutron 
+        mode: 0600
+
     - name: update dhcp_agent.ini from template
       template: 
         src: templates/etc/neutron/dhcp_agent.ini 

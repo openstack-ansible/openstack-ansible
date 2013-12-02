@@ -2,8 +2,8 @@
 - name: gather facts needed for templates
   hosts: mysql:rabbitmq:keystone
 
-- name: Install and configure openvswitch and quantum agent
-  hosts: quantum-network:nova-compute
+- name: Install and configure openvswitch and neutron agent
+  hosts: neutron-network:nova-compute
   sudo: True
   gather_facts: True
   tasks:
@@ -41,41 +41,49 @@
       with_items:
         - openvswitch-common
         - openvswitch-switch
-        - quantum-plugin-openvswitch-agent
+        - neutron-plugin-openvswitch-agent
       
     - name: ensure services are stopped
       service: 
         name: "{{ item }}" 
         state: stopped
       with_items:
-        - quantum-plugin-openvswitch-agent
+        - neutron-plugin-openvswitch-agent
         - openvswitch-switch
 
-    - name: ensure quantum sqlite is deleted
+    - name: ensure neutron sqlite is deleted
       file: 
-        dest: /var/lib/quantum/quantum.sqlite 
+        dest: /var/lib/neutron/neutron.sqlite 
         state: absent
 
-    - name: update quantum.conf from template
+    - name: update neutron.conf from template
       template: 
-        src: templates/etc/quantum/quantum.conf 
-        dest: /etc/quantum/quantum.conf 
-        owner: quantum 
-        group: quantum 
+        src: templates/etc/neutron/neutron.conf 
+        dest: /etc/neutron/neutron.conf 
+        owner: neutron 
+        group: neutron 
         mode: 0600
 
-    - name: update ovs_quantum_plugin.ini from template
+    - name: update api-paste.ini from template
       template: 
-        src: templates/etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini 
-        dest: /etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini 
-        owner: quantum 
-        group: quantum 
+        src: templates/etc/neutron/api-paste.ini 
+        dest: /etc/neutron/api-paste.ini 
+        owner: neutron 
+        group: neutron 
         mode: 0600
 
-    - name: make sure symlink to ovs_quantum_plugin.ini exists
+    - name: update ovs_neutron_plugin.ini from template
+      template: 
+        src: templates/etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini 
+        dest: /etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini 
+        owner: neutron 
+        group: neutron 
+        mode: 0600
+
+    - name: make sure symlink to ovs_neutron_plugin.ini exists
       file: 
-        src: /etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini 
-        dest: /etc/quantum/plugin.ini 
+        src: /etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini 
+        dest: /etc/neutron/plugin.ini 
         state: link
 
     - name: ensure OVS kernel module is loaded
@@ -110,9 +118,9 @@
     - name: ensure ovs internal bridge is present
       command: /usr/bin/ovs-vsctl -- --may-exist add-br br-int
 
-    - name: ensure quantum openvswitch service is started and enabled
+    - name: ensure neutron openvswitch service is started and enabled
       service: 
-        name: quantum-plugin-openvswitch-agent 
+        name: neutron-plugin-openvswitch-agent 
         state: started 
         enabled: yes
 

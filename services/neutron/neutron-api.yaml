@@ -30,6 +30,14 @@
         group: neutron 
         mode: 0600
 
+    - name: update api-paste.ini from template
+      template: 
+        src: templates/etc/neutron/api-paste.ini 
+        dest: /etc/neutron/api-paste.ini 
+        owner: neutron 
+        group: neutron 
+        mode: 0600
+
     - name: update ovs_neutron_plugin.ini from template
       template: 
         src: templates/etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini 

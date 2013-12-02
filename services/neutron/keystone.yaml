@@ -1,40 +1,40 @@
 ---
-- name: get quantum-api facts
-  hosts: quantum-api
+- name: get neutron-api facts
+  hosts: neutron-api
   sudo: False
   gather_facts: True
 
-- name: Configure quantum-api in keystone
+- name: Configure neutron-api in keystone
   hosts: keystone
   sudo: True
   gather_facts: True
   tasks:
 
-    - name: create quantum service user
+    - name: create neutron service user
       keystone_user: 
         endpoint: "{{ keystone_admin_url }}"
         token: "{{ keystone_admin_token }}" 
         tenant: service 
-        user: quantum 
-        password: "{{ quantum_identity_password }}"
+        user: neutron 
+        password: "{{ neutron_identity_password }}"
 
-    - name: add quantum service user to the service tenant with the admin role
+    - name: add neutron service user to the service tenant with the admin role
       keystone_user: 
         endpoint: "{{ keystone_admin_url }}"
         token: "{{ keystone_admin_token }}" 
         tenant: service 
-        user: quantum 
+        user: neutron 
         role: admin
 
-    - name: add quantum endpoint to keystone
+    - name: add neutron endpoint to keystone
       keystone_service: 
         endpoint: "{{ keystone_admin_url }}"
         token: "{{ keystone_admin_token }}" 
         region: "{{ openstack_region }}"
-        name: quantum
+        name: neutron
         type: network
         description: "Networking Service"
-        public_url: "{{ quantum_public_url }}"
-        internal_url: "{{ quantum_internal_url }}"
-        admin_url: "{{ quantum_admin_url }}"
+        public_url: "{{ neutron_public_url }}"
+        internal_url: "{{ neutron_internal_url }}"
+        admin_url: "{{ neutron_admin_url }}"
 

@@ -21,7 +21,7 @@
         - python-keystoneclient
         - python-swiftclient
         - python-glanceclient
-        - python-quantumclient
+        - python-neutronclient
         - python-cinderclient
         - python-novaclient
 
