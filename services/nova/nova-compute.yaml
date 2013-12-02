@@ -10,10 +10,13 @@
 
     - name: ensure nova-compute packages are installed
       apt: 
-        pkg: "{{ nova_compute_package }}"
+        pkg: "{{ item }}"
         state: latest 
         update_cache: yes 
         cache_valid_time: 600
+      with_items:
+        - "{{ nova_compute_package }}"
+        - python-guestfs
       
     - name: ensure services are stopped
       service: 
@@ -35,6 +38,9 @@
         owner: nova 
         group: nova 
         mode: 0600
+
+    - name: ensure /boot/vmlinuz is world-readable
+      command: chmod 0644 /boot/vmlinuz*
 
     - name: ensure compute service is started and enabled
       service: 

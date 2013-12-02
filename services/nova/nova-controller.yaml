@@ -15,15 +15,14 @@
         update_cache: yes 
         cache_valid_time: 600
       with_items:
+        - nova-ajax-console-proxy
         - nova-api
         - nova-cert
-        - nova-common
         - nova-conductor
         - nova-consoleauth
         - nova-novncproxy
         - nova-scheduler
         - novnc
-        - python-nova
         - python-novaclient
 
     - name: ensure services are stopped
