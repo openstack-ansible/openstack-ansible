@@ -18,7 +18,7 @@
         state: stopped
         enabled: yes
 
-    - name: install rabbitmq config file that binds to management netowrk interface
+    - name: install rabbitmq config file that binds to management network interface
       template:
         src: templates/etc/rabbitmq/rabbitmq-env.conf
         dest: /etc/rabbitmq/rabbitmq-env.conf
