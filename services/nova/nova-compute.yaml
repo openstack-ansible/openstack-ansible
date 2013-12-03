@@ -40,7 +40,7 @@
         mode: 0600
 
     - name: ensure /boot/vmlinuz is world-readable
-      command: chmod 0644 /boot/vmlinuz*
+      shell: chmod 0644 /boot/vmlinuz*
 
     - name: ensure compute service is started and enabled
       service: 

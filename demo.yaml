@@ -34,7 +34,7 @@
       register: cirros_image
 
     - name: ensure internal network is registered
-      quantum_network: 
+      neutron_network: 
         auth_url: "{{ keystone_public_url }}"
         login_tenant_name: admin
         login_username: admin 
@@ -48,7 +48,7 @@
       register: internal_network
 
     - name: ensure subnet internal network is registered
-      quantum_subnet: 
+      neutron_subnet: 
         auth_url: "{{ keystone_public_url }}"
         login_tenant_name: admin
         login_username: admin 
@@ -61,7 +61,7 @@
         state: present
 
     - name: ensure router exists
-      quantum_router: 
+      neutron_router: 
         auth_url: "{{ keystone_public_url }}"
         login_tenant_name: admin
         login_username: admin 
@@ -70,7 +70,7 @@
         state: present 
 
     - name: ensure router has interface connected to internal network
-      quantum_router_interface: 
+      neutron_router_interface: 
         auth_url: "{{ keystone_public_url }}"
         login_tenant_name: admin
         login_username: admin 
@@ -80,7 +80,7 @@
         state: present 
 
     - name: ensure router has external network gateway
-      quantum_router_gateway: 
+      neutron_router_gateway: 
         auth_url: "{{ keystone_public_url }}"
         login_tenant_name: admin
         login_username: admin 
@@ -90,11 +90,11 @@
         state: present
 
     - name: add rule to allow ping to default security group
-      command: quantum --os-auth-url "{{ keystone_public_url }}" --os-tenant-name admin --os-username admin --os-password "{{ admin_password }}"  security-group-rule-create default --direction ingress --protocol icmp
+      command: neutron --os-auth-url "{{ keystone_public_url }}" --os-tenant-name admin --os-username admin --os-password "{{ admin_password }}"  security-group-rule-create default --direction ingress --protocol icmp
       ignore_errors: yes
 
     - name: add rule to allow ssh to default security group
-      command: quantum --os-auth-url "{{ keystone_public_url }}" --os-tenant-name admin --os-username admin --os-password "{{ admin_password }}"  security-group-rule-create default --direction ingress --protocol tcp --port-range-min 22 --port-range-max 22
+      command: neutron --os-auth-url "{{ keystone_public_url }}" --os-tenant-name admin --os-username admin --os-password "{{ admin_password }}"  security-group-rule-create default --direction ingress --protocol tcp --port-range-min 22 --port-range-max 22
       ignore_errors: yes
 
     - name: create ssh keypair
@@ -135,7 +135,7 @@
       ignore_errors: yes
 
     - name: associate a floating ip with the instance
-      quantum_floating_ip: 
+      neutron_floating_ip: 
         auth_url: "{{ keystone_public_url }}"
         login_tenant_name: admin
         login_username: admin 

@@ -1,11 +1,11 @@
-- include: services/common/main.yaml
-- include: services/keystone/main.yaml
-- include: services/swift/main.yaml
-- include: services/glance/main.yaml
-- include: services/neutron/main.yaml
+#- include: services/common/main.yaml
+#- include: services/keystone/main.yaml
+#- include: services/swift/main.yaml
+#- include: services/glance/main.yaml
+#- include: services/neutron/main.yaml
 #- include: services/cinder/main.yaml
 - include: services/nova/main.yaml
 #- include: services/horizon/main.yaml
 #- include: services/heat/main.yaml
 #- include: services/ceilometer/main.yaml
-- include: services/frontend/main.yaml
+#- include: services/frontend/main.yaml
