@@ -5,6 +5,7 @@
   gather_facts: True
   vars: 
     storage_ip: "{{ hostvars[ansible_hostname]|find_ip(storage_network) }}"
+    replication_ip: "{{ hostvars[ansible_hostname]|find_ip(replication_network) }}"
   tasks:
 
     - name: ensure required base packages are present
@@ -150,21 +151,21 @@
 
     - name: create account ring
       delegate_to: "{{ groups['swift-proxy'][0] }}"
-      command: sudo -u swift swift-ring-builder account.builder add r1z1-{{ storage_ip }}:6002/{{ item }} 100
+      command: sudo -u swift swift-ring-builder account.builder add r1z1-{{ storage_ip }}:6002R{{ replication_ip }}:6005/{{ item }} 100
                chdir=/etc/swift
       with_items: storage_devices
       ignore_errors: yes
 
     - name: create container ring
       delegate_to: "{{ groups['swift-proxy'][0] }}"
-      command: sudo -u swift swift-ring-builder container.builder add r1z1-{{ storage_ip }}:6001/{{ item }} 100
+      command: sudo -u swift swift-ring-builder container.builder add r1z1-{{ storage_ip }}:6001R{{ replication_ip }}:6004/{{ item }} 100
                chdir=/etc/swift
       with_items: storage_devices
       ignore_errors: yes
 
     - name: create object ring
       delegate_to: "{{ groups['swift-proxy'][0] }}"
-      command: sudo -u swift swift-ring-builder object.builder add r1z1-{{ storage_ip }}:6000/{{ item }} 100
+      command: sudo -u swift swift-ring-builder object.builder add r1z1-{{ storage_ip }}:6000R{{ replication_ip }}:6003/{{ item }} 100
                chdir=/etc/swift
       with_items: storage_devices
       ignore_errors: yes

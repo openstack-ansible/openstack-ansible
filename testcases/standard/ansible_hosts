@@ -1,3 +1,8 @@
+controller ansible_ssh_host=10.1.0.2
+compute ansible_ssh_host=10.1.0.3
+network ansible_ssh_host=10.1.0.4
+storage ansible_ssh_host=10.1.0.5
+
 [all:vars]
 external_ntp_host = uk.pool.ntp.org
 
@@ -17,31 +22,32 @@ external_network_subnet_allocation_pool_end = 10.4.0.250
 
 [swift:vars]
 storage_network = 10.5.0.0/16
+replication_network = 10.6.0.0/16
 
 [mysql]
-controller ansible_ssh_host=10.1.0.2
+controller
 
 [rabbitmq]
-controller ansible_ssh_host=10.1.0.2
+controller
 
 [ntpserver]
-controller ansible_ssh_host=10.1.0.2
+controller
 
 [keystone]
-controller ansible_ssh_host=10.1.0.2
+controller
 
 [glance]
-controller ansible_ssh_host=10.1.0.2
+controller
 
 [nova:children]
 nova-controller
 nova-compute
 
 [nova-controller]
-controller ansible_ssh_host=10.1.0.2
+controller
 
 [nova-compute]
-compute ansible_ssh_host=10.1.0.3
+compute
 
 [neutron:children]
 neutron-api
@@ -49,24 +55,24 @@ neutron-network
 nova-compute
 
 [neutron-api]
-controller ansible_ssh_host=10.1.0.2
+controller
 
 [neutron-network]
-network ansible_ssh_host=10.1.0.4
+network
 
 [swift:children]
 swift-proxy
 swift-storage
 
 [swift-proxy]
-controller ansible_ssh_host=10.1.0.2
+controller
 
 [swift-storage]
-storage ansible_ssh_host=10.1.0.5
+storage
 
 [horizon]
-controller ansible_ssh_host=10.1.0.2
+controller
 
 [frontend]
-controller ansible_ssh_host=10.1.0.2
+controller
 

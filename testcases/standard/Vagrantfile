@@ -16,6 +16,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                        :netmask => "255.255.0.0"
     machine.vm.network :private_network, ip: "10.5.0.2",
                        :netmask => "255.255.0.0"
+    machine.vm.network :private_network, ip: "10.6.0.2",
+                       :netmask => "255.255.0.0"
     machine.vm.hostname = "controller"
     machine.vm.provider :virtualbox do |v| 
       v.customize ["modifyvm", :id, "--memory", 512]
@@ -51,6 +53,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     machine.vm.network :private_network, ip: "10.1.0.5",
                        :netmask => "255.255.0.0"
     machine.vm.network :private_network, ip: "10.5.0.5",
+                       :netmask => "255.255.0.0"
+    machine.vm.network :private_network, ip: "10.6.0.5",
                        :netmask => "255.255.0.0"
     machine.vm.hostname = "storage"
     machine.vm.provider :virtualbox do |v| 
