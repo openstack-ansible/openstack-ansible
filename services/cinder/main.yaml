@@ -1,0 +1,6 @@
+---
+- include: mysql.yaml
+- include: rabbitmq.yaml
+- include: keystone.yaml
+- include: cinder-volume.yaml
+- include: cinder-api.yaml

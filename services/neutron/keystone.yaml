@@ -6,7 +6,7 @@
 
 - name: Configure neutron-api in keystone
   hosts: keystone
-  sudo: True
+  sudo: False
   gather_facts: True
   tasks:
 

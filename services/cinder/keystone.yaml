@@ -5,8 +5,8 @@
   gather_facts: True
 
 - name: Configure cinder-api in keystone
-  hosts: cinder-api
-  sudo: True
+  hosts: keystone
+  sudo: False
   gather_facts: True
   tasks:
 
