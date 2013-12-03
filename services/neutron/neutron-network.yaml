@@ -92,6 +92,14 @@
         group: neutron 
         mode: 0600
 
+    - name: update l3_agent.ini from template
+      template: 
+        src: templates/etc/neutron/l3_agent.ini 
+        dest: /etc/neutron/l3_agent.ini 
+        owner: neutron 
+        group: neutron 
+        mode: 0600
+
     - name: update metadata_agent.ini from template
       template: 
         src: templates/etc/neutron/metadata_agent.ini 

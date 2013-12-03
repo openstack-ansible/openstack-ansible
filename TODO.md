@@ -3,7 +3,6 @@
 * implement cinder, heat, ceilometer, moniker
 * update openstack-ansible-modules
 * admin password to just 'secret'?
-* add replication network to swift...
 * get horizon working
 * need to run quantum-ovs-cleanup before dhcp or l3
 * make sure vm and ping out..
@@ -19,4 +18,4 @@
 * script to bring up networking needs to re-add gateway device for real world
 * script to bring up networking needs to run in the real-world...
 * needs to not run virtualbox stuff in real world
-
+* neutron lbaas vlan

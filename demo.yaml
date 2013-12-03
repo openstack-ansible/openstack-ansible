@@ -8,9 +8,9 @@
     cirros_url: http://download.cirros-cloud.net/0.3.1/cirros-0.3.1-x86_64-disk.img
     internal_network_name: private
     internal_network_subnet_name: private-subnet
-    internal_network_subnet_cidr: 10.5.5.0/24
+    internal_network_subnet_cidr: 10.100.1.0/24
     internal_network_subnet_dns_nameservers: 8.8.8.8
-    internal_network_subnet_gateway_ip: 10.5.5.1
+    internal_network_subnet_gateway_ip: 10.100.1.1
     router_name: default-router
     external_network_name: public
     external_network_subnet_name: public-subnet
