@@ -2,6 +2,7 @@ controller ansible_ssh_host=10.1.0.2
 compute ansible_ssh_host=10.1.0.3
 network ansible_ssh_host=10.1.0.4
 storage ansible_ssh_host=10.1.0.5
+volume ansible_ssh_host=10.1.0.6
 
 [all:vars]
 external_ntp_host = uk.pool.ntp.org
@@ -69,6 +70,16 @@ controller
 
 [swift-storage]
 storage
+
+[cinder:children]
+cinder-api
+cinder-volume
+
+[cinder-api]
+controller
+
+[cinder-volume]
+volume
 
 [horizon]
 controller
