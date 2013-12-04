@@ -74,7 +74,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     machine.vm.provider :virtualbox do |v| 
       cinder_file_to_disk = '.vagrant/cinder-storage-extradisk.vdi'
       v.customize ["modifyvm", :id, "--memory", 512]
-      v.customize ["createhd", "--filename", cinder_file_to_disk, "--size", 1024]
+      v.customize ["createhd", "--filename", cinder_file_to_disk, "--size", 4096]
       v.customize ["storageattach", :id, "--storagectl", "SATA Controller", 
                    "--port", 1, "--device", 0, "--type", "hdd", 
                    "--medium", cinder_file_to_disk]

@@ -18,13 +18,13 @@
         state: stopped
         enabled: yes
 
-    - name: install rabbitmq config file that binds to management network interface
-      template:
-        src: templates/etc/rabbitmq/rabbitmq-env.conf
-        dest: /etc/rabbitmq/rabbitmq-env.conf
-        owner: root
-        group: root
-        mode: 0644
+    #- name: install rabbitmq config file that binds to management network interface
+    #  template:
+    #    src: templates/etc/rabbitmq/rabbitmq-env.conf
+    #    dest: /etc/rabbitmq/rabbitmq-env.conf
+    #    owner: root
+    #    group: root
+    #    mode: 0644
 
     - name: ensure rabbitmq server is started and enabled
       service: 

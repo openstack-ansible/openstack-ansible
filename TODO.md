@@ -1,14 +1,10 @@
-* install all packages, get conf files, make sure sqlite deleted if it appears...
-* move from grizzly to havana
-* implement cinder, heat, ceilometer, moniker
+* implement cinder, heat, ceilometer, moniker, dashboard
 * update openstack-ansible-modules
 * admin password to just 'secret'?
-* get horizon working
 * need to run quantum-ovs-cleanup before dhcp or l3
 * make sure vm and ping out..
 * iptables?!
 * switch to role-based organization?
-* chrony-server chrony-clients...
 * mysql_secure_installation...
 * augeas instead of templates?
 * switch from commands to modules where appropriate
@@ -20,3 +16,7 @@
 * needs to not run virtualbox stuff in real world
 * neutron lbaas vlan
 * mkfs && mkdir /srv/xxx creates=blah...
+* nginx ssl reverse proxy linking api to public network?
+* change endpoint_host to internal_host, provide admin_host, public_host as well?
+* something wrong with rabbit server
+* allow separate mysql/rabbit/mongo for different services?
