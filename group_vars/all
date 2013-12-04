@@ -47,6 +47,11 @@ swift_internal_url: http://{{ swift_endpoint_host }}:8888/v1/AUTH_%(tenant_id)s
 swift_admin_url: http://{{ swift_endpoint_host }}:8888/v1
 swift_public_url: http://{{ hostvars[groups['swift-proxy'][0]]|find_ip(api_network) }}:8888/v1/AUTH_%(tenant_id)s
 
+cinder_endpoint_host: "{{ hostvars[groups['cinder-api'][0]]|find_ip(management_network) }}"
+cinder_internal_url: http://{{ cinder_endpoint_host }}:8776/v1/%(tenant_id)s
+cinder_admin_url: "{{ cinder_internal_url }}"
+cinder_public_url: http://{{ hostvars[groups['cinder-api'][0]]|find_ip(api_network) }}:8776/v1/%(tenant_id)s
+
 metadata_proxy_shared_secret: "{{ lookup('password', inventory_dir + '/credentials/metadata-proxy-shared-secret') }}"
 
 admin_password: "{{ lookup('password', inventory_dir + '/credentials/admin-password') }}"

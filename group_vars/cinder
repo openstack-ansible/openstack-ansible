@@ -1,5 +1,6 @@
 ---
-volume_devices: [ sdc ]
+volume_devices: [ sdb ]
 
 cinder_mysql_password: "{{ lookup('password', inventory_dir + '/credentials/cinder-mysql-password') }}"
 cinder_identity_password: "{{ lookup('password', inventory_dir + '/credentials/cinder-identity-password') }}"
+cinder_rabbit_password: "{{ lookup('password', inventory_dir + '/credentials/cinder-rabbit-password') }}"
