@@ -1,3 +1,4 @@
+* add precise64 url
 * todo: all services restarted?
 * cinder qemu-img
 * implement cinder, heat, ceilometer, moniker, dashboard
@@ -22,3 +23,4 @@
 * change endpoint_host to internal_host, provide admin_host, public_host as well?
 * something wrong with rabbit server
 * allow separate mysql/rabbit/mongo for different services?
+* docker?
