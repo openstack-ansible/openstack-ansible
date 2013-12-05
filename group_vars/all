@@ -3,8 +3,8 @@ external_ntp_host: pool.ntp.org
 
 openstack_region: RegionOne
 
-global_log_verbose: False
-global_log_debug: False
+global_log_verbose: True
+global_log_debug: True
 
 openstack_repositories: 
   - cloud-archive:havana
@@ -51,6 +51,10 @@ cinder_endpoint_host: "{{ hostvars[groups['cinder-api'][0]]|find_ip(management_n
 cinder_internal_url: http://{{ cinder_endpoint_host }}:8776/v1/%(tenant_id)s
 cinder_admin_url: "{{ cinder_internal_url }}"
 cinder_public_url: http://{{ hostvars[groups['cinder-api'][0]]|find_ip(api_network) }}:8776/v1/%(tenant_id)s
+
+cinderv2_internal_url: http://{{ cinder_endpoint_host }}:8776/v2/%(tenant_id)s
+cinderv2_admin_url: "{{ cinderv2_internal_url }}"
+cinderv2_public_url: http://{{ hostvars[groups['cinder-api'][0]]|find_ip(api_network) }}:8776/v2/%(tenant_id)s
 
 metadata_proxy_shared_secret: "{{ lookup('password', inventory_dir + '/credentials/metadata-proxy-shared-secret') }}"
 

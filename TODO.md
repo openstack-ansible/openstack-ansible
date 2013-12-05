@@ -1,3 +1,5 @@
+* todo: all services restarted?
+* cinder qemu-img
 * implement cinder, heat, ceilometer, moniker, dashboard
 * update openstack-ansible-modules
 * admin password to just 'secret'?

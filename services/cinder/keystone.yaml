@@ -38,3 +38,15 @@
         internal_url: "{{ cinder_internal_url }}"
         admin_url: "{{ cinder_admin_url }}"
 
+    - name: add cinder endpoint to keystone
+      keystone_service: 
+        endpoint: "{{ keystone_admin_url }}"
+        token: "{{ keystone_admin_token }}" 
+        region: "{{ openstack_region }}"
+        name: cinderv2
+        type: volumev2
+        description: "Volume Service V2"
+        public_url: "{{ cinderv2_public_url }}"
+        internal_url: "{{ cinderv2_internal_url }}"
+        admin_url: "{{ cinderv2_admin_url }}"
+

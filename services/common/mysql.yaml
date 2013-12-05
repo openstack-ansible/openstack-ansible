@@ -28,7 +28,7 @@
     - name: ensure mysql is started and enabled
       service: 
         name: mysql 
-        state: started 
+        state: restarted 
         enabled: yes
 
     - name: update mysql root password for all root accounts

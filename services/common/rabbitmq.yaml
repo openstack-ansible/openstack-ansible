@@ -29,7 +29,7 @@
     - name: ensure rabbitmq server is started and enabled
       service: 
         name: rabbitmq-server 
-        state: started 
+        state: restarted 
         enabled: yes
 
     - name: ensure anonymous guest user is absent

@@ -68,7 +68,7 @@
     - name: make sure chrony server is started and enabled
       service: 
         name: chrony
-        state: started 
+        state: restarted 
         enabled: yes
       when: "'ntpserver' in group_names"
 
@@ -86,7 +86,7 @@
     - name: make sure chrony is started and enabled everywhere
       service: 
         name: chrony
-        state: started 
+        state: restarted 
         enabled: yes
 
 - include: virtualbox.yaml
