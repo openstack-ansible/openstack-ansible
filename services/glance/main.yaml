@@ -1,5 +1,5 @@
 ---
 - include: mysql.yaml
 - include: rabbitmq.yaml
-- include: glance.yaml
 - include: keystone.yaml
+- include: glance.yaml

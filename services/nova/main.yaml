@@ -1,6 +1,6 @@
 ---
 - include: mysql.yaml
 - include: rabbitmq.yaml
+- include: keystone.yaml
 - include: nova-controller.yaml
 - include: nova-compute.yaml
-- include: keystone.yaml

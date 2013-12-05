@@ -1,10 +1,10 @@
-* add precise64 url
 * todo: all services restarted?
 * cinder qemu-img
 * implement cinder, heat, ceilometer, moniker, dashboard
 * update openstack-ansible-modules
 * admin password to just 'secret'?
-* need to run quantum-ovs-cleanup before dhcp or l3
+* need to run neutron-ovs-cleanup before dhcp or l3?
+* keystone cleanup or memcache?
 * make sure vm and ping out..
 * iptables?!
 * switch to role-based organization?
@@ -12,7 +12,6 @@
 * augeas instead of templates?
 * switch from commands to modules where appropriate
 * performance issues with keystone/mysql ... mysql performance tuning and/or 
-  switch to memcache?
 * allow possibility of separate rabbit/mysqld for each service...
 * script to bring up networking needs to re-add gateway device for real world
 * script to bring up networking needs to run in the real-world...
