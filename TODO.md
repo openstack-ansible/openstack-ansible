@@ -1,3 +1,4 @@
+* db syncs...neutron missing, others?
 * todo: all services restarted?
 * cinder qemu-img
 * implement cinder, heat, ceilometer, moniker, dashboard
