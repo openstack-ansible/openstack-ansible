@@ -1,0 +1,65 @@
+---
+- name: Install cinder server agents
+  hosts: cinder-volume
+  sudo: True
+  gather_facts: True
+  tasks:
+
+    - name: create cinder-volumes volume group
+      lvg:
+        vg: cinder-volumes
+        pvs: "/dev/{{ volume_devices|join(',/dev/') }}"
+        state: present
+
+    - name: ensure cinder packages are installed
+      apt: 
+        pkg: "{{ item }}" 
+        state: latest 
+        update_cache: yes 
+        cache_valid_time: 600
+      with_items:
+        - cinder-volume
+        - lvm2
+        - qemu-utils
+        - tgt
+
+    - name: ensure services are stopped
+      service: 
+        name: "{{ item }}" 
+        state: stopped
+      with_items: 
+        - cinder-volume
+        - tgt
+
+    - name: ensure cinder sqlite is deleted
+      file: 
+        dest: /var/lib/cinder/cinder.sqlite 
+        state: absent
+
+    - name: update cinder.conf from template
+      template: 
+        src: templates/etc/cinder/cinder.conf 
+        dest: /etc/cinder/cinder.conf 
+        owner: cinder 
+        group: cinder 
+        mode: 0600
+
+    - name: update api-paste.ini from template
+      template: 
+        src: templates/etc/cinder/api-paste.ini 
+        dest: /etc/cinder/api-paste.ini 
+        owner: cinder 
+        group: cinder 
+        mode: 0600
+
+    - name: ensure database is synced
+      command: /usr/bin/cinder-manage db sync
+
+    - name: ensure services are started and enabled
+      service: 
+        name: "{{ item }}"
+        state: restarted 
+        enabled: yes
+      with_items:
+        - cinder-volume
+        - tgt
