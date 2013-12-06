@@ -81,11 +81,10 @@
         login_tenant_name: admin
         login_username: admin
         login_password: "{{ admin_password }}"
-        name: "{{ external_network_subnet_name }}"
+        name: "{{ external_network_name }}"-subnet
         network_name: "{{ external_network_name }}"
-        cidr: "{{ external_network_subnet_cidr }}"
+        cidr: "{{ external_network }}"
         enable_dhcp: False
-        gateway_ip: "{{ external_network_subnet_gateway_ip }}"
         allocation_pool_start: "{{ external_network_subnet_allocation_pool_start }}"
         allocation_pool_end: "{{ external_network_subnet_allocation_pool_end }}"
         state: present
