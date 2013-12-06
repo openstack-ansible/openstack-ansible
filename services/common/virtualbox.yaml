@@ -6,7 +6,9 @@
   tasks:
 
     - name: attempt to load vboxguest module
-      command: /sbin/modprobe vboxguest
+      modprobe:
+        name: vboxguest
+        state: present
       register: modprobe_result
       ignore_errors: True
 

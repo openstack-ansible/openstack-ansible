@@ -87,7 +87,9 @@
         state: link
 
     - name: ensure OVS kernel module is loaded
-      command: /sbin/modprobe openvswitch
+      modprobe: 
+        name: openvswitch
+        state: present
       ignore_errors: True
       register: modprobe_result
 
