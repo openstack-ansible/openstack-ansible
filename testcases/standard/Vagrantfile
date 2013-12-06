@@ -21,7 +21,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                        :netmask => "255.255.0.0"
     machine.vm.hostname = "controller"
     machine.vm.provider :virtualbox do |v| 
-      v.customize ["modifyvm", :id, "--memory", 256]
+      v.customize ["modifyvm", :id, "--memory", 384]
     end
   end
 
@@ -45,7 +45,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                        :netmask => "255.255.0.0"
     machine.vm.hostname = "network"
     machine.vm.provider :virtualbox do |v| 
-      v.customize ["modifyvm", :id, "--memory", 256]
+      v.customize ["modifyvm", :id, "--memory", 384]
       v.customize ["modifyvm", :id, "--nicpromisc4", "allow-vms"]
     end
   end
@@ -60,7 +60,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     machine.vm.hostname = "storage"
     machine.vm.provider :virtualbox do |v| 
       swift_file_to_disk = '.vagrant/swift-storage-extradisk.vdi'
-      v.customize ["modifyvm", :id, "--memory", 256]
+      v.customize ["modifyvm", :id, "--memory", 384]
       v.customize ["createhd", "--filename", swift_file_to_disk, "--size", 1024]
       v.customize ["storageattach", :id, "--storagectl", "SATA Controller", 
                    "--port", 1, "--device", 0, "--type", "hdd", 
@@ -74,7 +74,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     machine.vm.hostname = "volume"
     machine.vm.provider :virtualbox do |v| 
       cinder_file_to_disk = '.vagrant/cinder-storage-extradisk.vdi'
-      v.customize ["modifyvm", :id, "--memory", 256]
+      v.customize ["modifyvm", :id, "--memory", 384]
       v.customize ["createhd", "--filename", cinder_file_to_disk, "--size", 4096]
       v.customize ["storageattach", :id, "--storagectl", "SATA Controller", 
                    "--port", 1, "--device", 0, "--type", "hdd", 
