@@ -1,6 +1,7 @@
+* put modules in pip?
+* demo to boot from cinder volume...
 * db syncs...neutron missing, others?
 * todo: all services restarted?
-* cinder qemu-img
 * implement cinder, heat, ceilometer, moniker, dashboard
 * update openstack-ansible-modules
 * admin password to just 'secret'?
