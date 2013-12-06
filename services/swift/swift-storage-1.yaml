@@ -94,8 +94,10 @@
         mode: 0660
 
     - name: create filesystems on devices
-      command: mkfs.xfs -i size=1024 /dev/{{ item }}
-      ignore_errors: yes
+      filesystem:
+        dev: /dev/{{ item }}
+        fstype: xfs
+        opts: -i size=1024
       with_items: storage_devices
 
     - name: create node directory
@@ -125,7 +127,12 @@
       with_items: storage_devices
 
     - name: ensure /srv/node is owned by swift
-      command: chown -R swift:swift /srv/node
+      file:
+        path: /srv/node
+        owner: swift
+        group: swift
+        recurse: yes
+        state: directory
 
     - name: create /var/lib/swift directory if not already there
       file:

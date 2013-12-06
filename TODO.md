@@ -1,3 +1,4 @@
+* deprecation warnings
 * put modules in pip?
 * demo to boot from cinder volume...
 * db syncs...neutron missing, others?
