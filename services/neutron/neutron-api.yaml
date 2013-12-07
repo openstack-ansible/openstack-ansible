@@ -81,7 +81,7 @@
         login_tenant_name: admin
         login_username: admin
         login_password: "{{ admin_password }}"
-        name: "{{ external_network_name }}"-subnet
+        name: "{{ external_network_name }}-subnet"
         network_name: "{{ external_network_name }}"
         cidr: "{{ external_network }}"
         enable_dhcp: False
