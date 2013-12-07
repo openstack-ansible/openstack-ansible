@@ -1,4 +1,4 @@
-* neutron routing to real world
+* neutron routing to real world...gateway setting and when to masq
 * cinder create volume and nova boot from volume...
 * deprecation warnings
 * put modules in pip?
