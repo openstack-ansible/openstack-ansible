@@ -85,7 +85,7 @@
         network_name: "{{ external_network_name }}"
         cidr: "{{ external_network }}"
         enable_dhcp: False
-        gateway_ip: "{{ external_network_gatway_ip }}"
+        gateway_ip: "{{ external_network_gateway_ip }}"
         dns_nameservers: "{{ external_network_dns_nameservers }}"
         allocation_pool_start: "{{ external_network_allocation_pool_start }}"
         allocation_pool_end: "{{ external_network_allocation_pool_end }}"
