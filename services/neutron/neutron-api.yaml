@@ -87,6 +87,6 @@
         enable_dhcp: False
         gateway_ip: "{{ external_network_gatway_ip }}"
         dns_nameservers: "{{ external_network_dns_nameservers }}"
-        allocation_pool_start: "{{ external_network_subnet_allocation_pool_start }}"
-        allocation_pool_end: "{{ external_network_subnet_allocation_pool_end }}"
+        allocation_pool_start: "{{ external_network_allocation_pool_start }}"
+        allocation_pool_end: "{{ external_network_allocation_pool_end }}"
         state: present
