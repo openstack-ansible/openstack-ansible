@@ -1,6 +1,6 @@
 ---
 - name: Install horizon
-  hosts: horizon
+  hosts: dashboard
   sudo: True
   gather_facts: True
   tasks:
