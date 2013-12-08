@@ -12,7 +12,7 @@
     internal_network_subnet_dns_nameservers: 8.8.8.8
     internal_network_subnet_gateway_ip: 192.168.0.1
     router_name: demo-router
-    demo_password: "{{ lookup('password', inventory_dir + '/credentials/demo-password') }}"
+    demo_password: secret
   tasks:
 
     - name: create demo tenant
@@ -29,6 +29,12 @@
         tenant: demo
         user: demo
         password: "{{ demo_password }}"
+
+    - name: update demo.openrc template
+      template:
+        src: templates/demo.openrc
+        dest: "{{ ansible_env['HOME'] }}/demo.openrc"
+        mode: 0600
 
     - name: ensure cirros image is registered
       glance_image: 
@@ -124,7 +130,6 @@
         name: default
         public_key: "{{ pubkey.stdout }}"
         state: present
-
 
     - name: create a new virtual machine instance
       nova_compute: 

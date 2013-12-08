@@ -25,15 +25,15 @@
         - python-cinderclient
         - python-novaclient
 
-    - name: update openrc template
-      template: 
-        src: templates/openrc 
-        dest: "{{ ansible_env['HOME'] }}/openrc"
-        mode: 0600
-
     - name: update admin.openrc template
       template: 
         src: templates/admin.openrc 
         dest: "{{ ansible_env['HOME'] }}/admin.openrc"
+        mode: 0600
+
+    - name: update token.openrc template
+      template: 
+        src: templates/token.openrc 
+        dest: "{{ ansible_env['HOME'] }}/token.openrc"
         mode: 0600
 
