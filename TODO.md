@@ -1,7 +1,6 @@
-* neutron routing to real world...gateway setting and when to masq
 * cinder create volume and nova boot from volume...
 * deprecation warnings
-* put modules in pip?
+* put modules in pip? or ansible?
 * demo to boot from cinder volume...
 * db syncs...neutron missing, others?
 * todo: all services restarted?

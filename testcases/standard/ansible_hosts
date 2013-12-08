@@ -80,7 +80,7 @@ controller
 [cinder-volume]
 volume
 
-[horizon]
+[dashboard]
 controller
 
 [frontend]

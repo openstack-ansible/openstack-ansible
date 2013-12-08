@@ -12,10 +12,9 @@
         update_cache: yes 
         cache_valid_time: 600
       with_items: 
-        - openstack-dashboard 
+        - libapache2-mod-wsgi
         - memcached 
-        - node-less
-        - python-memcache
+        - openstack-dashboard 
 
     - name: ensure ubuntu theme is removed
       apt: 
