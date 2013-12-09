@@ -49,12 +49,18 @@
         state: present
       register: cirros_image
 
+    # Ansible neutron modules lists all tenants to get ids, but this
+    # is not permitted for non-admin users. Need to fix neutron_* modules as
+    # non-admin *should* be able to create networks, associate floating ips,
+    # etc.
+    
     - name: ensure internal network is registered
       neutron_network: 
         auth_url: "{{ keystone_public_url }}"
-        login_tenant_name: demo
-        login_username: demo 
-        login_password: "{{ demo_password }}" 
+        login_tenant_name: admin
+        login_username: admin
+        login_password: "{{ admin_password }}" 
+        tenant_name: demo
         name: "{{ internal_network_name }}" 
         state: present
       register: internal_network
@@ -62,9 +68,10 @@
     - name: ensure subnet internal network is registered
       neutron_subnet: 
         auth_url: "{{ keystone_public_url }}"
-        login_tenant_name: demo
-        login_username: demo 
-        login_password: "{{ demo_password }}" 
+        login_tenant_name: admin
+        login_username: admin
+        login_password: "{{ admin_password }}" 
+        tenant_name: demo
         name: "{{ internal_network_subnet_name }}"
         network_name: "{{ internal_network_name }}"
         cidr: "{{ internal_network_subnet_cidr }}"
@@ -75,18 +82,20 @@
     - name: ensure router exists
       neutron_router: 
         auth_url: "{{ keystone_public_url }}"
-        login_tenant_name: demo
-        login_username: demo 
-        login_password: "{{ demo_password }}" 
+        login_tenant_name: admin
+        login_username: admin
+        login_password: "{{ admin_password }}" 
+        tenant_name: demo
         name: "{{ router_name }}"
         state: present 
 
     - name: ensure router has interface connected to internal network
       neutron_router_interface: 
         auth_url: "{{ keystone_public_url }}"
-        login_tenant_name: demo
-        login_username: demo 
-        login_password: "{{ demo_password }}" 
+        login_tenant_name: admin
+        login_username: admin
+        login_password: "{{ admin_password }}" 
+        tenant_name: demo
         router_name: "{{ router_name }}"
         subnet_name: "{{ internal_network_subnet_name }}"
         state: present 
@@ -94,9 +103,10 @@
     - name: ensure router has external network gateway
       neutron_router_gateway: 
         auth_url: "{{ keystone_public_url }}"
-        login_tenant_name: demo
-        login_username: demo 
-        login_password: "{{ demo_password }}" 
+        login_tenant_name: admin
+        login_username: admin
+        login_password: "{{ admin_password }}" 
+        tenant_name: demo
         router_name: "{{ router_name }}"
         network_name: "{{ external_network_name }}"
         state: present
@@ -148,9 +158,10 @@
     - name: associate a floating ip with the instance
       neutron_floating_ip: 
         auth_url: "{{ keystone_public_url }}"
-        login_tenant_name: demo
-        login_username: demo 
-        login_password: "{{ demo_password }}" 
+        login_tenant_name: admin
+        login_username: admin
+        login_password: "{{ admin_password }}" 
+        tenant_name: demo
         instance_name: cirros
         network_name: "{{ external_network_name }}"
         state: present
