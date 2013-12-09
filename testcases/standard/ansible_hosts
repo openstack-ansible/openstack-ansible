@@ -83,6 +83,9 @@ volume
 [dashboard]
 controller
 
+[heat]
+controller
+
 [frontend]
 controller
 
