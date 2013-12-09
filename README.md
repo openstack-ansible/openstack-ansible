@@ -63,7 +63,7 @@ though the cirros instance has booted and is pingable.
 The hosts for the standard configuration are:
 
  * 10.1.0.2 (our cloud controller)
- * 10.1.0.3 (compute node)
+ * 10.1.0.3 (compute node #1)
  * 10.1.0.4 (the quantum network host)
  * 10.1.0.5 (the swift storage host)
 
