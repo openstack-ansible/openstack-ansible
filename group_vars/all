@@ -56,6 +56,15 @@ cinderv2_internal_url: http://{{ cinder_endpoint_host }}:8776/v2/%(tenant_id)s
 cinderv2_admin_url: "{{ cinderv2_internal_url }}"
 cinderv2_public_url: http://{{ hostvars[groups['cinder-api'][0]]|find_ip(api_network) }}:8776/v2/%(tenant_id)s
 
+heat_endpoint_host: "{{ hostvars[groups['heat'][0]]|find_ip(management_network) }}"
+heat_internal_url: http://{{ heat_endpoint_host }}:8004/v1/%(tenant_id)s
+heat_admin_url: "{{ heat_internal_url }}"
+heat_public_url: http://{{ hostvars[groups['heat'][0]]|find_ip(api_network) }}:8004/v1/%(tenant_id)s
+
+cfn_internal_url: http://{{ heat_endpoint_host }}:8000/v1/
+cfn_admin_url: "{{ heat_internal_url }}"
+cfn_public_url: http://{{ hostvars[groups['heat'][0]]|find_ip(api_network) }}:8000/v1
+
 metadata_proxy_shared_secret: "{{ lookup('password', inventory_dir + '/credentials/metadata-proxy-shared-secret') }}"
 
 admin_password: "{{ lookup('password', inventory_dir + '/credentials/admin-password') }}"

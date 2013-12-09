@@ -21,38 +21,40 @@
         name: "{{ item }}"
         state: stopped
       with_items:
-        - cinder-api
-        - cinder-scheduler
+        - heat-api
+        - heat-api-cfn
+        - heat-engine
 
-    - name: ensure cinder sqlite is deleted
+    - name: ensure heat sqlite is deleted
       file: 
-        dest: /var/lib/cinder/cinder.sqlite 
+        dest: /var/lib/heat/heat.sqlite 
         state: absent
 
-    - name: update cinder.conf from template
+    - name: update heat.conf from template
       template: 
-        src: templates/etc/cinder/cinder.conf 
-        dest: /etc/cinder/cinder.conf 
-        owner: cinder 
-        group: cinder 
+        src: templates/etc/heat/heat.conf 
+        dest: /etc/heat/heat.conf 
+        owner: heat 
+        group: heat 
         mode: 0600
 
     - name: update api-paste.ini from template
       template: 
-        src: templates/etc/cinder/api-paste.ini 
-        dest: /etc/cinder/api-paste.ini 
-        owner: cinder 
-        group: cinder 
+        src: templates/etc/heat/api-paste.ini 
+        dest: /etc/heat/api-paste.ini 
+        owner: heat 
+        group: heat 
         mode: 0600
 
     - name: ensure database is synced
-      command: /usr/bin/cinder-manage db sync
+      command: /usr/bin/heat-manage db_sync
 
     - name: ensure services are started and enabled
       service: 
         name: "{{ item }}"
-        state: started 
+        state: restarted 
         enabled: yes
       with_items:
-        - cinder-api
-        - cinder-scheduler
+        - heat-api
+        - heat-api-cfn
+        - heat-engine
