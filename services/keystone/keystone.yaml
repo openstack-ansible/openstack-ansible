@@ -33,12 +33,12 @@
         group: keystone
         mode: 0600
 
-    #- name: initialize keystone database
-    #  keystone_manage: 
-    #    action: db_sync
-
     - name: initialize keystone database
-      command: /usr/bin/keystone-manage db_sync
+      keystone_manage: 
+        action: db_sync
+
+    #- name: initialize keystone database
+    #  command: /usr/bin/keystone-manage db_sync
 
     - name: ensure keystone is started
       service: 
