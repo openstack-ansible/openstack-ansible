@@ -1,0 +1,52 @@
+---
+- name: get heat facts
+  hosts: heat
+  sudo: False
+  gather_facts: True
+
+- name: Configure heat in keystone
+  hosts: keystone
+  sudo: False
+  gather_facts: True
+  tasks:
+
+    - name: create heat service user
+      keystone_user: 
+        endpoint: "{{ keystone_admin_url }}"
+        token: "{{ keystone_admin_token }}" 
+        tenant: service 
+        user: heat 
+        password: "{{ heat_identity_password }}"
+
+    - name: add heat service user to the service tenant with the admin role
+      keystone_user: 
+        endpoint: "{{ keystone_admin_url }}"
+        token: "{{ keystone_admin_token }}" 
+        tenant: service 
+        user: heat 
+        role: admin
+
+    - name: add heat endpoint to keystone
+      keystone_service: 
+        endpoint: "{{ keystone_admin_url }}"
+        token: "{{ keystone_admin_token }}" 
+        region: "{{ openstack_region }}"
+        name: heat
+        type: orchestration
+        description: "Heat Orchestration API"
+        public_url: "{{ heat_public_url }}"
+        internal_url: "{{ heat_internal_url }}"
+        admin_url: "{{ heat_admin_url }}"
+
+    - name: add cfn endpoint to keystone
+      keystone_service: 
+        endpoint: "{{ keystone_admin_url }}"
+        token: "{{ keystone_admin_token }}" 
+        region: "{{ openstack_region }}"
+        name: heat-cfn
+        type: cloudformation
+        description: "Heat CloudFormation API"
+        public_url: "{{ cfn_public_url }}"
+        internal_url: "{{ cfn_internal_url }}"
+        admin_url: "{{ cfn_admin_url }}"
+
