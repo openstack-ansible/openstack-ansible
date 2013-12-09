@@ -24,6 +24,8 @@
         - python-neutronclient
         - python-cinderclient
         - python-novaclient
+        - python-heatclient
+        - python-ceilometerclient
 
     - name: update admin.openrc template
       template: 
