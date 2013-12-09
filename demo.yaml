@@ -46,6 +46,7 @@
         disk_format: qcow2
         copy_from: "{{ cirros_url }}"
         is_public: True 
+        timeout: 600
         state: present
       register: cirros_image
 
