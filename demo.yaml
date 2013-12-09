@@ -56,10 +56,6 @@
         login_username: demo 
         login_password: "{{ demo_password }}" 
         name: "{{ internal_network_name }}" 
-        router_external: False
-        shared: True
-        provider_network_type: gre
-        provider_segmentation_id: 5
         state: present
       register: internal_network
 
