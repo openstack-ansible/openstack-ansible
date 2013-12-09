@@ -1,0 +1,52 @@
+---
+- name: get cinder-api facts
+  hosts: cinder-api
+  sudo: False
+  gather_facts: True
+
+- name: Configure cinder-api in keystone
+  hosts: keystone
+  sudo: False
+  gather_facts: True
+  tasks:
+
+    - name: create cinder service user
+      keystone_user: 
+        endpoint: "{{ keystone_admin_url }}"
+        token: "{{ keystone_admin_token }}" 
+        tenant: service 
+        user: cinder 
+        password: "{{ cinder_identity_password }}"
+
+    - name: add cinder service user to the service tenant with the admin role
+      keystone_user: 
+        endpoint: "{{ keystone_admin_url }}"
+        token: "{{ keystone_admin_token }}" 
+        tenant: service 
+        user: cinder 
+        role: admin
+
+    - name: add cinder endpoint to keystone
+      keystone_service: 
+        endpoint: "{{ keystone_admin_url }}"
+        token: "{{ keystone_admin_token }}" 
+        region: "{{ openstack_region }}"
+        name: cinder
+        type: volume
+        description: "Volume Service"
+        public_url: "{{ cinder_public_url }}"
+        internal_url: "{{ cinder_internal_url }}"
+        admin_url: "{{ cinder_admin_url }}"
+
+    - name: add cinder endpoint to keystone
+      keystone_service: 
+        endpoint: "{{ keystone_admin_url }}"
+        token: "{{ keystone_admin_token }}" 
+        region: "{{ openstack_region }}"
+        name: cinderv2
+        type: volumev2
+        description: "Volume Service V2"
+        public_url: "{{ cinderv2_public_url }}"
+        internal_url: "{{ cinderv2_internal_url }}"
+        admin_url: "{{ cinderv2_admin_url }}"
+
