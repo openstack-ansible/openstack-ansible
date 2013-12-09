@@ -57,28 +57,27 @@
         group: root 
         mode: 0644
 
-    - name: set chrony server clock to public ntp server
+    - name: set clocks to public ntp server
       command: ntpdate {{ external_ntp_host }}
       register: ntpdate_result
-      when: "'ntpserver' in group_names"
       until: ntpdate_result|success
       retries: 5
       delay: 5
 
-    - name: make sure chrony server is started and enabled
-      service: 
-        name: chrony
-        state: restarted 
-        enabled: yes
-      when: "'ntpserver' in group_names"
+    #- name: make sure chrony server is started and enabled
+    #  service: 
+    #    name: chrony
+    #    state: restarted 
+    #    enabled: yes
+    #  when: "'ntpserver' in group_names"
 
-    - name: set clocks to local chrony server
-      command: ntpdate {{ ntp_host }}
-      register: ntpdate_result
-      when: "'ntpserver' not in group_names"
-      until: ntpdate_result|success
-      retries: 5
-      delay: 5
+    #- name: set clocks to local chrony server
+    #  command: ntpdate {{ ntp_host }}
+    #  register: ntpdate_result
+    #  when: "'ntpserver' not in group_names"
+    #  until: ntpdate_result|success
+    #  retries: 5
+    #  delay: 5
 
     - name: save system clock to hardware
       command: hwclock --systohc
