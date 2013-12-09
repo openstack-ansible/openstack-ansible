@@ -103,10 +103,9 @@
     - name: ensure router has external network gateway
       neutron_router_gateway: 
         auth_url: "{{ keystone_public_url }}"
-        login_tenant_name: admin
-        login_username: admin
-        login_password: "{{ admin_password }}" 
-        tenant_name: demo
+        login_tenant_name: demo
+        login_username: demo
+        login_password: "{{ demo_password }}" 
         router_name: "{{ router_name }}"
         network_name: "{{ external_network_name }}"
         state: present
@@ -158,10 +157,9 @@
     - name: associate a floating ip with the instance
       neutron_floating_ip: 
         auth_url: "{{ keystone_public_url }}"
-        login_tenant_name: admin
-        login_username: admin
-        login_password: "{{ admin_password }}" 
-        tenant_name: demo
+        login_tenant_name: demo
+        login_username: demo
+        login_password: "{{ demo_password }}" 
         instance_name: cirros
         network_name: "{{ external_network_name }}"
         state: present
