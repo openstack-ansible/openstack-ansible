@@ -55,7 +55,7 @@
     - name: ensure neutron-api services are started and enabled
       service: 
         name: neutron-server 
-        state: started 
+        state: restarted 
         enabled: yes
 
     - name: wait for neutron to come back up

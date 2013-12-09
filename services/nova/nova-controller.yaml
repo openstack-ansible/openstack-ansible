@@ -64,7 +64,7 @@
     - name: ensure services are started
       service: 
         name: "{{ item }}" 
-        state: started 
+        state: restarted 
         enabled: yes
       with_items:
         - nova-api

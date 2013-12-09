@@ -123,6 +123,6 @@
     - name: ensure neutron openvswitch service is started and enabled
       service: 
         name: neutron-plugin-openvswitch-agent 
-        state: started 
+        state: restarted 
         enabled: yes
 

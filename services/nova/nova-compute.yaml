@@ -45,6 +45,6 @@
     - name: ensure compute service is started and enabled
       service: 
         name: nova-compute 
-        state: started 
+        state: restarted 
         enabled: yes
 

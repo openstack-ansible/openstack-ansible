@@ -43,7 +43,7 @@
     - name: ensure keystone is started
       service: 
         name: keystone 
-        state: started 
+        state: restarted 
         enabled: yes
 
     # keystone seems to take a while...

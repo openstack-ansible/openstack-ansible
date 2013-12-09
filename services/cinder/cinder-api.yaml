@@ -50,7 +50,7 @@
     - name: ensure services are started and enabled
       service: 
         name: "{{ item }}"
-        state: started 
+        state: restarted 
         enabled: yes
       with_items:
         - cinder-api
