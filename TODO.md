@@ -20,3 +20,4 @@
 * docker?
 * fix neutron_* modules to not require admin
 * more fine-grained split of services...
+* tempest test suite?
