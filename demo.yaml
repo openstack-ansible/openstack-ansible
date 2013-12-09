@@ -77,6 +77,7 @@
         cidr: "{{ internal_network_subnet_cidr }}"
         enable_dhcp: True
         gateway_ip: "{{ internal_network_subnet_gateway_ip }}"
+        dns_nameservers: "{{ internal_network_subnet_dns_nameservers }}"
         state: present
 
     - name: ensure router exists

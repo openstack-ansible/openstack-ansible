@@ -18,3 +18,4 @@
 * change endpoint_host to internal_host, provide admin_host, public_host as well?
 * allow separate mysql/rabbit/mongo for different services?
 * docker?
+* fix neutron_* modules to not require admin
