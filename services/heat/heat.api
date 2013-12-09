@@ -1,19 +1,20 @@
 ---
-- name: Configure cinder-api server
-  hosts: cinder-api
+- name: Configure heat server
+  hosts: heat
   sudo: True
   gather_facts: True
   tasks:
 
-    - name: ensure cinder-api packages are installed
+    - name: ensure heat packages are installed
       apt: 
         pkg: "{{ item }}"
         state: latest 
         update_cache: yes 
         cache_valid_time: 600
       with_items:
-        - cinder-api
-        - cinder-scheduler
+        - heat-api
+        - heat-api-cfn
+        - heat-engine
 
     - name: ensure services are stopped
       service: 
