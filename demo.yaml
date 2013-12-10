@@ -44,7 +44,7 @@
         login_password: "{{ demo_password }}"
         name: cirros-0.3.1-x86_64 
         disk_format: qcow2
-        copy_from: "{{ cirros_url }}"
+        file: files/cirros-0.3.1-x86_64-disk.img
         is_public: True 
         timeout: 600
         state: present
