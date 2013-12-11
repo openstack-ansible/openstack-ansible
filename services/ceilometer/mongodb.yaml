@@ -13,6 +13,7 @@
         roles:
           - readWrite
           - dbAdmin
+        state: present
       with_items:
         - "%"
         - localhost

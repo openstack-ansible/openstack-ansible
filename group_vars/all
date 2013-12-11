@@ -14,6 +14,8 @@ ntp_host: "{{ hostvars[groups['ntpserver'][0]]|find_ip(management_network) }}"
 mysql_host: "{{ hostvars[groups['mysql'][0]]|find_ip(management_network) }}"
 mysql_root_password: "{{ lookup('password', inventory_dir + '/credentials/mysql-root-password') }}"
 
+mongodb_host: "{{ hostvars[groups['mongodb'][0]]|find_ip(management_network) }}"
+
 rabbit_host: "{{ hostvars[groups['rabbitmq'][0]]|find_ip(management_network) }}"
 
 keystone_endpoint_host: "{{ hostvars[groups['keystone'][0]]|find_ip(management_network) }}"

@@ -25,6 +25,9 @@ replication_network = 10.6.0.0/16
 [mysql]
 backend
 
+[mongodb]
+backend
+
 [rabbitmq]
 backend
 
