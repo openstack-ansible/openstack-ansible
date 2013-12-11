@@ -2,3 +2,4 @@
 - include: all.yaml
 - include: mysql.yaml
 - include: rabbitmq.yaml
+- include: mongodb.yaml

@@ -1,0 +1,35 @@
+---
+- name: Configure MongoDB server
+  hosts: mongodb
+  sudo: True
+  gather_facts: True
+  tasks:
+
+    - name: ensure mongodb is installed
+      apt: 
+        pkg: "{{ item }}"
+        state: latest 
+        update_cache: yes 
+        cache_valid_time: 600
+      with_items:
+        - mongodb
+        - python-pymongo 
+
+    - name: ensure mongodb is stopped
+      service: 
+        name: mongodb
+        state: stopped
+
+    - name: install mongodb config file that binds to management network interface
+      template: 
+        src: templates/etc/mongodb.conf
+        dest: /etc/mongodb.conf
+        owner: root 
+        group: root 
+        mode: 0644
+
+    - name: ensure mongodb is started and enabled
+      service: 
+        name: mongodb
+        state: restarted 
+        enabled: yes

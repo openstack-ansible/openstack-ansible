@@ -65,6 +65,11 @@ cfn_internal_url: http://{{ heat_endpoint_host }}:8000/v1/
 cfn_admin_url: "{{ heat_internal_url }}"
 cfn_public_url: http://{{ hostvars[groups['heat'][0]]|find_ip(api_network) }}:8000/v1
 
+ceilometer_endpoint_host: "{{ hostvars[groups['ceilometer'][0]]|find_ip(management_network) }}"
+ceilometer_internal_url: http://{{ ceilometer_endpoint_host }}:8777
+ceilometer_admin_url: "{{ ceilometer_internal_url }}"
+ceilometer_public_url: http://{{ hostvars[groups['ceilometer'][0]]|find_ip(api_network) }}:8777
+
 metadata_proxy_shared_secret: "{{ lookup('password', inventory_dir + '/credentials/metadata-proxy-shared-secret') }}"
 
 admin_password: "{{ lookup('password', inventory_dir + '/credentials/admin-password') }}"
@@ -94,3 +99,9 @@ nova_rabbit_password: "{{ lookup('password', inventory_dir + '/credentials/nova-
 heat_mysql_password: "{{ lookup('password', inventory_dir + '/credentials/heat-mysql-password') }}"
 heat_identity_password: "{{ lookup('password', inventory_dir + '/credentials/heat-identity-password') }}"
 heat_rabbit_password: "{{ lookup('password', inventory_dir + '/credentials/heat-rabbit-password') }}"
+
+ceilometer_mongodb_password: "{{ lookup('password', inventory_dir + '/credentials/ceilometer-mongodb-password') }}"
+ceilometer_rabbit_password: "{{ lookup('password', inventory_dir + '/credentials/ceilometer-rabbit-password') }}"
+ceilometer_identity_password: "{{ lookup('password', inventory_dir + '/credentials/ceilometer-identity-password') }}"
+metering_shared_secret: "{{ lookup('password', inventory_dir + '/credentials/metering-shared-secret') }}"
+

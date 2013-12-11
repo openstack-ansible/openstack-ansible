@@ -36,21 +36,16 @@
         dest: /var/lib/cinder/cinder.sqlite 
         state: absent
 
-    - name: update cinder.conf from template
+    - name: update configuration files from templates
       template: 
-        src: templates/etc/cinder/cinder.conf 
-        dest: /etc/cinder/cinder.conf 
+        src: templates/etc/cinder/{{ item }}
+        dest: /etc/cinder/{{ item }}
         owner: cinder 
         group: cinder 
         mode: 0600
-
-    - name: update api-paste.ini from template
-      template: 
-        src: templates/etc/cinder/api-paste.ini 
-        dest: /etc/cinder/api-paste.ini 
-        owner: cinder 
-        group: cinder 
-        mode: 0600
+      with_items:
+        - cinder.conf
+        - api-paste.ini
 
     - name: ensure services are started and enabled
       service: 

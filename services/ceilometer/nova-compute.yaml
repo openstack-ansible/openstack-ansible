@@ -1,46 +1,40 @@
 ---
-- name: Configure cinder-api server
-  hosts: cinder-api
+- name: Configure ceilometer compute agent
+  hosts: nova-compute
   sudo: True
   gather_facts: True
   tasks:
 
-    - name: ensure cinder-api packages are installed
+    - name: ensure ceilometer-agent-compute packages are installed
       apt: 
         pkg: "{{ item }}"
         state: latest 
         update_cache: yes 
         cache_valid_time: 600
       with_items:
-        - cinder-api
-        - cinder-scheduler
+        - ceilometer-agent-compute
 
     - name: ensure services are stopped
       service: 
         name: "{{ item }}"
         state: stopped
       with_items:
-        - cinder-api
-        - cinder-scheduler
+        - ceilometer-agent-compute
 
-    - name: ensure cinder sqlite is deleted
+    - name: ensure ceilometer sqlite is deleted
       file: 
-        dest: /var/lib/cinder/cinder.sqlite 
+        dest: /var/lib/ceilometer/ceilometer.sqlite 
         state: absent
 
     - name: update configuration files from templates
       template: 
-        src: templates/etc/cinder/{{ item }}
-        dest: /etc/cinder/{{ item }}
-        owner: cinder 
-        group: cinder 
+        src: templates/etc/ceilometer/{{ item }}
+        dest: /etc/ceilometer/{{ item }}
+        owner: ceilometer 
+        group: ceilometer 
         mode: 0600
       with_items:
-        - cinder.conf
-        - api-paste.ini
-
-    - name: ensure database is synced
-      command: /usr/bin/cinder-manage db sync
+        - ceilometer.conf
 
     - name: ensure services are started and enabled
       service: 
@@ -48,5 +42,4 @@
         state: restarted 
         enabled: yes
       with_items:
-        - cinder-api
-        - cinder-scheduler
+        - ceilometer-agent-compute
