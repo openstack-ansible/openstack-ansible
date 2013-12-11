@@ -7,5 +7,5 @@
 - include: services/nova/main.yaml
 - include: services/dashboard/main.yaml
 - include: services/heat/main.yaml
-#- include: services/ceilometer/main.yaml
+- include: services/ceilometer/main.yaml
 - include: services/frontend/main.yaml

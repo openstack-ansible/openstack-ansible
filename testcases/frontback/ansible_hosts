@@ -86,5 +86,23 @@ frontend
 [heat]
 frontend
 
+[ceilometer:children]
+ceilometer-api
+ceilometer-collector
+ceilometer-central
+ceilometer-notifier
+
+[ceilometer-api]
+backend
+
+[ceilometer-collector]
+backend
+
+[ceilometer-central]
+backend
+
+[ceilometer-notifier]
+backend
+
 [frontend]
 frontend
