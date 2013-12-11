@@ -1,3 +1,4 @@
+* service-all....
 * neutron lbaas vlan
 * deprecation warnings
 * put modules in pip? or ansible?
@@ -11,7 +12,7 @@
 * change endpoint_host to internal_host, provide admin_host, public_host as well?
 * fix neutron_* modules to not require admin
 
-* docker?
+* docker...
 
 * more fine-grained split of services...
 * allow possibility of separate rabbit/mysqld/mongo for each service...

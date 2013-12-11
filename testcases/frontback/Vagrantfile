@@ -6,6 +6,7 @@ VAGRANTFILE_API_VERSION = "2"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.box = "precise64"
+  config.cache.auto_detect = true # vagrant-cachier
   config.vm.box_url = "http://files.vagrantup.com/precise64.box"
   
   config.vm.define "frontend" do |machine|
@@ -19,7 +20,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                        :netmask => "255.255.0.0"
     machine.vm.network :private_network, ip: "10.6.0.2",
                        :netmask => "255.255.0.0"
-    machine.vm.hostname = "controller"
+    machine.vm.hostname = "frontend"
     machine.vm.provider :virtualbox do |v| 
       v.customize ["modifyvm", :id, "--memory", 512]
     end
@@ -39,7 +40,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                        :netmask => "255.255.0.0"
     machine.vm.network :private_network, ip: "10.6.0.3",
                        :netmask => "255.255.0.0"
-    machine.vm.hostname = "network"
+    machine.vm.hostname = "backend"
     machine.vm.provider :virtualbox do |v| 
       v.customize ["modifyvm", :id, "--memory", 512]
       v.customize ["modifyvm", :id, "--nicpromisc4", "allow-vms"]

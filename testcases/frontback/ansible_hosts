@@ -32,10 +32,10 @@ backend
 backend
 
 [keystone]
-backend
+frontend
 
 [glance]
-backend
+frontend
 
 [nova:children]
 nova-controller
@@ -68,6 +68,8 @@ frontend
 [swift-storage]
 backend
 
+[cinder:vars]
+
 [cinder:children]
 cinder-api
 cinder-volume
@@ -86,4 +88,3 @@ frontend
 
 [frontend]
 frontend
-

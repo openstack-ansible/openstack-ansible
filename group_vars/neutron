@@ -1,5 +1,0 @@
----
-neutron_mysql_password: "{{ lookup('password', inventory_dir + '/credentials/neutron-mysql-password') }}"
-neutron_identity_password: "{{ lookup('password', inventory_dir + '/credentials/neutron-identity-password') }}"
-neutron_ovs_mysql_password: "{{ lookup('password', inventory_dir + '/credentials/neutron-ovs-mysql-password') }}"
-neutron_rabbit_password: "{{ lookup('password', inventory_dir + '/credentials/neutron-rabbit-password') }}"

@@ -1,4 +1,0 @@
----
-heat_mysql_password: "{{ lookup('password', inventory_dir + '/credentials/heat-mysql-password') }}"
-heat_identity_password: "{{ lookup('password', inventory_dir + '/credentials/heat-identity-password') }}"
-heat_rabbit_password: "{{ lookup('password', inventory_dir + '/credentials/heat-rabbit-password') }}"

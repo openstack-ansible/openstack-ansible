@@ -69,3 +69,28 @@ metadata_proxy_shared_secret: "{{ lookup('password', inventory_dir + '/credentia
 
 admin_password: "{{ lookup('password', inventory_dir + '/credentials/admin-password') }}"
 
+keystone_mysql_password: "{{ lookup('password', inventory_dir + '/credentials/keystone-mysql-password') }}"
+
+swift_mysql_password: "{{ lookup('password', inventory_dir + '/credentials/swift-mysql-password') }}"
+swift_identity_password: "{{ lookup('password', inventory_dir + '/credentials/swift-identity-password') }}"
+
+glance_mysql_password: "{{ lookup('password', inventory_dir + '/credentials/glance-mysql-password')}}"
+glance_identity_password: "{{ lookup('password', inventory_dir + '/credentials/glance-identity-password') }}"
+glance_rabbit_password: "{{ lookup('password', inventory_dir + '/credentials/glance-rabbit-password') }}"
+
+cinder_mysql_password: "{{ lookup('password', inventory_dir + '/credentials/cinder-mysql-password') }}"
+cinder_identity_password: "{{ lookup('password', inventory_dir + '/credentials/cinder-identity-password') }}"
+cinder_rabbit_password: "{{ lookup('password', inventory_dir + '/credentials/cinder-rabbit-password') }}"
+
+neutron_mysql_password: "{{ lookup('password', inventory_dir + '/credentials/neutron-mysql-password') }}"
+neutron_identity_password: "{{ lookup('password', inventory_dir + '/credentials/neutron-identity-password') }}"
+neutron_ovs_mysql_password: "{{ lookup('password', inventory_dir + '/credentials/neutron-ovs-mysql-password') }}"
+neutron_rabbit_password: "{{ lookup('password', inventory_dir + '/credentials/neutron-rabbit-password') }}"
+
+nova_mysql_password: "{{ lookup('password', inventory_dir + '/credentials/nova-mysql-password') }}"
+nova_identity_password: "{{ lookup('password', inventory_dir + '/credentials/nova-identity-password') }}"
+nova_rabbit_password: "{{ lookup('password', inventory_dir + '/credentials/nova-rabbit-password') }}"
+
+heat_mysql_password: "{{ lookup('password', inventory_dir + '/credentials/heat-mysql-password') }}"
+heat_identity_password: "{{ lookup('password', inventory_dir + '/credentials/heat-identity-password') }}"
+heat_rabbit_password: "{{ lookup('password', inventory_dir + '/credentials/heat-rabbit-password') }}"
