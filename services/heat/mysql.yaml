@@ -1,8 +1,4 @@
 ---
-- name: Gather required facts
-  hosts: heat
-  gather_facts: True
-
 - name: Install or verify Heat database
   hosts: mysql
   sudo: True

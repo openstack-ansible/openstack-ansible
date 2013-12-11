@@ -24,6 +24,12 @@
         group: root 
         mode: 0755
 
+    - name: ensure ovs bridge for gateway br-ex present
+      command: /usr/bin/ovs-vsctl -- --may-exist add-br br-ex
+
+    - name: ensure br-ex has external nic enslaved
+      command: /usr/bin/ovs-vsctl -- --may-exist add-port br-ex {{ hostvars[groups['neutron-network'][0]]|find_netdev(external_network) }}
+
     - name: ensure script to configure network is in place
       template: 
         src: templates/etc/network/if-pre-up.d/configure_br-ex
@@ -31,13 +37,6 @@
         owner: root 
         group: root 
         mode: 0755
-
-    - name: ensure ovs bridge for gateway br-ex present
-      command: /usr/bin/ovs-vsctl -- --may-exist add-br br-ex
-
-    # FIXME: inventory_host?
-    - name: ensure br-ex has external nic enslaved
-      command: /usr/bin/ovs-vsctl -- --may-exist add-port br-ex {{ hostvars[groups['neutron-network'][0]]|find_netdev(external_network) }}
 
     - name: ensure configure script is run at least once
       command: /etc/network/if-pre-up.d/configure_br-ex
@@ -58,7 +57,6 @@
         name: "{{ item }}" 
         state: stopped
       with_items: 
-        - neutron-plugin-openvswitch-agent
         - neutron-dhcp-agent
         - neutron-metadata-agent
         - neutron-l3-agent
@@ -108,16 +106,12 @@
         group: neutron 
         mode: 0600
 
-    - name: run ovs cleanup
-      command: /usr/bin/neutron-ovs-cleanup
-
     - name: ensure services are started
       service: 
         name: "{{ item }}" 
         state: restarted 
         enabled: yes
       with_items: 
-        - neutron-plugin-openvswitch-agent
         - neutron-dhcp-agent
         - neutron-metadata-agent
         - neutron-l3-agent

@@ -52,9 +52,6 @@
         group: cinder 
         mode: 0600
 
-    - name: ensure database is synced
-      command: /usr/bin/cinder-manage db sync
-
     - name: ensure services are started and enabled
       service: 
         name: "{{ item }}"

@@ -22,6 +22,14 @@
         state: absent 
         purge: yes
 
+    - name: ensure services are stopped
+      service:
+        name: "{{ item }}"
+        state: stopped
+      with_items:
+        - memcached
+        - apache2
+
     - name: update memcached.conf from template
       template:
         src: templates/etc/memcached.conf
@@ -37,3 +45,12 @@
         owner: root
         group: root
         mode: 0644
+
+    - name: ensure services are started and enabled
+      service:
+        name: "{{ item }}"
+        state: restarted
+        enabled: yes
+      with_items:
+        - memcached
+        - apache2

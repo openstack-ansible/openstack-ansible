@@ -1,12 +1,15 @@
 ---
 - name: gather needed facts for template
-  hosts: mysql:rabbitmq:keystone:glance:quantum-api:nova-controller
+  hosts: mysql:rabbitmq:keystone:glance:neutron-api:nova-controller
 
 - name: Install nova compute on nodes
   hosts: nova-compute
   sudo: True
   gather_facts: True
   tasks:
+
+    - name: ensure /boot/vmlinuz is world-readable
+      shell: chmod 0644 /boot/vmlinuz*
 
     - name: ensure nova-compute packages are installed
       apt: 
@@ -38,9 +41,6 @@
         owner: nova 
         group: nova 
         mode: 0600
-
-    - name: ensure /boot/vmlinuz is world-readable
-      shell: chmod 0644 /boot/vmlinuz*
 
     - name: ensure compute service is started and enabled
       service: 

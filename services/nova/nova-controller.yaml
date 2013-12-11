@@ -1,6 +1,6 @@
 ---
 - name: gather required facts
-  hosts: mysql:rabbitmq:keystone:glance:quantum-api
+  hosts: mysql:rabbitmq:keystone:glance:neutron-api
 
 - name: Configure nova-controller
   hosts: nova-controller
