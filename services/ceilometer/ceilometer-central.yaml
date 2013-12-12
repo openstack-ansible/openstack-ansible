@@ -1,6 +1,6 @@
 ---
 - name: Configure ceilometer-agent-central server
-  hosts: ceilometer-agent-central
+  hosts: ceilometer-central
   sudo: True
   gather_facts: True
   tasks:

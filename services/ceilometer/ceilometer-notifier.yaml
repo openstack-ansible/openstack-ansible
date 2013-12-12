@@ -1,6 +1,6 @@
 ---
 - name: Configure ceilometer-alarm-notifier server
-  hosts: ceilometer-alarm-notifier
+  hosts: ceilometer-notifier
   sudo: True
   gather_facts: True
   tasks:
