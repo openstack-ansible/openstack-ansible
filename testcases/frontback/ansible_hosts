@@ -96,7 +96,7 @@ ceilometer-central
 ceilometer-notifier
 
 [ceilometer-api]
-backend
+frontend
 
 [ceilometer-collector]
 backend
