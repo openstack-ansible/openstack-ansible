@@ -26,6 +26,9 @@ replication_network = 10.6.0.0/16
 [mysql]
 controller
 
+[mongodb]
+controller
+
 [rabbitmq]
 controller
 
@@ -83,6 +86,24 @@ storage
 controller
 
 [heat]
+controller
+
+[ceilometer:children]
+ceilometer-api
+ceilometer-collector
+ceilometer-central
+ceilometer-notifier
+
+[ceilometer-api]
+controller
+
+[ceilometer-collector]
+controller
+
+[ceilometer-central]
+controller
+
+[ceilometer-notifier]
 controller
 
 [frontend]
