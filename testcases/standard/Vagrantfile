@@ -21,7 +21,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                        :netmask => "255.255.0.0"
     machine.vm.hostname = "controller"
     machine.vm.provider :virtualbox do |v| 
-      v.customize ["modifyvm", :id, "--memory", 384]
+      v.customize ["modifyvm", :id, "--memory", 512]
     end
   end
 
@@ -32,7 +32,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                        :netmask => "255.255.0.0"
     machine.vm.hostname = "compute"
     machine.vm.provider :virtualbox do |v| 
-      v.customize ["modifyvm", :id, "--memory", 768]
+      v.customize ["modifyvm", :id, "--memory", 1024]
     end
   end
 
@@ -45,7 +45,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                        :netmask => "255.255.0.0"
     machine.vm.hostname = "network"
     machine.vm.provider :virtualbox do |v| 
-      v.customize ["modifyvm", :id, "--memory", 384]
+      v.customize ["modifyvm", :id, "--memory", 512]
       v.customize ["modifyvm", :id, "--nicpromisc4", "allow-vms"]
     end
   end
@@ -60,24 +60,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     machine.vm.hostname = "storage"
     machine.vm.provider :virtualbox do |v| 
       swift_file_to_disk = '.vagrant/swift-storage-extradisk.vdi'
-      v.customize ["modifyvm", :id, "--memory", 384]
-      v.customize ["createhd", "--filename", swift_file_to_disk, "--size", 1024]
-      v.customize ["storageattach", :id, "--storagectl", "SATA Controller", 
-                   "--port", 1, "--device", 0, "--type", "hdd", 
-                   "--medium", swift_file_to_disk]
-    end
-  end
-
-  config.vm.define "volume" do |machine|
-    machine.vm.network :private_network, ip: "10.1.0.6",
-                       :netmask => "255.255.0.0"
-    machine.vm.hostname = "volume"
-    machine.vm.provider :virtualbox do |v| 
       cinder_file_to_disk = '.vagrant/cinder-storage-extradisk.vdi'
-      v.customize ["modifyvm", :id, "--memory", 384]
-      v.customize ["createhd", "--filename", cinder_file_to_disk, "--size", 4096]
-      v.customize ["storageattach", :id, "--storagectl", "SATA Controller", 
-                   "--port", 1, "--device", 0, "--type", "hdd", 
+      v.customize ["modifyvm", :id, "--memory", 512]
+      v.customize ["storageattach", :id, "--storagectl", "SATA Controller",
+                   "--port", 1, "--device", 0, "--type", "hdd",
+                   "--medium", swift_file_to_disk]
+      v.customize ["storageattach", :id, "--storagectl", "SATA Controller",
+                   "--port", 2, "--device", 0, "--type", "hdd",
                    "--medium", cinder_file_to_disk]
     end
   end
