@@ -3,40 +3,46 @@
   hosts: neutron-api
   sudo: True
   gather_facts: True
+  vars:
+    component: neutron
+    subcomponent: server
+    packages:
+      - "{{ component }}-{{ subcomponent }}"
+    services:
+      - "{{ component }}-{{ subcomponent }}"
+    config_files:
+      - "{{ component }}.conf"
+      - api-paste.ini
+
   tasks:
 
-    - name: ensure neutron-api packages are installed
+    - name: ensure {{ component }}-{{ subcomponent }} packages are installed
       apt: 
-        pkg: neutron-server 
+        pkg: "{{ item }}"
         state: latest 
         update_cache: yes 
         cache_valid_time: 600
+      with_items: packages
 
     - name: ensure services are stopped
       service: 
-        name: neutron-server 
+        name: "{{ item }}"
         state: stopped
+      with_items: services
 
-    - name: ensure neutron sqlite is deleted
+    - name: ensure {{ component }} sqlite is deleted
       file: 
-        dest: /var/lib/neutron/neutron.sqlite 
+        dest: /var/lib/{{ component }}/{{ component }}.sqlite 
         state: absent
 
-    - name: update neutron.conf from template
+    - name: update configuration files from templates
       template: 
-        src: templates/etc/neutron/neutron.conf 
-        dest: /etc/neutron/neutron.conf 
-        owner: neutron 
-        group: neutron 
+        src: templates/etc/{{ component }}/{{ item }}
+        dest: /etc/{{ component }}/{{ item }}
+        owner: "{{ component }}"
+        group: "{{ component }}"
         mode: 0600
-
-    - name: update api-paste.ini from template
-      template: 
-        src: templates/etc/neutron/api-paste.ini 
-        dest: /etc/neutron/api-paste.ini 
-        owner: neutron 
-        group: neutron 
-        mode: 0600
+      with_items: config_files
 
     - name: update ovs_neutron_plugin.ini from template
       template: 
@@ -52,11 +58,12 @@
         dest: /etc/neutron/plugin.ini 
         state: link
 
-    - name: ensure neutron-api services are started and enabled
+    - name: ensure services are started and enabled
       service: 
-        name: neutron-server 
+        name: "{{ item }}"
         state: restarted 
         enabled: yes
+      with_items: services
 
     - name: wait for neutron to come back up
       wait_for:
@@ -90,3 +97,4 @@
         allocation_pool_start: "{{ external_network_allocation_pool_start }}"
         allocation_pool_end: "{{ external_network_allocation_pool_end }}"
         state: present
+

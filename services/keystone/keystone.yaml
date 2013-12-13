@@ -3,48 +3,55 @@
   hosts: keystone
   sudo: True
   gather_facts: True
+  vars:
+    component: keystone
+    packages:
+      - "{{ component }}"
+    services:
+      - "{{ component }}"
+    config_files:
+      - "{{ component }}.conf"
+      - api-paste.ini
+
   tasks:
 
-    - name: ensure keystone packages are installed
+    - name: ensure {{ component }} packages are installed
       apt: 
-        pkg: "{{ item }}" 
+        pkg: "{{ item }}"
         state: latest 
         update_cache: yes 
         cache_valid_time: 600
-      with_items:
-        - keystone
-        - python-keystoneclient
+      with_items: packages
 
-    - name: ensure keystone is stopped
+    - name: ensure services are stopped
       service: 
-        name: keystone 
+        name: "{{ item }}"
         state: stopped
+      with_items: services
 
-    - name: ensure sqlite keystone database is deleted
+    - name: ensure {{ component }} sqlite is deleted
       file: 
-        dest: /var/lib/keystone/keystone.db 
+        dest: /var/lib/{{ component }}/{{ component }}.sqlite 
         state: absent
 
-    - name: ensure keystone.conf is present
+    - name: update configuration files from templates
       template: 
-        src: templates/etc/keystone/keystone.conf
-        dest: /etc/keystone/keystone.conf
-        owner: keystone
-        group: keystone
+        src: templates/etc/{{ component }}/{{ item }}
+        dest: /etc/{{ component }}/{{ item }}
+        owner: "{{ component }}"
+        group: "{{ component }}"
         mode: 0600
+      with_items: config_files
 
-    #- name: initialize keystone database
-    #  keystone_manage: 
-    #    action: db_sync
+    - name: ensure database is synced
+      command: /usr/bin/{{ component }}-manage db_sync
 
-    - name: initialize keystone database
-      command: /usr/bin/keystone-manage db_sync
-
-    - name: ensure keystone is started
+    - name: ensure services are started and enabled
       service: 
-        name: keystone 
+        name: "{{ item }}"
         state: restarted 
         enabled: yes
+      with_items: services
 
     # keystone seems to take a while...
     - name: wait for keystone to come back up

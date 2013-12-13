@@ -1,11 +1,11 @@
 ---
-- name: Configure heat-api-cfn server
-  hosts: heat-api-cfn
+- name: Configure cinder-controller server
+  hosts: cinder-controller
   sudo: True
   gather_facts: True
   vars:
-    component: heat
-    subcomponent: api-cfn
+    component: cinder
+    subcomponent: scheduler
     packages:
       - "{{ component }}-{{ subcomponent }}"
     services:

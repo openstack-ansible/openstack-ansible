@@ -1,11 +1,22 @@
 ---
-- name: gather facts needed for templates
-  hosts: mysql:rabbitmq:keystone
-
 - name: Install and configure openvswitch and neutron agent
   hosts: neutron-network:nova-compute
   sudo: True
   gather_facts: True
+  vars:
+    component: neutron
+    subcomponent: openvswitch
+    packages:
+      - openvswitch-common
+      - openvswitch-switch
+      - neutron-plugin-openvswitch-agent
+    services:
+      - neutron-plugin-openvswitch-agent
+      - openvswitch-switch
+    config_files:
+      - "{{ component }}.conf"
+      - api-paste.ini
+
   tasks:
 
     - name: enable net.ipv4.ip_forward in sysctl
@@ -32,45 +43,33 @@
         value: "0"
         state: present
 
-    - name: ensure openvswitch packages are installed
+    - name: ensure {{ component }}-{{ subcomponent }} packages are installed
       apt: 
-        pkg: "{{ item }}" 
+        pkg: "{{ item }}"
         state: latest 
         update_cache: yes 
         cache_valid_time: 600
-      with_items:
-        - openvswitch-common
-        - openvswitch-switch
-        - neutron-plugin-openvswitch-agent
-      
+      with_items: packages
+
     - name: ensure services are stopped
       service: 
-        name: "{{ item }}" 
+        name: "{{ item }}"
         state: stopped
-      with_items:
-        - neutron-plugin-openvswitch-agent
-        - openvswitch-switch
+      with_items: services
 
-    - name: ensure neutron sqlite is deleted
+    - name: ensure {{ component }} sqlite is deleted
       file: 
-        dest: /var/lib/neutron/neutron.sqlite 
+        dest: /var/lib/{{ component }}/{{ component }}.sqlite 
         state: absent
 
-    - name: update neutron.conf from template
+    - name: update configuration files from templates
       template: 
-        src: templates/etc/neutron/neutron.conf 
-        dest: /etc/neutron/neutron.conf 
-        owner: neutron 
-        group: neutron 
+        src: templates/etc/{{ component }}/{{ item }}
+        dest: /etc/{{ component }}/{{ item }}
+        owner: "{{ component }}"
+        group: "{{ component }}"
         mode: 0600
-
-    - name: update api-paste.ini from template
-      template: 
-        src: templates/etc/neutron/api-paste.ini 
-        dest: /etc/neutron/api-paste.ini 
-        owner: neutron 
-        group: neutron 
-        mode: 0600
+      with_items: config_files
 
     - name: update ovs_neutron_plugin.ini from template
       template: 

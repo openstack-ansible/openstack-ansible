@@ -8,8 +8,10 @@
     subcomponent: api
     packages:
       - "{{ component }}-{{ subcomponent }}"
+      - "{{ component }}-{{ subcomponent }}-cfn"
     services:
       - "{{ component }}-{{ subcomponent }}"
+      - "{{ component }}-{{ subcomponent }}-cfn"
     config_files:
       - "{{ component }}.conf"
       - api-paste.ini

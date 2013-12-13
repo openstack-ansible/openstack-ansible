@@ -3,5 +3,5 @@
 - include: rabbitmq.yaml
 - include: keystone.yaml
 - include: neutron-api.yaml
-- include: openvswitch.yaml
-- include: neutron-network.yaml
+- include: neutron-openvswitch.yaml
+- include: neutron-controller.yaml

@@ -16,5 +16,6 @@
         password: "{{ keystone_mysql_password }}" 
         priv: keystone.*:ALL
       with_items:
-          - "%"
-          - localhost
+        - "%"
+        - localhost
+

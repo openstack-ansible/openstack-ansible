@@ -3,6 +3,5 @@
 - include: rabbitmq.yaml
 - include: keystone.yaml
 - include: ceilometer-api.yaml
-- include: ceilometer-agent-central.yaml
-- include: ceilometer-collector.yaml
+- include: ceilometer-controller.yaml
 - include: nova-compute.yaml
