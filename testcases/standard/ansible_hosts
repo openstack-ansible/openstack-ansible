@@ -42,8 +42,12 @@ controller
 controller
 
 [nova:children]
+nova-api
 nova-controller
 nova-compute
+
+[nova-api]
+controller
 
 [nova-controller]
 controller
@@ -53,13 +57,13 @@ compute
 
 [neutron:children]
 neutron-api
-neutron-network
+neutron-controller
 nova-compute
 
 [neutron-api]
 controller
 
-[neutron-network]
+[neutron-controller]
 network
 
 [swift:children]
@@ -74,13 +78,13 @@ storage
 
 [cinder:children]
 cinder-api
-cinder-scheduler
+cinder-controller
 cinder-volume
 
 [cinder-api]
 controller
 
-[cinder-scheduler]
+[cinder-controller]
 controller
 
 [cinder-volume]
@@ -91,34 +95,22 @@ controller
 
 [heat:children]
 heat-api
-heat-api-cfn
-heat-engine
+heat-controller
 
 [heat-api]
 controller
 
-[heat-api-cfn]
-controller
-
-[heat-engine]
+[heat-controller]
 controller
 
 [ceilometer:children]
 ceilometer-api
-ceilometer-collector
-ceilometer-central
-ceilometer-notifier
+ceilometer-controller
 
 [ceilometer-api]
 controller
 
-[ceilometer-collector]
-controller
-
-[ceilometer-central]
-controller
-
-[ceilometer-notifier]
+[ceilometer-controller]
 controller
 
 [frontend]
