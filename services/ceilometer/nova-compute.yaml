@@ -1,45 +1,51 @@
 ---
-- name: Configure ceilometer compute agent
+- name: Configure ceilometer-agent-compute server
   hosts: nova-compute
   sudo: True
   gather_facts: True
+  vars:
+    component: ceilometer
+    subcomponent: agent-compute
+    packages:
+      - "{{ component }}-{{ subcomponent }}"
+    services:
+      - "{{ component }}-{{ subcomponent }}"
+    config_files:
+      - "{{ component }}.conf"
+
   tasks:
 
-    - name: ensure ceilometer-agent-compute packages are installed
+    - name: ensure {{ component }}-{{ subcomponent }} packages are installed
       apt: 
         pkg: "{{ item }}"
         state: latest 
         update_cache: yes 
         cache_valid_time: 600
-      with_items:
-        - ceilometer-agent-compute
+      with_items: packages
 
     - name: ensure services are stopped
       service: 
         name: "{{ item }}"
         state: stopped
-      with_items:
-        - ceilometer-agent-compute
+      with_items: services
 
-    - name: ensure ceilometer sqlite is deleted
+    - name: ensure {{ component }} sqlite is deleted
       file: 
-        dest: /var/lib/ceilometer/ceilometer.sqlite 
+        dest: /var/lib/{{ component }}/{{ component }}.sqlite 
         state: absent
 
     - name: update configuration files from templates
       template: 
-        src: templates/etc/ceilometer/{{ item }}
-        dest: /etc/ceilometer/{{ item }}
-        owner: ceilometer 
-        group: ceilometer 
+        src: templates/etc/{{ component }}/{{ item }}
+        dest: /etc/{{ component }}/{{ item }}
+        owner: "{{ component }}"
+        group: "{{ component }}"
         mode: 0600
-      with_items:
-        - ceilometer.conf
+      with_items: config_files
 
     - name: ensure services are started and enabled
       service: 
         name: "{{ item }}"
         state: restarted 
         enabled: yes
-      with_items:
-        - ceilometer-agent-compute
+      with_items: services

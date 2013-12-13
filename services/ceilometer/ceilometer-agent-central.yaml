@@ -4,17 +4,18 @@
   sudo: True
   gather_facts: True
   vars:
-    component_name: ceilometer
+    component: ceilometer
+    subcomponent: agent-central
     packages:
-      - ceilometer-agent-central
+      - "{{ component }}-{{ subcomponent }}"
     services:
-      - ceilometer-agent-central
+      - "{{ component }}-{{ subcomponent }}"
     config_files:
-      - ceilometer.conf
+      - "{{ component }}.conf"
 
   tasks:
 
-    - name: ensure {{ component_name }}-agent-central packages are installed
+    - name: ensure {{ component }}-{{ subcomponent }} packages are installed
       apt: 
         pkg: "{{ item }}"
         state: latest 
@@ -28,17 +29,17 @@
         state: stopped
       with_items: services
 
-    - name: ensure {{ component_name }} sqlite is deleted
+    - name: ensure {{ component }} sqlite is deleted
       file: 
-        dest: /var/lib/{{ component_name }}/{{ component_name }}.sqlite 
+        dest: /var/lib/{{ component }}/{{ component }}.sqlite 
         state: absent
 
     - name: update configuration files from templates
       template: 
-        src: templates/etc/{{ component_name }}/{{ item }}
-        dest: /etc/{{ component_name }}/{{ item }}
-        owner: "{{ component_name }}"
-        group: "{{ component_name }}"
+        src: templates/etc/{{ component }}/{{ item }}
+        dest: /etc/{{ component }}/{{ item }}
+        owner: "{{ component }}"
+        group: "{{ component }}"
         mode: 0600
       with_items: config_files
 
@@ -48,4 +49,3 @@
         state: restarted 
         enabled: yes
       with_items: services
-
