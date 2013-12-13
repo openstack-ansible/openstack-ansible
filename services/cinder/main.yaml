@@ -3,5 +3,5 @@
 - include: rabbitmq.yaml
 - include: keystone.yaml
 - include: cinder-api.yaml
-- include: cinder-scheduler.yaml
+- include: cinder-controller.yaml
 - include: cinder-volume.yaml

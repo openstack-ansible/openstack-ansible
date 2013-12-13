@@ -11,7 +11,6 @@
       - "{{ component }}"
     config_files:
       - "{{ component }}.conf"
-      - api-paste.ini
 
   tasks:
 
