@@ -1,30 +1,20 @@
 ---
-- name: Configure cinder-volume server
-  hosts: cinder-volume
+- name: Configure heat-api server
+  hosts: heat-api
   sudo: True
   gather_facts: True
   vars:
-    component: cinder
-    subcomponent: volume
+    component: heat
+    subcomponent: api
     packages:
       - "{{ component }}-{{ subcomponent }}"
-      - lvm2
-      - qemu-utils
-      - tgt
     services:
       - "{{ component }}-{{ subcomponent }}"
-      - tgt
     config_files:
       - "{{ component }}.conf"
       - api-paste.ini
 
   tasks:
-
-    - name: create cinder-volumes volume group
-      lvg:
-        vg: cinder-volumes
-        pvs: "/dev/{{ volume_devices|join(',/dev/') }}"
-        state: present
 
     - name: ensure {{ component }}-{{ subcomponent }} packages are installed
       apt: 

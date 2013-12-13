@@ -3,69 +3,56 @@
   hosts: glance
   sudo: True
   gather_facts: True
+  vars:
+    component: glance 
+    packages:
+      - glance
+    services:
+      - glance-api
+      - glance-registry
+    config_files:
+      - glance-api.conf
+      - glance-api-paste.ini
+      - glance-registry.conf
+      - glance-registry-paste.ini
+
   tasks:
 
-    - name: ensure glance is installed
+    - name: ensure {{ component }} packages are installed
       apt: 
-        pkg: glance 
+        pkg: "{{ item }}"
         state: latest 
         update_cache: yes 
         cache_valid_time: 600
+      with_items: packages
 
-    - name: ensure glance service are stopped
+    - name: ensure services are stopped
       service: 
-        name: "{{ item }}" 
+        name: "{{ item }}"
         state: stopped
-      with_items:
-        - glance-api
-        - glance-registry
+      with_items: services
 
-    - name: ensure glance sqlite is deleted
+    - name: ensure {{ component }} sqlite is deleted
       file: 
-        dest: /var/lib/glance/glance.sqlite 
+        dest: /var/lib/{{ component }}/{{ component }}.sqlite 
         state: absent
 
-    - name: update glance-api.conf file from template
+    - name: update configuration files from templates
       template: 
-        src: templates/etc/glance/glance-api.conf 
-        dest: /etc/glance/glance-api.conf 
-        owner: glance 
-        group: glance 
+        src: templates/etc/{{ component }}/{{ item }}
+        dest: /etc/{{ component }}/{{ item }}
+        owner: "{{ component }}"
+        group: "{{ component }}"
         mode: 0600
-
-    - name: update glance-api-paste.ini file from template
-      template: 
-        src: templates/etc/glance/glance-api-paste.ini 
-        dest: /etc/glance/glance-api-paste.ini 
-        owner: glance 
-        group: glance 
-        mode: 0600
-
-    - name: update glance-registry.conf file from template
-      template: 
-        src: templates/etc/glance/glance-registry.conf 
-        dest: /etc/glance/glance-registry.conf 
-        owner: glance 
-        group: glance 
-        mode: 0600
-
-    - name: update glance-registry-paste.ini file from template
-      template: 
-        src: templates/etc/glance/glance-registry-paste.ini 
-        dest: /etc/glance/glance-registry-paste.ini 
-        owner: glance 
-        group: glance 
-        mode: 0600
+      with_items: config_files
 
     - name: ensure database is synced
-      command: /usr/bin/glance-manage db_sync
+      command: /usr/bin/{{ component }}-manage db_sync
 
-    - name: ensure services are started
+    - name: ensure services are started and enabled
       service: 
-        name: "{{ item }}" 
+        name: "{{ item }}"
         state: restarted 
         enabled: yes
-      with_items:
-        - glance-api
-        - glance-registry
+      with_items: services
 

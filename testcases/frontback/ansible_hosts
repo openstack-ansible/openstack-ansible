@@ -75,9 +75,13 @@ backend
 
 [cinder:children]
 cinder-api
+cinder-scheduler
 cinder-volume
 
 [cinder-api]
+frontend
+
+[cinder-scheduler]
 frontend
 
 [cinder-volume]

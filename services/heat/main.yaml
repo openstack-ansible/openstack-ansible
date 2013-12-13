@@ -2,4 +2,6 @@
 - include: mysql.yaml
 - include: rabbitmq.yaml
 - include: keystone.yaml
-- include: heat.yaml
+- include: heat-api.yaml
+- include: heat-api-cfn.yaml
+- include: heat-engine.yaml

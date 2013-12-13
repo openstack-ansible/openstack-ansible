@@ -6,13 +6,15 @@
   tasks:
 
     - name: ensure cinder database is present
-      mysql_db: name=cinder
+      mysql_db: 
+        name: cinder
 
     - name: ensure cinder database user is present
-      mysql_user: name=cinder 
-                  host="{{ item }}" 
-                  password="{{ cinder_mysql_password }}" 
-                  priv=cinder.*:ALL
+      mysql_user: 
+        name: cinder 
+        host: "{{ item }}" 
+        password: "{{ cinder_mysql_password }}" 
+        priv: cinder.*:ALL
       with_items:
         - "%"
         - localhost

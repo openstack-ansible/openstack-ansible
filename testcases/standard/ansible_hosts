@@ -74,9 +74,13 @@ storage
 
 [cinder:children]
 cinder-api
+cinder-scheduler
 cinder-volume
 
 [cinder-api]
+controller
+
+[cinder-scheduler]
 controller
 
 [cinder-volume]
@@ -85,7 +89,18 @@ storage
 [dashboard]
 controller
 
-[heat]
+[heat:children]
+heat-api
+heat-api-cfn
+heat-engine
+
+[heat-api]
+controller
+
+[heat-api-cfn]
+controller
+
+[heat-engine]
 controller
 
 [ceilometer:children]
