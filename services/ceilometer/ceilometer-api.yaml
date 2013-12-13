@@ -3,43 +3,49 @@
   hosts: ceilometer-api
   sudo: True
   gather_facts: True
+  vars:
+    component_name: ceilometer
+    subcomponent_name: api
+    packages:
+      - "{{ component_name }}-{{ subcomponent_name }}"
+    services:
+      - "{{ component_name }}-{{ subcomponent_name }}"
+    config_files:
+      - "{{ component_name }}.conf"
+
   tasks:
 
-    - name: ensure ceilometer-api packages are installed
+    - name: ensure {{ component_name }}-{{ subcomponent_name }} packages are installed
       apt: 
         pkg: "{{ item }}"
         state: latest 
         update_cache: yes 
         cache_valid_time: 600
-      with_items:
-        - ceilometer-api
+      with_items: packages
 
     - name: ensure services are stopped
       service: 
         name: "{{ item }}"
         state: stopped
-      with_items:
-        - ceilometer-api
+      with_items: services
 
-    - name: ensure ceilometer sqlite is deleted
+    - name: ensure {{ component_name }} sqlite is deleted
       file: 
-        dest: /var/lib/ceilometer/ceilometer.sqlite 
+        dest: /var/lib/{{ component_name }}/{{ component_name }}.sqlite 
         state: absent
 
     - name: update configuration files from templates
       template: 
-        src: templates/etc/ceilometer/{{ item }}
-        dest: /etc/ceilometer/{{ item }}
-        owner: ceilometer 
-        group: ceilometer 
+        src: templates/etc/{{ component_name }}/{{ item }}
+        dest: /etc/{{ component_name }}/{{ item }}
+        owner: "{{ component_name }}"
+        group: "{{ component_name }}"
         mode: 0600
-      with_items:
-        - ceilometer.conf
+      with_items: config_files
 
     - name: ensure services are started and enabled
       service: 
         name: "{{ item }}"
         state: restarted 
         enabled: yes
-      with_items:
-        - ceilometer-api
+      with_items: services

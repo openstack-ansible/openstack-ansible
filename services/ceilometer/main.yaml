@@ -5,5 +5,4 @@
 - include: ceilometer-api.yaml
 - include: ceilometer-central.yaml
 - include: ceilometer-collector.yaml
-- include: ceilometer-notifier.yaml
 - include: nova-compute.yaml

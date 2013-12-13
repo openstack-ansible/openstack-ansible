@@ -59,10 +59,12 @@
 
     - name: set clocks to public ntp server
       command: ntpdate {{ external_ntp_host }}
-      register: ntpdate_result
-      until: ntpdate_result|success
-      retries: 5
-      delay: 5
+      ignore_errors: yes
+
+    # register: ntpdate_result
+    # until: ntpdate_result|success
+    # retries: 5
+    # delay: 5
 
     #- name: make sure chrony server is started and enabled
     #  service: 

@@ -1,45 +1,51 @@
 ---
 - name: Configure ceilometer-agent-central server
-  hosts: ceilometer-central
+  hosts: ceilometer-agent-central
   sudo: True
   gather_facts: True
+  vars:
+    component_name: ceilometer
+    packages:
+      - ceilometer-agent-central
+    services:
+      - ceilometer-agent-central
+    config_files:
+      - ceilometer.conf
+
   tasks:
 
-    - name: ensure ceilometer-agent-central packages are installed
+    - name: ensure {{ component_name }}-agent-central packages are installed
       apt: 
         pkg: "{{ item }}"
         state: latest 
         update_cache: yes 
         cache_valid_time: 600
-      with_items:
-        - ceilometer-agent-central
+      with_items: packages
 
     - name: ensure services are stopped
       service: 
         name: "{{ item }}"
         state: stopped
-      with_items:
-        - ceilometer-agent-central
+      with_items: services
 
-    - name: ensure ceilometer sqlite is deleted
+    - name: ensure {{ component_name }} sqlite is deleted
       file: 
-        dest: /var/lib/ceilometer/ceilometer.sqlite 
+        dest: /var/lib/{{ component_name }}/{{ component_name }}.sqlite 
         state: absent
 
     - name: update configuration files from templates
       template: 
-        src: templates/etc/ceilometer/{{ item }}
-        dest: /etc/ceilometer/{{ item }}
-        owner: ceilometer 
-        group: ceilometer 
+        src: templates/etc/{{ component_name }}/{{ item }}
+        dest: /etc/{{ component_name }}/{{ item }}
+        owner: "{{ component_name }}"
+        group: "{{ component_name }}"
         mode: 0600
-      with_items:
-        - ceilometer.conf
+      with_items: config_files
 
     - name: ensure services are started and enabled
       service: 
         name: "{{ item }}"
         state: restarted 
         enabled: yes
-      with_items:
-        - ceilometer-agent-central
+      with_items: services
+
