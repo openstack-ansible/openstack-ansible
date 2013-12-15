@@ -42,12 +42,8 @@ controller
 controller
 
 [nova:children]
-nova-api
 nova-controller
 nova-compute
-
-[nova-api]
-controller
 
 [nova-controller]
 controller
