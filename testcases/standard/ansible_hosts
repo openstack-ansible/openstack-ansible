@@ -93,14 +93,7 @@ storage
 [dashboard]
 controller
 
-[heat:children]
-heat-api
-heat-engine
-
-[heat-api]
-controller
-
-[heat-engine]
+[heat]
 controller
 
 [ceilometer:children]

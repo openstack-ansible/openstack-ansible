@@ -1,18 +1,17 @@
 ---
-- name: Configure heat-api server
-  hosts: heat-api
+- name: Configure heat server
+  hosts: heat
   sudo: True
   gather_facts: True
   vars:
     component: heat
-    subcomponent: api
     packages:
-      - "{{ component }}-{{ subcomponent }}"
-      - "{{ component }}-{{ subcomponent }}-cfn"
+      - "{{ component }}-api"
+      - "{{ component }}-api-cfn"
       - "{{ component }}-engine"
     services:
-      - "{{ component }}-{{ subcomponent }}"
-      - "{{ component }}-{{ subcomponent }}-cfn"
+      - "{{ component }}-api"
+      - "{{ component }}-api-cfn"
       - "{{ component }}-engine"
     config_files:
       - "{{ component }}.conf"
@@ -20,7 +19,7 @@
 
   tasks:
 
-    - name: ensure {{ component }}-{{ subcomponent }} packages are installed
+    - name: ensure {{ component }} packages are installed
       apt: 
         pkg: "{{ item }}"
         state: latest 
