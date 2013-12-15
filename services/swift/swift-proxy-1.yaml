@@ -11,11 +11,11 @@
       - python-memcache
       - python-swiftclient
       - python-webob
-      - swift
-      - swift-proxy
+      - "{{ component }}"
+      - "{{ component }}-proxy"
     services:
       - memcached
-      - swift-proxy
+      - "{{ component }}-proxy"
     config_files:
       - "{{ component }}.conf"
       - proxy-server.conf
@@ -41,6 +41,18 @@
         dest: /var/lib/{{ component }}/{{ component }}.sqlite 
         state: absent
 
+    - name: create directories if not already there
+      file:
+        path: "{{ item }}"
+        owner: "{{ component }}"
+        group: "{{ component }}"
+        mode: 0750
+        state: directory
+      with_items:
+        - /etc/{{ component }}
+        - /var/lib/{{ component }}
+        - /var/lib/{{ component }}/keystone-signing
+
     - name: update configuration files from templates
       template: 
         src: templates/etc/{{ component }}/{{ item }}
@@ -58,30 +70,18 @@
         group: root
         mode: 0644
 
-    - name: create directories if not already there
-      file:
-        path: "{{ item }}"
-        owner: swift
-        group: swift
-        mode: 0750
-        state: directory
-      with_items:
-        - /etc/swift
-        - /var/lib/swift
-        - /var/lib/swift/keystone-signing
-
     - name: create account builder
-      command: sudo -u swift swift-ring-builder account.builder create 18 3 1
-               chdir=/etc/swift
-               creates=/etc/swift/account.builder
+      command: sudo -u {{ component }} {{ component }}-ring-builder account.builder create 18 3 1
+               chdir=/etc/{{ component }}
+               creates=/etc/{{ component }}/account.builder
 
     - name: create container builder
-      command: sudo -u swift swift-ring-builder container.builder create 18 3 1
-               chdir=/etc/swift
-               creates=/etc/swift/container.builder
+      command: sudo -u {{ component }} {{ component }}-ring-builder container.builder create 18 3 1
+               chdir=/etc/{{ component }}
+               creates=/etc/{{ component }}/container.builder
 
     - name: create object builder
-      command: sudo -u swift swift-ring-builder object.builder create 18 3 1
-               chdir=/etc/swift
-               creates=/etc/swift/object.builder
+      command: sudo -u {{ component }} {{ component }}-ring-builder object.builder create 18 3 1
+               chdir=/etc/{{ component }}
+               creates=/etc/{{ component }}/object.builder
 

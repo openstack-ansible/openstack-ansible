@@ -9,9 +9,11 @@
     packages:
       - "{{ component }}-{{ subcomponent }}"
       - "{{ component }}-{{ subcomponent }}-cfn"
+      - "{{ component }}-engine"
     services:
       - "{{ component }}-{{ subcomponent }}"
       - "{{ component }}-{{ subcomponent }}-cfn"
+      - "{{ component }}-engine"
     config_files:
       - "{{ component }}.conf"
       - api-paste.ini
@@ -47,7 +49,7 @@
       with_items: config_files
 
     - name: ensure database is synced
-      command: /usr/bin/{{ component }}-manage db sync
+      command: /usr/bin/{{ component }}-manage db_sync
 
     - name: ensure services are started and enabled
       service: 
