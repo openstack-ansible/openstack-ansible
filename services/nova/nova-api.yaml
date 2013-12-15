@@ -1,34 +1,22 @@
 ---
-- name: Configure nova-controller server
-  hosts: nova-controller
+- name: Configure nova-api server
+  hosts: nova-api
   sudo: True
   gather_facts: True
   vars:
     component: nova
+    subcomponent: api
     packages:
-      - nova-ajax-console-proxy
-      - nova-api
-      - nova-cert
-      - nova-conductor
-      - nova-consoleauth
-      - nova-novncproxy
-      - nova-scheduler
-      - novnc
-      - python-novaclient
+      - "{{ component }}-{{ subcomponent }}"
     services:
-      - nova-api
-      - nova-cert
-      - nova-conductor
-      - nova-consoleauth
-      - nova-scheduler
-      - nova-novncproxy
+      - "{{ component }}-{{ subcomponent }}"
     config_files:
       - "{{ component }}.conf"
       - api-paste.ini
 
   tasks:
 
-    - name: ensure {{ component }}-controller packages are installed
+    - name: ensure {{ component }}-{{ subcomponent }} packages are installed
       apt: 
         pkg: "{{ item }}"
         state: latest 
