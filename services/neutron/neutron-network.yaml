@@ -1,6 +1,6 @@
 ---
-- name: Configure neutron-controller server
-  hosts: neutron-controller
+- name: Configure neutron-network server
+  hosts: neutron-network
   sudo: True
   gather_facts: True
   vars:
@@ -45,7 +45,7 @@
       command: /usr/bin/ovs-vsctl -- --may-exist add-br br-ex
 
     - name: ensure br-ex has external nic enslaved
-      command: /usr/bin/ovs-vsctl -- --may-exist add-port br-ex {{ hostvars[groups['neutron-controller'][0]]|find_netdev(external_network) }}
+      command: /usr/bin/ovs-vsctl -- --may-exist add-port br-ex {{ hostvars[groups['neutron-network'][0]]|find_netdev(external_network) }}
 
     - name: ensure script to configure network is in place
       template: 
@@ -58,7 +58,7 @@
     - name: ensure configure script is run at least once
       command: /etc/network/if-pre-up.d/configure_br-ex
 
-    - name: ensure {{ component }}-controller packages are installed
+    - name: ensure {{ component }}-network packages are installed
       apt: 
         pkg: "{{ item }}"
         state: latest 

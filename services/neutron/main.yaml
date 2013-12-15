@@ -4,4 +4,4 @@
 - include: keystone.yaml
 - include: neutron-api.yaml
 - include: neutron-openvswitch.yaml
-- include: neutron-controller.yaml
+- include: neutron-network.yaml

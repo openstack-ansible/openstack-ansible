@@ -21,7 +21,7 @@
       - nova-scheduler
       - nova-novncproxy
     config_files:
-      - nova.conf
+      - "{{ component }}.conf"
       - api-paste.ini
 
   tasks:

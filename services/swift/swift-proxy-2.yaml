@@ -1,12 +1,8 @@
 ---
-- name: gather needed facts
-  hosts: keystone:swift-storage
-  gather_facts: True
-
 - name: Configure Swift Proxy Node
   hosts: swift-proxy
-  gather_facts: True
   sudo: True
+  gather_facts: True
   tasks:
 
     - name: rebalance account builder

@@ -1,36 +1,54 @@
 ---
-- name: gather needed facts
-  hosts: keystone:swift-storage
-  gather_facts: True
-
-- name: Configure Swift Proxy Node
+- name: Configure swift-proxy server
   hosts: swift-proxy
-  gather_facts: True
   sudo: True
+  gather_facts: True
+  vars:
+    component: swift
+    packages:
+      - memcached
+      - python-keystoneclient
+      - python-memcache
+      - python-swiftclient
+      - python-webob
+      - swift
+      - swift-proxy
+    services:
+      - memcached
+      - swift-proxy
+    config_files:
+      - "{{ component }}.conf"
+      - proxy-server.conf
+
   tasks:
 
-    - name: ensure required base packages are present
+    - name: ensure {{ component }}-proxy packages are installed
       apt: 
-        pkg: "{{ item }}" 
+        pkg: "{{ item }}"
         state: latest 
         update_cache: yes 
         cache_valid_time: 600
-      with_items:
-        - memcached
-        - python-keystoneclient
-        - python-memcache
-        - python-swiftclient
-        - python-webob
-        - swift
-        - swift-proxy
+      with_items: packages
 
     - name: ensure services are stopped
       service: 
-        name: "{{ item }}" 
+        name: "{{ item }}"
         state: stopped
-      with_items:
-        - memcached
-        - swift-proxy
+      with_items: services
+
+    - name: ensure {{ component }} sqlite is deleted
+      file: 
+        dest: /var/lib/{{ component }}/{{ component }}.sqlite 
+        state: absent
+
+    - name: update configuration files from templates
+      template: 
+        src: templates/etc/{{ component }}/{{ item }}
+        dest: /etc/{{ component }}/{{ item }}
+        owner: "{{ component }}"
+        group: "{{ component }}"
+        mode: 0600
+      with_items: config_files
 
     - name: update memcached.conf from template
       template:
@@ -40,33 +58,17 @@
         group: root
         mode: 0644
 
-    - name: create /etc/swift directory if not already there
+    - name: create directories if not already there
       file:
-        path: /etc/swift
+        path: "{{ item }}"
         owner: swift
         group: swift
         mode: 0750
         state: directory
-
-    - name: update swift.conf from template
-      template:
-        src: templates/etc/swift/swift.conf
-        dest: /etc/swift/swift.conf
-        owner: swift
-        group: swift
-        mode: 0660
-
-    - name: update proxy-server.conf from template
-      template:
-        src: templates/etc/swift/proxy-server.conf
-        dest: /etc/swift/proxy-server.conf
-        owner: swift
-        group: swift
-        mode: 0660
-
-    #- name: create proxy self-signed certificate
-    #  command: sudo -u swift openssl req -new -nodes -x509 -subj "/CN=swift-internal" -days 3650 -out /etc/swift/cert.crt -keyout /etc/swift/cert.key
-    #           creates=/etc/swift/cert.crt
+      with_items:
+        - /etc/swift
+        - /var/lib/swift
+        - /var/lib/swift/keystone-signing
 
     - name: create account builder
       command: sudo -u swift swift-ring-builder account.builder create 18 3 1
@@ -82,19 +84,4 @@
       command: sudo -u swift swift-ring-builder object.builder create 18 3 1
                chdir=/etc/swift
                creates=/etc/swift/object.builder
-    
-    - name: create /var/lib/swift directory if not already there
-      file:
-        path: /var/lib/swift
-        owner: swift
-        group: swift
-        mode: 0750
-        state: directory
 
-    - name: create /var/lib/swift/keystone-signing directory if not already there
-      file:
-        path: /var/lib/swift/keystone-signing
-        owner: swift
-        group: swift
-        mode: 0750
-        state: directory

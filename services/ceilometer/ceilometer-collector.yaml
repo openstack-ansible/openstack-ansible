@@ -1,22 +1,22 @@
 ---
-- name: Configure heat-controller server
-  hosts: heat-controller
+- name: Configure ceilometer-colloector server
+  hosts: ceilometer-collector
   sudo: True
   gather_facts: True
   vars:
-    component: heat
-    subcomponent: engine
+    component: ceilometer
     packages:
-      - "{{ component }}-{{ subcomponent }}"
+      - "{{ component }}-collector"
+      - "{{ component }}-agent-central"
     services:
-      - "{{ component }}-{{ subcomponent }}"
+      - "{{ component }}-collector"
+      - "{{ component }}-agent-central"
     config_files:
       - "{{ component }}.conf"
-      - api-paste.ini
 
   tasks:
 
-    - name: ensure {{ component }}-{{ subcomponent }} packages are installed
+    - name: ensure {{ component }}-collector packages are installed
       apt: 
         pkg: "{{ item }}"
         state: latest 
@@ -43,9 +43,6 @@
         group: "{{ component }}"
         mode: 0600
       with_items: config_files
-
-    - name: ensure database is synced
-      command: /usr/bin/{{ component }}-manage db sync
 
     - name: ensure services are started and enabled
       service: 

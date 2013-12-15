@@ -57,13 +57,13 @@ compute
 
 [neutron:children]
 neutron-api
-neutron-controller
+neutron-network
 nova-compute
 
 [neutron-api]
 controller
 
-[neutron-controller]
+[neutron-network]
 network
 
 [swift:children]
@@ -78,13 +78,13 @@ storage
 
 [cinder:children]
 cinder-api
-cinder-controller
+cinder-scheduler
 cinder-volume
 
 [cinder-api]
 controller
 
-[cinder-controller]
+[cinder-scheduler]
 controller
 
 [cinder-volume]
@@ -95,22 +95,22 @@ controller
 
 [heat:children]
 heat-api
-heat-controller
+heat-engine
 
 [heat-api]
 controller
 
-[heat-controller]
+[heat-engine]
 controller
 
 [ceilometer:children]
 ceilometer-api
-ceilometer-controller
+ceilometer-collector
 
 [ceilometer-api]
 controller
 
-[ceilometer-controller]
+[ceilometer-collector]
 controller
 
 [frontend]

@@ -1,11 +1,11 @@
 ---
-- name: Configure cinder-controller server
-  hosts: cinder-controller
+- name: Configure heat-engine server
+  hosts: heat-engine
   sudo: True
   gather_facts: True
   vars:
-    component: cinder
-    subcomponent: scheduler
+    component: heat
+    subcomponent: engine
     packages:
       - "{{ component }}-{{ subcomponent }}"
     services:
