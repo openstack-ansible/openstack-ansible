@@ -86,9 +86,6 @@
         mode: 0600
       with_items: config_files
 
-    - name: ensure database is synced
-      command: /usr/bin/{{ component }}-manage db sync
-
     - name: ensure services are started and enabled
       service: 
         name: "{{ item }}"
