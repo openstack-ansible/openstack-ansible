@@ -3,4 +3,4 @@
 - include: rabbitmq.yaml
 - include: keystone.yaml
 - include: heat-api.yaml
-- include: heat-controller.yaml
+- include: heat-engine.yaml

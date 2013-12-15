@@ -35,6 +35,8 @@
       - container-server.conf
       - object-server.conf
 
+    tasks:
+
     - name: ensure {{ component }}-{{ subcomponent }} packages are installed
       apt: 
         pkg: "{{ item }}"
