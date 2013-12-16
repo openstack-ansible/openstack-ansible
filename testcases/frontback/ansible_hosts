@@ -23,16 +23,16 @@ storage_network = 10.5.0.0/16
 replication_network = 10.6.0.0/16
 
 [mysql]
-backend
+frontend
 
 [mongodb]
-backend
+frontend
 
 [rabbitmq]
-backend
+frontend
 
 [ntpserver]
-backend
+frontend
 
 [keystone]
 frontend
@@ -71,8 +71,6 @@ frontend
 [swift-storage]
 backend
 
-[cinder:vars]
-
 [cinder:children]
 cinder-api
 cinder-scheduler
@@ -96,20 +94,12 @@ frontend
 [ceilometer:children]
 ceilometer-api
 ceilometer-collector
-ceilometer-central
-ceilometer-notifier
 
 [ceilometer-api]
 frontend
 
 [ceilometer-collector]
-backend
-
-[ceilometer-central]
-backend
-
-[ceilometer-notifier]
-backend
+frontend
 
 [frontend]
 frontend
