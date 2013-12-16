@@ -37,7 +37,7 @@
 
   tasks:
 
-    - name: ensure {{ component }}-{{ subcomponent }} packages are installed
+    - name: ensure {{ component }}-storage packages are installed
       apt: 
         pkg: "{{ item }}"
         state: latest 
