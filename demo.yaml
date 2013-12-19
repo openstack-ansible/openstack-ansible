@@ -36,11 +36,6 @@
         dest: "{{ ansible_env['HOME'] }}/demo.openrc"
         mode: 0600
 
-    - name: copy cirros image to frontend
-      copy:
-        src: files/cirros-0.3.1-x86_64-disk.img
-        dest: /tmp/cirros-0.3.1-x86_64-disk.img
- 
     - name: ensure cirros image is registered
       glance_image: 
         auth_url: "{{ keystone_public_url }}"
@@ -49,9 +44,9 @@
         login_password: "{{ demo_password }}"
         name: cirros-0.3.1-x86_64 
         disk_format: qcow2
-        file: /tmp/cirros-0.3.1-x86_64-disk.img
+        copy_from: "{{ cirros_url }}"
         is_public: True 
-        timeout: 600
+        timeout: 1200
         state: present
       register: cirros_image
 
