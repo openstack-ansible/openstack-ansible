@@ -1,0 +1,22 @@
+---
+- name: Configure RabbitMQ server
+  hosts: rabbitmq
+  sudo: True
+  gather_facts: False
+  tasks:
+
+    - name: ensure glance vhost is present
+      rabbitmq_vhost: 
+        name: /glance
+        state: present
+
+    - name: ensure glance user is present
+      rabbitmq_user: 
+        user: glance
+        password: "{{ glance_rabbit_password }}" 
+        vhost: /glance
+        configure_priv: .*
+        read_priv: .*
+        write_priv: .*
+        state: present
+        force: yes

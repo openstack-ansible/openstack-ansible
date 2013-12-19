@@ -1,0 +1,38 @@
+---
+- name: Configure Swift Proxy Node
+  hosts: swift-proxy
+  sudo: True
+  gather_facts: True
+  tasks:
+
+    - name: rebalance account builder
+      command: sudo -u swift swift-ring-builder account.builder rebalance
+               chdir=/etc/swift
+      ignore_errors: yes
+
+    - name: rebalance container builder
+      command: sudo -u swift swift-ring-builder container.builder rebalance
+               chdir=/etc/swift
+      ignore_errors: yes
+
+    - name: rebalance object builder
+      command: sudo -u swift swift-ring-builder object.builder rebalance
+               chdir=/etc/swift
+      ignore_errors: yes
+    
+    - name: distribute builders with rsync
+      shell: rsync -av /etc/swift/*.builder {{ hostvars[item]|find_ip(storage_network) }}::config
+      with_items: groups['swift-storage']
+
+    - name: distribute rings with rsync
+      shell: rsync -av /etc/swift/*.ring.gz {{ hostvars[item]|find_ip(storage_network) }}::config
+      with_items: groups['swift-storage']
+
+    - name: ensure services are started
+      service: 
+        name: "{{ item }}" 
+        state: restarted 
+        enabled: yes
+      with_items:
+        - memcached
+        - swift-proxy

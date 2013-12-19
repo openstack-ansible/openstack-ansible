@@ -1,3 +1,2 @@
 ---
 - include: frontend.yaml
-- include: keystone.yaml

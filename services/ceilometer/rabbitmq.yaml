@@ -1,0 +1,22 @@
+---
+- name: Configure RabbitMQ server
+  hosts: rabbitmq
+  sudo: True
+  gather_facts: False
+  tasks:
+
+    - name: ensure ceilometer vhost is present
+      rabbitmq_vhost: 
+        name: /ceilometer
+        state: present
+
+    - name: ensure ceilometer user is present
+      rabbitmq_user: 
+        user: ceilometer
+        password: "{{ ceilometer_rabbit_password }}" 
+        vhost: /ceilometer
+        configure_priv: .*
+        read_priv: .*
+        write_priv: .*
+        state: present
+        force: yes

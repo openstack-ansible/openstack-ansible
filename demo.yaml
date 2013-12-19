@@ -1,0 +1,168 @@
+---
+- hosts: keystone
+  gather_facts: True
+
+- hosts: frontend
+  gather_facts: False
+  vars:
+    cirros_url: http://download.cirros-cloud.net/0.3.1/cirros-0.3.1-x86_64-disk.img
+    internal_network_name: demo-net
+    internal_network_subnet_name: demo-subnet
+    internal_network_subnet_cidr: 192.168.0.0/24
+    internal_network_subnet_dns_nameservers: 8.8.8.8
+    internal_network_subnet_gateway_ip: 192.168.0.1
+    router_name: demo-router
+    demo_password: secret
+  tasks:
+
+    - name: create demo tenant
+      keystone_user:
+        endpoint: "{{ keystone_admin_url }}"
+        token: "{{ keystone_admin_token }}"
+        tenant: demo
+        tenant_description: "Demo Tenant"
+
+    - name: create demo user
+      keystone_user:
+        endpoint: "{{ keystone_admin_url }}"
+        token: "{{ keystone_admin_token }}"
+        tenant: demo
+        user: demo
+        password: "{{ demo_password }}"
+
+    - name: update demo.openrc template
+      template:
+        src: templates/demo.openrc
+        dest: "{{ ansible_env['HOME'] }}/demo.openrc"
+        mode: 0600
+
+    - name: ensure cirros image is registered
+      glance_image: 
+        auth_url: "{{ keystone_public_url }}"
+        login_tenant_name: demo
+        login_username: demo 
+        login_password: "{{ demo_password }}"
+        name: cirros-0.3.1-x86_64 
+        disk_format: qcow2
+        copy_from: "{{ cirros_url }}"
+        is_public: True 
+        timeout: 1200
+        state: present
+      register: cirros_image
+
+    # Ansible neutron modules lists all tenants to get ids, but this
+    # is not permitted for non-admin users. Need to fix neutron_* modules as
+    # non-admin *should* be able to create networks, associate floating ips,
+    # etc.
+    
+    - name: ensure internal network is registered
+      neutron_network: 
+        auth_url: "{{ keystone_public_url }}"
+        login_tenant_name: admin
+        login_username: admin
+        login_password: "{{ admin_password }}" 
+        tenant_name: demo
+        name: "{{ internal_network_name }}" 
+        state: present
+      register: internal_network
+
+    - name: ensure subnet internal network is registered
+      neutron_subnet: 
+        auth_url: "{{ keystone_public_url }}"
+        login_tenant_name: admin
+        login_username: admin
+        login_password: "{{ admin_password }}" 
+        tenant_name: demo
+        name: "{{ internal_network_subnet_name }}"
+        network_name: "{{ internal_network_name }}"
+        cidr: "{{ internal_network_subnet_cidr }}"
+        enable_dhcp: True
+        gateway_ip: "{{ internal_network_subnet_gateway_ip }}"
+        dns_nameservers: "{{ internal_network_subnet_dns_nameservers }}"
+        state: present
+
+    - name: ensure router exists
+      neutron_router: 
+        auth_url: "{{ keystone_public_url }}"
+        login_tenant_name: admin
+        login_username: admin
+        login_password: "{{ admin_password }}" 
+        tenant_name: demo
+        name: "{{ router_name }}"
+        state: present 
+
+    - name: ensure router has interface connected to internal network
+      neutron_router_interface: 
+        auth_url: "{{ keystone_public_url }}"
+        login_tenant_name: admin
+        login_username: admin
+        login_password: "{{ admin_password }}" 
+        tenant_name: demo
+        router_name: "{{ router_name }}"
+        subnet_name: "{{ internal_network_subnet_name }}"
+        state: present 
+
+    - name: ensure router has external network gateway
+      neutron_router_gateway: 
+        auth_url: "{{ keystone_public_url }}"
+        login_tenant_name: demo
+        login_username: demo
+        login_password: "{{ demo_password }}" 
+        router_name: "{{ router_name }}"
+        network_name: "{{ external_network_name }}"
+        state: present
+
+    - name: add rule to allow ping to default security group
+      command: neutron --os-auth-url "{{ keystone_public_url }}" --os-tenant-name demo --os-username demo --os-password "{{ demo_password }}"  security-group-rule-create default --direction ingress --protocol icmp
+      ignore_errors: yes
+
+    - name: add rule to allow ssh to default security group
+      command: neutron --os-auth-url "{{ keystone_public_url }}" --os-tenant-name demo --os-username demo --os-password "{{ demo_password }}"  security-group-rule-create default --direction ingress --protocol tcp --port-range-min 22 --port-range-max 22
+      ignore_errors: yes
+
+    - name: create ssh keypair
+      command: ssh-keygen -q -f {{ ansible_env['HOME'] }}/.ssh/id_rsa -P ""
+               creates={{ ansible_env['HOME'] }}/.ssh/id_rsa
+
+    - name: capture public key in variable
+      command: cat {{ ansible_env['HOME'] }}/.ssh/id_rsa.pub
+      register: pubkey
+
+    - name: add ssh keypair to nova
+      nova_keypair: 
+        auth_url: "{{ keystone_public_url }}"
+        login_tenant_name: demo
+        login_username: demo 
+        login_password: "{{ demo_password }}" 
+        name: default
+        public_key: "{{ pubkey.stdout }}"
+        state: present
+
+    - name: create a new virtual machine instance
+      nova_compute: 
+        auth_url: "{{ keystone_public_url }}"
+        login_tenant_name: demo
+        login_username: demo 
+        login_password: "{{ demo_password }}" 
+        name: cirros
+        flavor_id: 1
+        image_id: "{{ cirros_image.id }}"
+        nics: 
+          - net-id: "{{ internal_network.id }}"
+        security_groups: default
+        key_name: default
+        wait: "yes"
+        state: present
+      register: createvm
+      ignore_errors: yes
+
+    - name: associate a floating ip with the instance
+      neutron_floating_ip: 
+        auth_url: "{{ keystone_public_url }}"
+        login_tenant_name: demo
+        login_username: demo
+        login_password: "{{ demo_password }}" 
+        instance_name: cirros
+        network_name: "{{ external_network_name }}"
+        state: present
+      when: createvm|success

@@ -1,5 +1,5 @@
 ---
-- name: Install or verify nova database
+- name: Install or verify Nova database
   hosts: mysql
   sudo: True
   gather_facts: False

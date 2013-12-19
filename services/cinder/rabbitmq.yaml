@@ -1,0 +1,22 @@
+---
+- name: Configure RabbitMQ server
+  hosts: rabbitmq
+  sudo: True
+  gather_facts: False
+  tasks:
+
+    - name: ensure cinder vhost is present
+      rabbitmq_vhost: 
+        name: /cinder
+        state: present
+
+    - name: ensure cinder user is present
+      rabbitmq_user: 
+        user: cinder
+        password: "{{ cinder_rabbit_password }}" 
+        vhost: /cinder
+        configure_priv: .*
+        read_priv: .*
+        write_priv: .*
+        state: present
+        force: yes

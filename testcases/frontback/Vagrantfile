@@ -1,0 +1,68 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  config.vm.box = "precise64"
+  config.vm.box_url = "http://files.vagrantup.com/precise64.box"
+  
+  config.vm.define "frontend" do |machine|
+    machine.vm.network :private_network, ip: "10.1.0.2",
+                       :netmask => "255.255.0.0"
+    machine.vm.network :private_network, ip: "10.2.0.2",
+                       :netmask => "255.255.0.0"
+    machine.vm.network :private_network, ip: "10.4.0.2",
+                       :netmask => "255.255.0.0"
+    machine.vm.network :private_network, ip: "10.5.0.2",
+                       :netmask => "255.255.0.0"
+    machine.vm.network :private_network, ip: "10.6.0.2",
+                       :netmask => "255.255.0.0"
+    machine.vm.hostname = "frontend"
+    machine.vm.provider :virtualbox do |v| 
+      v.customize ["modifyvm", :id, "--memory", 512]
+    end
+  end
+
+  swift_file_to_disk = '.vagrant/swift-storage-extradisk.vdi'
+  cinder_file_to_disk = '.vagrant/cinder-storage-extradisk.vdi'
+
+  config.vm.define "backend" do |machine|
+    machine.vm.network :private_network, ip: "10.1.0.3",
+                       :netmask => "255.255.0.0"
+    machine.vm.network :private_network, ip: "10.3.0.3",
+                       :netmask => "255.255.0.0"
+    machine.vm.network :private_network, ip: "10.4.0.3",
+                       :netmask => "255.255.0.0"
+    machine.vm.network :private_network, ip: "10.5.0.3",
+                       :netmask => "255.255.0.0"
+    machine.vm.network :private_network, ip: "10.6.0.3",
+                       :netmask => "255.255.0.0"
+    machine.vm.hostname = "backend"
+    machine.vm.provider :virtualbox do |v| 
+      v.customize ["modifyvm", :id, "--memory", 512]
+      v.customize ["modifyvm", :id, "--nicpromisc4", "allow-vms"]
+      v.customize ["createhd", "--filename", swift_file_to_disk, "--size", 1024]
+      v.customize ["createhd", "--filename", cinder_file_to_disk, "--size", 4096]
+      v.customize ["storageattach", :id, "--storagectl", "SATA Controller", 
+                   "--port", 1, "--device", 0, "--type", "hdd", 
+                   "--medium", swift_file_to_disk]
+      v.customize ["storageattach", :id, "--storagectl", "SATA Controller", 
+                   "--port", 2, "--device", 0, "--type", "hdd", 
+                   "--medium", cinder_file_to_disk]
+    end
+  end
+
+  config.vm.define "compute" do |machine|
+    machine.vm.network :private_network, ip: "10.1.0.4",
+                       :netmask => "255.255.0.0"
+    machine.vm.network :private_network, ip: "10.3.0.4",
+                       :netmask => "255.255.0.0"
+    machine.vm.hostname = "compute"
+    machine.vm.provider :virtualbox do |v| 
+      v.customize ["modifyvm", :id, "--memory", 1024]
+    end
+  end
+
+end

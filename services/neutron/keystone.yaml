@@ -1,0 +1,40 @@
+---
+- name: get neutron-api facts
+  hosts: neutron-api
+  sudo: False
+  gather_facts: True
+
+- name: Configure neutron-api in keystone
+  hosts: keystone
+  sudo: False
+  gather_facts: True
+  tasks:
+
+    - name: create neutron service user
+      keystone_user: 
+        endpoint: "{{ keystone_admin_url }}"
+        token: "{{ keystone_admin_token }}" 
+        tenant: service 
+        user: neutron 
+        password: "{{ neutron_identity_password }}"
+
+    - name: add neutron service user to the service tenant with the admin role
+      keystone_user: 
+        endpoint: "{{ keystone_admin_url }}"
+        token: "{{ keystone_admin_token }}" 
+        tenant: service 
+        user: neutron 
+        role: admin
+
+    - name: add neutron endpoint to keystone
+      keystone_service: 
+        endpoint: "{{ keystone_admin_url }}"
+        token: "{{ keystone_admin_token }}" 
+        region: "{{ openstack_region }}"
+        name: neutron
+        type: network
+        description: "Networking Service"
+        public_url: "{{ neutron_public_url }}"
+        internal_url: "{{ neutron_internal_url }}"
+        admin_url: "{{ neutron_admin_url }}"
+

@@ -1,19 +1,22 @@
 ---
 external_ntp_host: pool.ntp.org
 
-default_region: RegionOne
-default_tenant: default
+openstack_region: RegionOne
 
 global_log_verbose: False
 global_log_debug: False
 
+openstack_repositories: 
+  - cloud-archive:havana
+
+ntp_host: "{{ hostvars[groups['ntpserver'][0]]|find_ip(management_network) }}"
+
 mysql_host: "{{ hostvars[groups['mysql'][0]]|find_ip(management_network) }}"
 mysql_root_password: "{{ lookup('password', inventory_dir + '/credentials/mysql-root-password') }}"
 
-rabbit_host: "{{ hostvars[groups['rabbitmq'][0]]|find_ip(management_network) }}"
-rabbit_password: "{{ lookup('password', inventory_dir + '/credentials/rabbit-password') }}"
+mongodb_host: "{{ hostvars[groups['mongodb'][0]]|find_ip(management_network) }}"
 
-ntp_host: "{{ hostvars[groups['ntpserver'][0]]|find_ip(management_network) }}"
+rabbit_host: "{{ hostvars[groups['rabbitmq'][0]]|find_ip(management_network) }}"
 
 keystone_endpoint_host: "{{ hostvars[groups['keystone'][0]]|find_ip(management_network) }}"
 keystone_internal_url: http://{{ keystone_endpoint_host }}:5000/v2.0
@@ -36,17 +39,71 @@ ec2_internal_url: http://{{ nova_endpoint_host }}:8773/services/Cloud
 ec2_admin_url: http://{{ nova_endpoint_host }}:8773/services/Admin
 ec2_public_url: http://{{ hostvars[groups['nova-controller'][0]]|find_ip(api_network) }}:8773/services/Cloud
 
-quantum_endpoint_host: "{{ hostvars[groups['quantum-api'][0]]|find_ip(management_network) }}"
-quantum_internal_url: http://{{ quantum_endpoint_host }}:9696
-quantum_admin_url: "{{ quantum_internal_url }}"
-quantum_public_url: http://{{ hostvars[groups['quantum-api'][0]]|find_ip(api_network) }}:9696
+neutron_endpoint_host: "{{ hostvars[groups['neutron-api'][0]]|find_ip(management_network) }}"
+neutron_internal_url: http://{{ neutron_endpoint_host }}:9696
+neutron_admin_url: "{{ neutron_internal_url }}"
+neutron_public_url: http://{{ hostvars[groups['neutron-api'][0]]|find_ip(api_network) }}:9696
 
 swift_endpoint_host: "{{ hostvars[groups['swift-proxy'][0]]|find_ip(management_network) }}"
 swift_internal_url: http://{{ swift_endpoint_host }}:8888/v1/AUTH_%(tenant_id)s
 swift_admin_url: http://{{ swift_endpoint_host }}:8888/v1
 swift_public_url: http://{{ hostvars[groups['swift-proxy'][0]]|find_ip(api_network) }}:8888/v1/AUTH_%(tenant_id)s
 
+cinder_endpoint_host: "{{ hostvars[groups['cinder-api'][0]]|find_ip(management_network) }}"
+cinder_internal_url: http://{{ cinder_endpoint_host }}:8776/v1/%(tenant_id)s
+cinder_admin_url: "{{ cinder_internal_url }}"
+cinder_public_url: http://{{ hostvars[groups['cinder-api'][0]]|find_ip(api_network) }}:8776/v1/%(tenant_id)s
+
+cinderv2_internal_url: http://{{ cinder_endpoint_host }}:8776/v2/%(tenant_id)s
+cinderv2_admin_url: "{{ cinderv2_internal_url }}"
+cinderv2_public_url: http://{{ hostvars[groups['cinder-api'][0]]|find_ip(api_network) }}:8776/v2/%(tenant_id)s
+
+heat_endpoint_host: "{{ hostvars[groups['heat'][0]]|find_ip(management_network) }}"
+heat_internal_url: http://{{ heat_endpoint_host }}:8004/v1/%(tenant_id)s
+heat_admin_url: "{{ heat_internal_url }}"
+heat_public_url: http://{{ hostvars[groups['heat'][0]]|find_ip(api_network) }}:8004/v1/%(tenant_id)s
+
+cfn_internal_url: http://{{ heat_endpoint_host }}:8000/v1/
+cfn_admin_url: "{{ heat_internal_url }}"
+cfn_public_url: http://{{ hostvars[groups['heat'][0]]|find_ip(api_network) }}:8000/v1
+
+ceilometer_endpoint_host: "{{ hostvars[groups['ceilometer'][0]]|find_ip(management_network) }}"
+ceilometer_internal_url: http://{{ ceilometer_endpoint_host }}:8777
+ceilometer_admin_url: "{{ ceilometer_internal_url }}"
+ceilometer_public_url: http://{{ hostvars[groups['ceilometer'][0]]|find_ip(api_network) }}:8777
+
 metadata_proxy_shared_secret: "{{ lookup('password', inventory_dir + '/credentials/metadata-proxy-shared-secret') }}"
 
 admin_password: "{{ lookup('password', inventory_dir + '/credentials/admin-password') }}"
+
+keystone_mysql_password: "{{ lookup('password', inventory_dir + '/credentials/keystone-mysql-password') }}"
+
+swift_mysql_password: "{{ lookup('password', inventory_dir + '/credentials/swift-mysql-password') }}"
+swift_identity_password: "{{ lookup('password', inventory_dir + '/credentials/swift-identity-password') }}"
+
+glance_mysql_password: "{{ lookup('password', inventory_dir + '/credentials/glance-mysql-password')}}"
+glance_identity_password: "{{ lookup('password', inventory_dir + '/credentials/glance-identity-password') }}"
+glance_rabbit_password: "{{ lookup('password', inventory_dir + '/credentials/glance-rabbit-password') }}"
+
+cinder_mysql_password: "{{ lookup('password', inventory_dir + '/credentials/cinder-mysql-password') }}"
+cinder_identity_password: "{{ lookup('password', inventory_dir + '/credentials/cinder-identity-password') }}"
+cinder_rabbit_password: "{{ lookup('password', inventory_dir + '/credentials/cinder-rabbit-password') }}"
+
+neutron_mysql_password: "{{ lookup('password', inventory_dir + '/credentials/neutron-mysql-password') }}"
+neutron_identity_password: "{{ lookup('password', inventory_dir + '/credentials/neutron-identity-password') }}"
+neutron_ovs_mysql_password: "{{ lookup('password', inventory_dir + '/credentials/neutron-ovs-mysql-password') }}"
+neutron_rabbit_password: "{{ lookup('password', inventory_dir + '/credentials/neutron-rabbit-password') }}"
+
+nova_mysql_password: "{{ lookup('password', inventory_dir + '/credentials/nova-mysql-password') }}"
+nova_identity_password: "{{ lookup('password', inventory_dir + '/credentials/nova-identity-password') }}"
+nova_rabbit_password: "{{ lookup('password', inventory_dir + '/credentials/nova-rabbit-password') }}"
+
+heat_mysql_password: "{{ lookup('password', inventory_dir + '/credentials/heat-mysql-password') }}"
+heat_identity_password: "{{ lookup('password', inventory_dir + '/credentials/heat-identity-password') }}"
+heat_rabbit_password: "{{ lookup('password', inventory_dir + '/credentials/heat-rabbit-password') }}"
+
+ceilometer_mongodb_password: "{{ lookup('password', inventory_dir + '/credentials/ceilometer-mongodb-password') }}"
+ceilometer_rabbit_password: "{{ lookup('password', inventory_dir + '/credentials/ceilometer-rabbit-password') }}"
+ceilometer_identity_password: "{{ lookup('password', inventory_dir + '/credentials/ceilometer-identity-password') }}"
+metering_shared_secret: "{{ lookup('password', inventory_dir + '/credentials/metering-shared-secret') }}"
 

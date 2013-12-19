@@ -17,7 +17,7 @@
         name: mysql 
         state: stopped
 
-    - name: install mysql config file that binds to all interfaces
+    - name: install mysql config file that binds to management network interface
       template: 
         src: templates/etc/mysql/my.cnf 
         dest: /etc/mysql/my.cnf 
@@ -28,7 +28,7 @@
     - name: ensure mysql is started and enabled
       service: 
         name: mysql 
-        state: started 
+        state: restarted 
         enabled: yes
 
     - name: update mysql root password for all root accounts

@@ -1,65 +1,107 @@
+controller ansible_ssh_host=10.1.0.2
+compute ansible_ssh_host=10.1.0.3
+network ansible_ssh_host=10.1.0.4
+storage ansible_ssh_host=10.1.0.5
+
 [all:vars]
+external_ntp_host = uk.pool.ntp.org
+
 management_network = 10.1.0.0/16
 api_network = 10.2.0.0/16
 
-external_ntp_host = uk.pool.ntp.org
+external_network_name = public
 
-[quantum:vars]
+[neutron:vars]
 data_network = 10.3.0.0/16
 external_network = 10.4.0.0/16
+external_network_gateway_ip = 10.4.0.4
+external_network_dns_nameservers = 8.8.8.8
+external_network_allocation_pool_start = 10.4.10.100
+external_network_allocation_pool_end = 10.4.250.250
 
 [swift:vars]
 storage_network = 10.5.0.0/16
+replication_network = 10.6.0.0/16
 
 [mysql]
-controller ansible_ssh_host=10.1.0.2
+controller
+
+[mongodb]
+controller
 
 [rabbitmq]
-controller ansible_ssh_host=10.1.0.2
+controller
 
 [ntpserver]
-controller ansible_ssh_host=10.1.0.2
+controller
 
 [keystone]
-controller ansible_ssh_host=10.1.0.2
+controller
 
 [glance]
-controller ansible_ssh_host=10.1.0.2
+controller
 
 [nova:children]
 nova-controller
 nova-compute
 
 [nova-controller]
-controller ansible_ssh_host=10.1.0.2
+controller
 
 [nova-compute]
-compute ansible_ssh_host=10.1.0.3
+compute
 
-[quantum:children]
-quantum-api
-quantum-network
+[neutron:children]
+neutron-api
+neutron-network
 nova-compute
 
-[quantum-api]
-controller ansible_ssh_host=10.1.0.2
+[neutron-api]
+controller
 
-[quantum-network]
-network ansible_ssh_host=10.1.0.4
+[neutron-network]
+network
 
 [swift:children]
 swift-proxy
 swift-storage
 
 [swift-proxy]
-controller ansible_ssh_host=10.1.0.2
+controller
 
 [swift-storage]
-storage ansible_ssh_host=10.1.0.5
+storage
 
-[horizon]
-controller ansible_ssh_host=10.1.0.2
+[cinder:children]
+cinder-api
+cinder-scheduler
+cinder-volume
+
+[cinder-api]
+controller
+
+[cinder-scheduler]
+controller
+
+[cinder-volume]
+storage
+
+[dashboard]
+controller
+
+[heat]
+controller
+
+[ceilometer:children]
+ceilometer-api
+ceilometer-collector
+
+[ceilometer-api]
+controller
+
+[ceilometer-collector]
+controller
 
 [frontend]
-controller ansible_ssh_host=10.1.0.2
+controller
 

@@ -1,4 +1,0 @@
----
-quantum_mysql_password: "{{ lookup('password', inventory_dir + '/credentials/quantum-mysql-password') }}"
-quantum_identity_password: "{{ lookup('password', inventory_dir + '/credentials/quantum-identity-password') }}"
-quantum_ovs_mysql_password: "{{ lookup('password', inventory_dir + '/credentials/quantum-ovs-mysql-password') }}"

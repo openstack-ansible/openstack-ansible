@@ -1,0 +1,5 @@
+export OS_USERNAME=admin
+export OS_TENANT_NAME=admin
+export OS_PASSWORD={{ admin_password }}
+export OS_AUTH_URL={{ keystone_public_url }}
+export OS_REGION_NAME={{ openstack_region }}

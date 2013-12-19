@@ -1,0 +1,22 @@
+---
+- name: Configure RabbitMQ server
+  hosts: rabbitmq
+  sudo: True
+  gather_facts: False
+  tasks:
+
+    - name: ensure neutron vhost is present
+      rabbitmq_vhost: 
+        name: /neutron
+        state: present
+
+    - name: ensure neutron user is present
+      rabbitmq_user: 
+        user: neutron
+        password: "{{ neutron_rabbit_password }}" 
+        vhost: /neutron
+        configure_priv: .*
+        read_priv: .*
+        write_priv: .*
+        state: present
+        force: yes

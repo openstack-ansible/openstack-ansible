@@ -1,0 +1,34 @@
+---
+- name: Install or verify neutron database
+  hosts: mysql
+  sudo: True
+  gather_facts: False
+  tasks:
+
+    - name: ensure neutron database is present
+      mysql_db: 
+        name: neutron
+
+    - name: ensure neutron database user is present
+      mysql_user: 
+        name: neutron 
+        host: "{{ item }}" 
+        password: "{{ neutron_mysql_password }}" 
+        priv: neutron.*:ALL
+      with_items:
+        - "%"
+        - localhost
+
+    - name: ensure neutron_ovs database is present
+      mysql_db: 
+        name: neutron_ovs
+
+    - name: ensure neutron database user is present
+      mysql_user: 
+        name: neutron_ovs 
+        host: "{{ item }}" 
+        password: "{{ neutron_ovs_mysql_password }}" 
+        priv: neutron_ovs.*:ALL
+      with_items:
+        - "%"
+        - localhost

@@ -1,0 +1,87 @@
+---
+- name: Configure swift-proxy server
+  hosts: swift-proxy
+  sudo: True
+  gather_facts: True
+  vars:
+    component: swift
+    packages:
+      - memcached
+      - python-keystoneclient
+      - python-memcache
+      - python-swiftclient
+      - python-webob
+      - "{{ component }}"
+      - "{{ component }}-proxy"
+    services:
+      - memcached
+      - "{{ component }}-proxy"
+    config_files:
+      - "{{ component }}.conf"
+      - proxy-server.conf
+
+  tasks:
+
+    - name: ensure {{ component }}-proxy packages are installed
+      apt: 
+        pkg: "{{ item }}"
+        state: latest 
+        update_cache: yes 
+        cache_valid_time: 600
+      with_items: packages
+
+    - name: ensure services are stopped
+      service: 
+        name: "{{ item }}"
+        state: stopped
+      with_items: services
+
+    - name: ensure {{ component }} sqlite is deleted
+      file: 
+        dest: /var/lib/{{ component }}/{{ component }}.sqlite 
+        state: absent
+
+    - name: create directories if not already there
+      file:
+        path: "{{ item }}"
+        owner: "{{ component }}"
+        group: "{{ component }}"
+        mode: 0750
+        state: directory
+      with_items:
+        - /etc/{{ component }}
+        - /var/lib/{{ component }}
+        - /var/lib/{{ component }}/keystone-signing
+
+    - name: update configuration files from templates
+      template: 
+        src: templates/etc/{{ component }}/{{ item }}
+        dest: /etc/{{ component }}/{{ item }}
+        owner: "{{ component }}"
+        group: "{{ component }}"
+        mode: 0600
+      with_items: config_files
+
+    - name: update memcached.conf from template
+      template:
+        src: templates/etc/memcached.conf
+        dest: /etc/memcached.conf
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: create account builder
+      command: sudo -u {{ component }} {{ component }}-ring-builder account.builder create 18 3 1
+               chdir=/etc/{{ component }}
+               creates=/etc/{{ component }}/account.builder
+
+    - name: create container builder
+      command: sudo -u {{ component }} {{ component }}-ring-builder container.builder create 18 3 1
+               chdir=/etc/{{ component }}
+               creates=/etc/{{ component }}/container.builder
+
+    - name: create object builder
+      command: sudo -u {{ component }} {{ component }}-ring-builder object.builder create 18 3 1
+               chdir=/etc/{{ component }}
+               creates=/etc/{{ component }}/object.builder
+

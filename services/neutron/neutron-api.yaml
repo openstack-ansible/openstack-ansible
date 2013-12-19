@@ -1,0 +1,100 @@
+---
+- name: Configure neutron-api server
+  hosts: neutron-api
+  sudo: True
+  gather_facts: True
+  vars:
+    component: neutron
+    subcomponent: server
+    packages:
+      - "{{ component }}-{{ subcomponent }}"
+    services:
+      - "{{ component }}-{{ subcomponent }}"
+    config_files:
+      - "{{ component }}.conf"
+      - api-paste.ini
+
+  tasks:
+
+    - name: ensure {{ component }}-{{ subcomponent }} packages are installed
+      apt: 
+        pkg: "{{ item }}"
+        state: latest 
+        update_cache: yes 
+        cache_valid_time: 600
+      with_items: packages
+
+    - name: ensure services are stopped
+      service: 
+        name: "{{ item }}"
+        state: stopped
+      with_items: services
+
+    - name: ensure {{ component }} sqlite is deleted
+      file: 
+        dest: /var/lib/{{ component }}/{{ component }}.sqlite 
+        state: absent
+
+    - name: update configuration files from templates
+      template: 
+        src: templates/etc/{{ component }}/{{ item }}
+        dest: /etc/{{ component }}/{{ item }}
+        owner: "{{ component }}"
+        group: "{{ component }}"
+        mode: 0600
+      with_items: config_files
+
+    - name: update ovs_neutron_plugin.ini from template
+      template: 
+        src: templates/etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini 
+        dest: /etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini 
+        owner: neutron 
+        group: neutron 
+        mode: 0600
+
+    - name: make sure symlink to ovs_neutron_plugin.ini exists
+      file: 
+        src: /etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini 
+        dest: /etc/neutron/plugin.ini 
+        state: link
+
+    - name: ensure services are started and enabled
+      service: 
+        name: "{{ item }}"
+        state: restarted 
+        enabled: yes
+      with_items: services
+
+    - name: wait for neutron to come back up
+      wait_for:
+        host: "{{ neutron_endpoint_host }}"
+        port: 9696
+
+    - name: ensure external network is registered
+      neutron_network:
+        auth_url: "{{ keystone_internal_url }}"
+        login_tenant_name: admin
+        login_username: admin
+        login_password: "{{ admin_password }}"
+        name: "{{ external_network_name }}"
+        router_external: True
+        provider_network_type: gre
+        provider_segmentation_id: 6
+        state: present
+
+    - name: ensure subnet for external network is registered
+      neutron_subnet:
+        auth_url: "{{ keystone_internal_url }}"
+        login_tenant_name: admin
+        login_username: admin
+        login_password: "{{ admin_password }}"
+        name: "{{ external_network_name }}-subnet"
+        network_name: "{{ external_network_name }}"
+        cidr: "{{ external_network }}"
+        enable_dhcp: False
+        gateway_ip: "{{ external_network_gateway_ip }}"
+        dns_nameservers: "{{ external_network_dns_nameservers }}"
+        allocation_pool_start: "{{ external_network_allocation_pool_start }}"
+        allocation_pool_end: "{{ external_network_allocation_pool_end }}"
+        state: present
+

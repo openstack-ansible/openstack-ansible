@@ -1,23 +1,21 @@
 # OpenStack on Ansible with Vagrant
 
 This repository contains script that will deploy OpenStack into Vagrant virtual
-machines. These scripts are based on the [OpenStack Install and Deploy
-Manual](http://docs.openstack.org/grizzly/openstack-compute/install/apt/content/),
-grizzly release.
+machines. These scripts are based on the [Official OpenStack
+Docmentation](http://docs.openstack.org/), havana release, except where
+otherwise noted..
 
-See also [Vagrant, Ansible and OpenStack on your laptop](http://www.slideshare.net/lorinh/vagrant-ansible-and-openstack-on-your-laptop)
+See also [Vagrant, Ansible and OpenStack on your laptop]
+(http://www.slideshare.net/lorinh/vagrant-ansible-and-openstack-on-your-laptop)
 on SlideShare.
 
 ## Install prereqs
 
 You'll need to install:
 
- * [Vagrant](http://vagrantup.com)
- * [Ansible](http://ansible.github.com)
- * [python-novaclient](http://pypi.python.org/pypi/python-novaclient/)
-    so you can control your instances with the `nova` command-line tool.
- * [python-netaddr](https://pypi.python.org/pypi/netaddr/)
-    this is used to match ip addresses and interfaces to networks.
+* [Vagrant](http://vagrantup.com)
+* [Ansible](http://ansible.github.com)
+* [python-netaddr](https://pypi.python.org/pypi/netaddr/)
 
 The simplest way to get started with Ansible is to install the prerequisites,
 grab the git repo and source the appropriate file to set your environment
@@ -39,19 +37,19 @@ Download a 64-bit Ubuntu Vagrant box:
 This repository uses a submodule that contains some custom Ansible modules for
 OpenStack, so there's an extra command required after cloning the repo:
 
-    git clone http://github.com/lorin/openstack-ansible
+    git clone http://github.com/marklee77/openstack-ansible.git
     cd openstack-ansible
     git submodule update --init
 
 ## Bring up the cloud
 
-    make standard
+    make
 
-This will boot three VMs (controller, network, and a compute node), install
-OpenStack, and attempt to boot a test VM inside of OpenStack.
+This will boot three VMs (controller, network, storage, and a compute node),
+install OpenStack, and attempt to boot a test VM inside of OpenStack.
 
-If everything works, you should be able to ssh to the instance from the
-network host:
+If everything works, you should be able to ssh to the instance from any
+of your vagrant hosts:
 
  * username: `cirros`
  * password: `cubswin:)`
@@ -65,17 +63,15 @@ though the cirros instance has booted and is pingable.
 The hosts for the standard configuration are:
 
  * 10.1.0.2 (our cloud controller)
- * 10.1.0.3 (compute host #1)
+ * 10.1.0.3 (compute node #1)
  * 10.1.0.4 (the quantum network host)
- * 10.1.0.5 (storage host)
+ * 10.1.0.5 (the swift storage host)
 
 You should be able to ssh to these VMs (username: `vagrant`, password:
 `vagrant`). You can also authenticate  with the vagrant private key, which is
 included here as the file `vagrant_private_key` (NOTE: git does not manage file
 permissions, these must be set to using "chmod 0600 vagrant_private_key" or ssh
 and ansible will fail with an error).
-
-
 
 ## Interacting with your cloud
 

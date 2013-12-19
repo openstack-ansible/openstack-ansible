@@ -1,6 +1,6 @@
 ---
 - name: gather needed facts for template
-  hosts: mysql:rabbitmq:keystone:glance:quantum-api:nova-controller
+  hosts: mysql:rabbitmq:keystone:glance:neutron-api:nova-controller
 
 - name: Install nova compute on nodes
   hosts: nova-compute
@@ -8,12 +8,18 @@
   gather_facts: True
   tasks:
 
+    - name: ensure /boot/vmlinuz is world-readable
+      shell: chmod 0644 /boot/vmlinuz*
+
     - name: ensure nova-compute packages are installed
       apt: 
-        pkg: "{{ nova_compute_package }}"
+        pkg: "{{ item }}"
         state: latest 
         update_cache: yes 
         cache_valid_time: 600
+      with_items:
+        - "{{ nova_compute_package }}"
+        - python-guestfs
       
     - name: ensure services are stopped
       service: 
@@ -39,6 +45,6 @@
     - name: ensure compute service is started and enabled
       service: 
         name: nova-compute 
-        state: started 
+        state: restarted 
         enabled: yes
 

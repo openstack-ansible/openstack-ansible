@@ -1,0 +1,105 @@
+frontend ansible_ssh_host=10.1.0.2
+backend ansible_ssh_host=10.1.0.3
+compute ansible_ssh_host=10.1.0.4
+
+[all:vars]
+external_ntp_host = uk.pool.ntp.org
+
+management_network = 10.1.0.0/16
+api_network = 10.2.0.0/16
+
+external_network_name = public
+
+[neutron:vars]
+data_network = 10.3.0.0/16
+external_network = 10.4.0.0/16
+external_network_gateway_ip = 10.4.0.3
+external_network_dns_nameservers = 8.8.8.8
+external_network_allocation_pool_start = 10.4.10.100
+external_network_allocation_pool_end = 10.4.250.250
+
+[swift:vars]
+storage_network = 10.5.0.0/16
+replication_network = 10.6.0.0/16
+
+[mysql]
+frontend
+
+[mongodb]
+frontend
+
+[rabbitmq]
+frontend
+
+[ntpserver]
+frontend
+
+[keystone]
+frontend
+
+[glance]
+frontend
+
+[nova:children]
+nova-controller
+nova-compute
+
+[nova-controller]
+frontend
+
+[nova-compute]
+compute
+
+[neutron:children]
+neutron-api
+neutron-network
+nova-compute
+
+[neutron-api]
+frontend
+
+[neutron-network]
+backend
+
+[swift:children]
+swift-proxy
+swift-storage
+
+[swift-proxy]
+frontend
+
+[swift-storage]
+backend
+
+[cinder:children]
+cinder-api
+cinder-scheduler
+cinder-volume
+
+[cinder-api]
+frontend
+
+[cinder-scheduler]
+frontend
+
+[cinder-volume]
+backend
+
+[dashboard]
+frontend
+
+[heat]
+frontend
+
+[ceilometer:children]
+ceilometer-api
+ceilometer-collector
+
+[ceilometer-api]
+frontend
+
+[ceilometer-collector]
+frontend
+
+[frontend]
+frontend

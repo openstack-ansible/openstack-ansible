@@ -1,6 +1,0 @@
----
-- include: mysql.yaml
-- include: openvswitch.yaml
-- include: quantum-network.yaml
-- include: quantum-api.yaml
-- include: keystone.yaml

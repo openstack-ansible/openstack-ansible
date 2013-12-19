@@ -1,0 +1,7 @@
+---
+- include: mongodb.yaml
+- include: rabbitmq.yaml
+- include: keystone.yaml
+- include: ceilometer-api.yaml
+- include: ceilometer-collector.yaml
+- include: nova-compute.yaml

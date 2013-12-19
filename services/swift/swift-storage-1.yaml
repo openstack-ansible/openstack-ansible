@@ -1,0 +1,151 @@
+---
+- name: Configure swift-storage server
+  hosts: swift-storage
+  sudo: True
+  gather_facts: True
+  vars:
+    storage_ip: "{{ hostvars[ansible_hostname]|find_ip(storage_network) }}"
+    replication_ip: "{{ hostvars[ansible_hostname]|find_ip(replication_network) }}"
+    component: swift
+    packages:
+      - python-xattr
+      - rsync
+      - "{{ component }}"
+      - "{{ component }}-account"
+      - "{{ component }}-container"
+      - "{{ component }}-object"
+      - xfsprogs
+    services:
+      - rsync
+      - "{{ component }}-account"
+      - "{{ component }}-account-auditor"
+      - "{{ component }}-account-reaper"
+      - "{{ component }}-account-replicator"
+      - "{{ component }}-container"
+      - "{{ component }}-container-auditor"
+      - "{{ component }}-container-replicator"
+      - "{{ component }}-container-updater"
+      - "{{ component }}-object"
+      - "{{ component }}-object-auditor"
+      - "{{ component }}-object-replicator"
+      - "{{ component }}-object-updater"
+    config_files:
+      - "{{ component }}.conf"
+      - account-server.conf
+      - container-server.conf
+      - object-server.conf
+
+  tasks:
+
+    - name: ensure {{ component }}-storage packages are installed
+      apt: 
+        pkg: "{{ item }}"
+        state: latest 
+        update_cache: yes 
+        cache_valid_time: 600
+      with_items: packages
+
+    - name: ensure services are stopped
+      service: 
+        name: "{{ item }}"
+        state: stopped
+      with_items: services
+
+    - name: ensure {{ component }} sqlite is deleted
+      file: 
+        dest: /var/lib/{{ component }}/{{ component }}.sqlite 
+        state: absent
+
+    - name: create directories if not already there
+      file:
+        path: "{{ item }}"
+        owner: "{{ component }}"
+        group: "{{ component }}"
+        mode: 0750
+        state: directory
+      with_items:
+        - /etc/{{ component }}
+        - /srv/node
+        - /var/lib/{{ component }}
+        - /var/cache/{{ component }}
+
+    - name: update configuration files from templates
+      template: 
+        src: templates/etc/{{ component }}/{{ item }}
+        dest: /etc/{{ component }}/{{ item }}
+        owner: "{{ component }}"
+        group: "{{ component }}"
+        mode: 0600
+      with_items: config_files
+
+    - name: create filesystems on devices
+      filesystem:
+        dev: /dev/{{ item }}
+        fstype: xfs
+        opts: -i size=1024
+      with_items: storage_devices
+
+    - name: create device directories
+      file:
+        path: /srv/node/{{ item }}
+        owner: "{{ component }}"
+        group: "{{ component }}"
+        mode: 0750
+        state: directory
+      with_items: storage_devices
+
+    - name: mount device directories
+      mount: 
+        name: /srv/node/{{ item }} 
+        src: /dev/{{ item }} 
+        fstype: xfs 
+        opts: noatime,nodiratime,nobarrier,logbufs=8
+        state: mounted
+      with_items: storage_devices
+
+    - name: ensure /srv/node is owned by {{ component }}
+      file:
+        path: /srv/node
+        owner: "{{ component }}"
+        group: "{{ component }}"
+        recurse: yes
+        state: directory
+
+    - name: create account ring
+      delegate_to: "{{ groups['swift-proxy'][0] }}"
+      command: sudo -u {{ component }} {{ component }}-ring-builder account.builder add r1z1-{{ storage_ip }}:6002R{{ replication_ip }}:6005/{{ item }} 100
+               chdir=/etc/{{ component }}
+      with_items: storage_devices
+      ignore_errors: yes
+
+    - name: create container ring
+      delegate_to: "{{ groups['swift-proxy'][0] }}"
+      command: sudo -u {{ component }} {{ component }}-ring-builder container.builder add r1z1-{{ storage_ip }}:6001R{{ replication_ip }}:6004/{{ item }} 100
+               chdir=/etc/{{ component }}
+      with_items: storage_devices
+      ignore_errors: yes
+
+    - name: create object ring
+      delegate_to: "{{ groups['swift-proxy'][0] }}"
+      command: sudo -u {{ component }} {{ component }}-ring-builder object.builder add r1z1-{{ storage_ip }}:6000R{{ replication_ip }}:6003/{{ item }} 100
+               chdir=/etc/{{ component }}
+      with_items: storage_devices
+      ignore_errors: yes
+
+    - name: update rsyncd.conf from template
+      template: 
+        src: templates/etc/rsyncd.conf 
+        dest: /etc/rsyncd.conf 
+        owner: root 
+        group: root 
+        mode: 0644
+
+    - name: enable rsync in /etc/default
+      command: sed -i '/^RSYNC_ENABLE=/s/false/true/' /etc/default/rsync
+
+    - name: ensure rsync service is started
+      service: 
+        name: rsync
+        state: restarted 
+        enabled: yes
+

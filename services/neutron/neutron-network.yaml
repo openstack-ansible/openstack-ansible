@@ -1,0 +1,95 @@
+---
+- name: Configure neutron-network server
+  hosts: neutron-network
+  sudo: True
+  gather_facts: True
+  vars:
+    component: neutron
+    packages:
+        - neutron-dhcp-agent
+        - neutron-metadata-agent
+        - neutron-l3-agent
+    services:
+        - neutron-dhcp-agent
+        - neutron-metadata-agent
+        - neutron-l3-agent
+    config_files:
+      - "{{ component }}.conf"
+      - api-paste.ini
+      - dhcp_agent.ini
+      - l3_agent.ini
+      - metadata_agent.ini
+
+  tasks:
+
+    - name: ensure iptables configuration is present
+      template: 
+        src: templates/etc/iptables.rules 
+        dest: /etc/iptables.rules 
+        owner: root 
+        group: root 
+        mode: 0644
+
+    - name: load iptables rules
+      shell: /sbin/iptables-restore < /etc/iptables.rules
+
+    - name: ensure iptables configuration is loaded at boot
+      template: 
+        src: templates/etc/network/if-pre-up.d/iptablesload 
+        dest: /etc/network/if-pre-up.d/iptablesload 
+        owner: root 
+        group: root 
+        mode: 0755
+
+    - name: ensure ovs bridge for gateway br-ex present
+      command: /usr/bin/ovs-vsctl -- --may-exist add-br br-ex
+
+    - name: ensure br-ex has external nic enslaved
+      command: /usr/bin/ovs-vsctl -- --may-exist add-port br-ex {{ hostvars[groups['neutron-network'][0]]|find_netdev(external_network) }}
+
+    - name: ensure script to configure network is in place
+      template: 
+        src: templates/etc/network/if-pre-up.d/configure_br-ex
+        dest: /etc/network/if-pre-up.d/configure_br-ex
+        owner: root 
+        group: root 
+        mode: 0755
+
+    - name: ensure configure script is run at least once
+      command: /etc/network/if-pre-up.d/configure_br-ex
+
+    - name: ensure {{ component }}-network packages are installed
+      apt: 
+        pkg: "{{ item }}"
+        state: latest 
+        update_cache: yes 
+        cache_valid_time: 600
+      with_items: packages
+
+    - name: ensure services are stopped
+      service: 
+        name: "{{ item }}"
+        state: stopped
+      with_items: services
+
+    - name: ensure {{ component }} sqlite is deleted
+      file: 
+        dest: /var/lib/{{ component }}/{{ component }}.sqlite 
+        state: absent
+
+    - name: update configuration files from templates
+      template: 
+        src: templates/etc/{{ component }}/{{ item }}
+        dest: /etc/{{ component }}/{{ item }}
+        owner: "{{ component }}"
+        group: "{{ component }}"
+        mode: 0600
+      with_items: config_files
+
+    - name: ensure services are started and enabled
+      service: 
+        name: "{{ item }}"
+        state: restarted 
+        enabled: yes
+      with_items: services
+
