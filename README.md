@@ -21,7 +21,7 @@ The simplest way to get started with Ansible is to install the prerequisites,
 grab the git repo and source the appropriate file to set your environment
 variables, no other installation is required:
 
-	sudo pip install paramiko PyYAML Jinja2
+	sudo pip install paramiko PyYAML Jinja2 netaddr
 	git clone git://github.com/ansible/ansible.git
 	cd ./ansible
 	source ./hacking/env-setup
