@@ -20,13 +20,6 @@
 
   tasks:
 
-    - name: create cinder-volumes volume group
-      lvg:
-        vg: cinder-volumes
-        pvs: "/dev/{{ volume_devices|join(',/dev/') }}"
-        state: present
-        vg_options: ""
-
     - name: ensure {{ component }}-{{ subcomponent }} packages are installed
       apt: 
         pkg: "{{ item }}"
@@ -34,6 +27,13 @@
         update_cache: yes 
         cache_valid_time: 600
       with_items: packages
+
+    - name: create cinder-volumes volume group
+      lvg:
+        vg: cinder-volumes
+        pvs: "/dev/{{ volume_devices|join(',/dev/') }}"
+        state: present
+        vg_options: ""
 
     - name: ensure services are stopped
       service: 
