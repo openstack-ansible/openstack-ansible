@@ -99,3 +99,11 @@
         tenant: admin
         user: admin 
         role: admin
+
+   - name: create Member role and associate it with admin user
+      keystone_user: 
+        endpoint: "{{ keystone_admin_url }}"
+        token: "{{ keystone_admin_token }}" 
+        tenant: admin
+        user: admin 
+        role: Member
