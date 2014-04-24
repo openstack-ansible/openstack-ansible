@@ -3,11 +3,12 @@
 This repository contains script that will deploy OpenStack into Vagrant virtual
 machines. These scripts are based on the [Official OpenStack
 Docmentation](http://docs.openstack.org/), havana release, except where
-otherwise noted..
+otherwise noted.
 
 See also [Vagrant, Ansible and OpenStack on your laptop]
 (http://www.slideshare.net/lorinh/vagrant-ansible-and-openstack-on-your-laptop)
-on SlideShare.
+on SlideShare, though this refers to a much older version of this repo and so is 
+now out of date.
 
 ## Install prereqs
 
@@ -17,7 +18,7 @@ You'll need to install:
 * [Ansible](http://ansible.github.com)
 * [python-netaddr](https://pypi.python.org/pypi/netaddr/)
 
-The simplest way to get started with Ansible is to install the prerequisites,
+To get started with the development branch of Ansible, install the prerequisites,
 grab the git repo and source the appropriate file to set your environment
 variables, no other installation is required:
 
@@ -25,6 +26,7 @@ variables, no other installation is required:
 	git clone git://github.com/ansible/ansible.git
 	cd ./ansible
 	source ./hacking/env-setup
+
 
 ## Get an Ubuntu 12.04 (precise) Vagrant box
 
