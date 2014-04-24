@@ -17,12 +17,13 @@ You'll need to install:
 * [Vagrant](http://vagrantup.com)
 * [Ansible](http://ansible.github.com)
 * [python-netaddr](https://pypi.python.org/pypi/netaddr/)
+* [python-novaclient](https://pypi.python.org/pypi/python-novaclient) (recommended)
 
 To get started with the development branch of Ansible, install the prerequisites,
 grab the git repo and source the appropriate file to set your environment
 variables, no other installation is required:
 
-	sudo pip install paramiko PyYAML Jinja2 netaddr
+	sudo pip install paramiko PyYAML Jinja2 netaddr python-novaclient
 	git clone git://github.com/ansible/ansible.git
 	cd ./ansible
 	source ./hacking/env-setup
