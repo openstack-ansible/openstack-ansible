@@ -7,7 +7,7 @@ otherwise noted.
 
 See also [Vagrant, Ansible and OpenStack on your laptop]
 (http://www.slideshare.net/lorinh/vagrant-ansible-and-openstack-on-your-laptop)
-on SlideShare, though this refers to a much older version of this repo and so is 
+on SlideShare, though this refers to a much older version of this repo and so is
 now out of date.
 
 ## Install prereqs
@@ -19,14 +19,9 @@ You'll need to install:
 * [python-netaddr](https://pypi.python.org/pypi/netaddr/)
 * [python-novaclient](https://pypi.python.org/pypi/python-novaclient) (recommended)
 
-To get started with the development branch of Ansible, install the prerequisites,
-grab the git repo and source the appropriate file to set your environment
-variables, no other installation is required:
+To install Ansible and the other required Python modules:
 
-	sudo pip install paramiko PyYAML Jinja2 netaddr python-novaclient
-	git clone git://github.com/ansible/ansible.git
-	cd ./ansible
-	source ./hacking/env-setup
+	pip install ansible netaddr python-novaclient
 
 
 ## Get an Ubuntu 12.04 (precise) Vagrant box
