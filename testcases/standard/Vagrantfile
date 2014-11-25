@@ -7,7 +7,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.box = "precise64"
   config.vm.box_url = "http://files.vagrantup.com/precise64.box"
-  
+
+  if Vagrant.has_plugin?("vagrant-cachier")
+    config.cache.scope = :box
+  end
+
   config.vm.define "controller" do |machine|
     machine.vm.network :private_network, ip: "10.1.0.2",
                        :netmask => "255.255.0.0"
@@ -20,7 +24,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     machine.vm.network :private_network, ip: "10.6.0.2",
                        :netmask => "255.255.0.0"
     machine.vm.hostname = "controller"
-    machine.vm.provider :virtualbox do |v| 
+    machine.vm.provider :virtualbox do |v|
       v.customize ["modifyvm", :id, "--memory", 768]
     end
   end
@@ -31,7 +35,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     machine.vm.network :private_network, ip: "10.3.0.3",
                        :netmask => "255.255.0.0"
     machine.vm.hostname = "compute"
-    machine.vm.provider :virtualbox do |v| 
+    machine.vm.provider :virtualbox do |v|
       v.customize ["modifyvm", :id, "--memory", 768]
     end
   end
@@ -44,7 +48,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     machine.vm.network :private_network, ip: "10.4.0.4",
                        :netmask => "255.255.0.0"
     machine.vm.hostname = "network"
-    machine.vm.provider :virtualbox do |v| 
+    machine.vm.provider :virtualbox do |v|
       v.customize ["modifyvm", :id, "--memory", 512]
       v.customize ["modifyvm", :id, "--nicpromisc4", "allow-vms"]
     end
@@ -61,7 +65,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     machine.vm.network :private_network, ip: "10.6.0.5",
                        :netmask => "255.255.0.0"
     machine.vm.hostname = "storage"
-    machine.vm.provider :virtualbox do |v| 
+    machine.vm.provider :virtualbox do |v|
       v.customize ["modifyvm", :id, "--memory", 512]
       v.customize ["createhd", "--filename", swift_file_to_disk, "--size", 1024]
       v.customize ["createhd", "--filename", cinder_file_to_disk, "--size", 4096]
