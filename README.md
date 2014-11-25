@@ -24,6 +24,16 @@ To install Ansible and the other required Python modules:
 	pip install ansible netaddr python-novaclient
 
 
+## (Optional) Speed up your provisioning
+
+Install [Vagrant-cachier](http://fgrehm.viewdocs.io/vagrant-cachier) plugin:
+
+    vagrant plugin install vagrant-cachier
+
+It allow to share a local directory containing packages (Apt, Npm, …) cache
+among VMs.
+
+
 ## Get an Ubuntu 12.04 (precise) Vagrant box
 
 Download a 64-bit Ubuntu Vagrant box:
