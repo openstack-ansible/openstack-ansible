@@ -5,6 +5,13 @@ machines. These scripts are based on the [Official OpenStack
 Docmentation](http://docs.openstack.org/), havana release, except where
 otherwise noted.
 
+You may also be interested in the following repos, which also contain playbooks for deploying
+OpenStack, and are likely more up to date:
+
+ * [stackforge/os-ansible-deployment](https://github.com/stackforge/os-ansible-deployment)
+ * [blueboxgroup/urusla](https://github.com/blueboxgroup/ursula)
+
+
 See also [Vagrant, Ansible and OpenStack on your laptop]
 (http://www.slideshare.net/lorinh/vagrant-ansible-and-openstack-on-your-laptop)
 on SlideShare, though this refers to a much older version of this repo and so is
