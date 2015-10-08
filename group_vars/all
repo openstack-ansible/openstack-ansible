@@ -103,7 +103,7 @@ heat_identity_password: "{{ lookup('password', inventory_dir + '/credentials/hea
 heat_rabbit_password: "{{ lookup('password', inventory_dir + '/credentials/heat-rabbit-password') }}"
 
 ceilometer_mongodb_password: "{{ lookup('password', inventory_dir + '/credentials/ceilometer-mongodb-password chars=ascii_letters,digits') }}"
-ceilometer_rabbit_password: "{{ lookup('password', inventory_dir + '/credentials/ceilometer-rabbit-password' chars=ascii_letters,digits) }}"
+ceilometer_rabbit_password: "{{ lookup('password', inventory_dir + '/credentials/ceilometer-rabbit-password chars=ascii_letters,digits') }}"
 ceilometer_identity_password: "{{ lookup('password', inventory_dir + '/credentials/ceilometer-identity-password chars=ascii_letters,digits') }}"
 metering_shared_secret: "{{ lookup('password', inventory_dir + '/credentials/metering-shared-secret') }}"
 
