@@ -5,16 +5,16 @@
   gather_facts: True
   tasks:
 
-    - name: ensure mysql-server is installed
+    - name: ensure MariaDB is installed
       apt: 
-        pkg: mysql-server 
-        state: latest 
-        update_cache: yes 
+        pkg: mariadb-server
+        state: latest
+        update_cache: yes
         cache_valid_time: 600
 
     - name: ensure mysql is stopped
       service: 
-        name: mysql 
+        name: mysql
         state: stopped
 
     - name: install mysql config file that binds to management network interface
