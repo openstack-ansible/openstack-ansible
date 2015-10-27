@@ -1,15 +1,18 @@
-# OpenStack on Ansible with Vagrant
+# OpenStack on Ansible with Vagrant (unofficial)
+
+## Note: this isn't the official OpenStack-Ansible project
+
+You almost certainly want [openstack/openstack-ansible][1] instead, which
+is the official OpenStack-Ansible project.
+
+[1]: https://github.com/openstack/openstack-ansible
+
+## Overview
 
 This repository contains script that will deploy OpenStack into Vagrant virtual
 machines. These scripts are based on the [Official OpenStack
 Docmentation](http://docs.openstack.org/), havana release, except where
 otherwise noted.
-
-You may also be interested in the following repos, which also contain playbooks for deploying
-OpenStack, and are likely more up to date:
-
- * [stackforge/os-ansible-deployment](https://github.com/stackforge/os-ansible-deployment)
- * [blueboxgroup/urusla](https://github.com/blueboxgroup/ursula)
 
 
 See also [Vagrant, Ansible and OpenStack on your laptop]
